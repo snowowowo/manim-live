@@ -1,0 +1,17 @@
+/* manim-live 的**可选**默认样式。
+ *
+ *   import 'manim-live/style.css'
+ *
+ * 只处理一件事：插进容器的那块 `<canvas>` 是 inline 元素，会按行基线对齐、
+ * 在容器底部露出几像素空隙（经典 baseline gap）。核心包给容器加上
+ * `.manim-live-surface` 类，这条规则把 canvas 变块级元素，间隙即消失。
+ *
+ * 刻意不做的事：不设背景、不锁尺寸、不写字体——明暗主题与排版是使用者的自由。
+ */
+.manim-live-surface {
+  position: relative;
+}
+
+.manim-live-surface > canvas {
+  display: block;
+}

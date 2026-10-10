@@ -1,0 +1,19 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+
+# playground 的构建产物与本地 Pyodide 资源（资源按 Step 3 拷进来，可随时重拷）
+playground/dist/
+playground/public/pyodide/
+
+# 开发期接进来的静态资源（软链到插件仓的 assets/，见 scripts/setup-assets.mjs）
+assets/
+
+# AI / 探针临时产物（用完即清）
+_tmp/
+
+# 语料截图的上一次运行清单：图本身要进库（实验场页面靠它显示「上次截图」），
+# 但这份清单每跑一次全量就整体重写，进库只会天天刷屏。
+_dev/shots/index.json
