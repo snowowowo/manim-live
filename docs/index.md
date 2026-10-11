@@ -1,19 +1,19 @@
 ---
 # 首页 = 简介落地页。layout: home 是默认主题的 landing 布局：
 # 按设计**不带左侧目录、也不带右侧大纲**，只有顶部导航——
-# 和 VitePress 官网首页同款。进入文档页之后才有左右两栏。
+# 与 VitePress 官网首页一致。进入文档页之后才有左右两栏。
 layout: home
 
 hero:
   name: manim-live
   text: 在浏览器里用真 Python 跑 Manim
-  tagline: 一块画布 + 一个运行时。Pyodide（真 CPython + 真 numpy）执行 Manim Community 的代码，WebGL 出画面。零 UI、零框架、零宿主、零本地 Manim。
+  tagline: 一块画布 + 一个运行时。Pyodide（真 CPython + 真 numpy）执行 Manim Community 的代码，WebGL 渲染画面。零 UI、零框架、零宿主、零本地 Manim。
   actions:
     - theme: brand
       text: 快速开始
       link: /guide/quick-start
     - theme: alt
-      text: 看渲染成品
+      text: 渲染成品
       link: /examples/
     - theme: alt
       text: GitHub
@@ -22,29 +22,29 @@ hero:
 features:
   - icon: 🐍
     title: 真 Python，不是转译
-    details: Pyodide 跑的是真 CPython：推导式、闭包、dataclass、itertools 原样可用；Manim CE 的写法由适配层翻译成 manim-web 调用。
+    details: Pyodide 运行真 CPython：推导式、闭包、dataclass、itertools 原样可用；Manim CE 的写法由适配层翻译为 manim-web 调用。
   - icon: 🧩
     title: 零框架
-    details: 对外只碰两个 DOM 原语——给一个容器元素，拿到 run / dispose。React、Vue、原生 JS 的差别只是挂载时机。
+    details: 对外只涉及两个 DOM 原语——传入一个容器元素，获得 run / dispose。React、Vue、原生 JS 的差别仅是挂载时机。
   - icon: 🩺
-    title: 先预检再上台
-    details: check() 干跑一遍，语法错、未定义名、取不到的第三方包当场回 ok:false，不必等用户点了播放才炸。
+    title: 先预检再呈现
+    details: check() 先干跑一遍，语法错、未定义名、取不到的第三方包立即返回 ok:false，无需等到用户播放时才失败。
   - icon: 🎬
-    title: 能录屏
-    details: 内置浏览器录屏导出（webm）；也可以接入自己的导出器，比如本机 manim CLI 渲 mp4。
+    title: 支持录屏
+    details: 内置浏览器录屏导出（webm）；也可接入自定义导出器，例如本机 manim CLI 渲染 mp4。
 ---
 
-## 怎么开始
+## 快速开始
 
 ```bash
 pnpm add manim-live
 ```
 
-装上之后，给一个容器元素、跑一段 Python，就走完了全部流程；装、跑、在各框架里挂的完整写法见[快速开始](/guide/quick-start)与[在各框架里用](/guide/frameworks)。
+安装后，传入一个容器元素、执行一段 Python，即完成全部流程；安装、执行与各框架挂载的完整写法见[快速开始](/guide/quick-start)与[在各框架里用](/guide/frameworks)。
 
-## 它渲出来的东西长这样
+## 渲染效果
 
-下面每一张都是**真机渲染的终态**：由 `scripts/shot-corpus.mjs` 用真 Chromium 逐条跑语料落图，不是设计稿。源码与这张图的对应关系见[示例画廊](/examples/)。
+以下每张图均为**真机渲染的终态**：由 `scripts/shot-corpus.mjs` 使用真实 Chromium 逐条运行语料生成，非设计稿。源码与图片的对应关系见[示例画廊](/examples/)。
 
 <div class="gallery">
   <figure>
@@ -53,27 +53,28 @@ pnpm add manim-live
   </figure>
   <figure>
     <img src="./images/monte-carlo-pi.png" alt="蒙特卡洛估算 π" loading="lazy" />
-    <figcaption>往正方形里撒点，数出 π ≈ 3.140</figcaption>
+    <figcaption>向正方形内撒点，估算出 π ≈ 3.140</figcaption>
   </figure>
   <figure>
     <img src="./images/space-cube.png" alt="真 3D 场景" loading="lazy" />
-    <figcaption>ThreeDScene：有光有深度的真 3D</figcaption>
+    <figcaption>ThreeDScene：带光照与深度的真实 3D</figcaption>
   </figure>
 </div>
 
 ::: warning 截图是终态，动画不是
-截图抓的是一段动画播完后的那一帧。**动画过程本身**（物体怎么动、怎么变形）静态图呈现不了——本仓自带一个本地演示台，`pnpm playground` 起来后 239 条语料都能点开实播。它只留在本地开发用，不随文档上线。
+截图截取的是一段动画播放完毕后的那一帧。**动画过程本身**（物体如何运动、变形）静态图无法呈现——本仓库附带一个本地演示台，`pnpm playground` 启动后 239 条语料均可点开实播。该演示台仅用于本地开发，不随文档上线。
 :::
 
 ## 全部章节
 
-| 章节 | 讲什么 |
+| 章节 | 内容 |
 | --- | --- |
-| [安装](/guide/installation) | 装包、两样外部资源（Pyodide / KaTeX）、浏览器要求 |
-| [快速开始](/guide/quick-start) | 二十行跑出第一幅画面，逐步说清每一步不调会怎样 |
-| [在各框架里用](/guide/frameworks) | 原生 JS / React / Vue，以及画布生命周期的两个实务 |
-| [必须知道的三条契约](/guide/contracts) | 多实例单例、`dispose()` 真释放、单段独立执行；外加「复用画布的坑」 |
-| [第三方包从哪来、缓存在哪](/guide/packages) | `import pandas` 取不到包时到底发生了什么，三种环境各自的取法与缓存 |
+| [安装](/guide/installation) | 安装包、两项外部资源（Pyodide / KaTeX）、浏览器要求 |
+| [快速开始](/guide/quick-start) | 约二十行代码渲染出第一幅画面，逐步说明每一步不调用的后果 |
+| [在各框架里用](/guide/frameworks) | 原生 JS / React / Vue，以及画布生命周期的两个要点 |
+| [必须知道的三条契约](/guide/contracts) | 多实例单例、`dispose()` 真实释放、单段独立执行；以及「复用画布的已知问题」 |
+| [第三方包从哪来、缓存在哪](/guide/packages) | `import pandas` 取不到包时的原因，两种部署环境的获取方式与缓存 |
 | [在 Node 里干跑预检](/guide/node) | 不碰 DOM 的 CI 预检 |
-| [渲染成品画廊](/examples/) | 10 张真机渲染的成品 + 对应语料源码 |
+| [渲染成品画廊](/examples/) | 10 张真机渲染的成品与对应语料源码 |
 | [公开接口](/api/) | `createManimRenderer` / `Surface` / 导出接入者 / 低层入口 |
+| [开发与调试](/dev/) | 面向本仓库开发者：构建、测试、演示台、产物自检 |

@@ -1,11 +1,11 @@
 # 第三方包从哪来、缓存在哪
 
-语料里有几条要 `import pandas` / `matplotlib` / `scipy` / `sklearn` 的。这些包**不随本包发**，
-也不随 Pyodide 核心发——它们按需取。这一页把「从哪取、为什么可能取不到、缓存落在哪」说清。
+部分语料需要 `import pandas` / `matplotlib` / `scipy` / `sklearn`。这些包**不随本包分发**，
+也不随 Pyodide 核心分发——它们按需获取。本页说明获取来源、获取失败的可能原因与缓存位置。
 
-## 先记一条硬事实
+## 一条关键事实
 
-读 Pyodide 的 `pyodide.asm.js` 得来（不是猜）：浏览器侧取一个按需包，就是
+来源为阅读 Pyodide 的 `pyodide.asm.js`（非猜测）：浏览器侧获取一个按需包的过程是
 
 ```js
 fetch(new URL(file_name, indexURL), { integrity: 'sha256-' + base64(pkg.sha256) })
@@ -13,59 +13,54 @@ fetch(new URL(file_name, indexURL), { integrity: 'sha256-' + base64(pkg.sha256) 
 
 两个推论：
 
-1. **地址只有 `indexURL` 一个，不会回落官方 CDN**（Pyodide 源码里那条 CDN 回落写在 Node
-   分支里，浏览器里是空操作）。`indexURL` 指向的目录里有什么，就只能取什么。
-2. 文件不在时，表现是 `TypeError: Failed to fetch`——因为带 SRI 的 fetch 撞上 404 空 body，
-   完整性校验必然失败，抛的这句话与「网络不通」**一模一样**。所以见到 `Failed to fetch`
-   先别急着怪网络。
+1. **地址只有 `indexURL` 一个，不会回落到官方 CDN**（Pyodide 源码中的 CDN 回落位于 Node
+   分支，浏览器中为空操作）。`indexURL` 指向的目录里有什么，就只能取到什么。
+2. 文件不存在时，表现为 `TypeError: Failed to fetch`——带 SRI 的 fetch 遇到 404 空 body，
+   完整性校验必然失败，抛出的错误信息与「网络不通」**完全一致**。因此遇到 `Failed to fetch`
+   时应先检查静态目录，而非网络。
 
-## 三种环境，各自的取法
+## 两种部署环境，各自的取法
 
-| 环境 | 谁把 wheel 放进 `indexURL` | 缓存落在哪 |
+| 环境 | 谁把 wheel 放进 `indexURL` | 缓存位置 |
 | --- | --- | --- |
-| 官方 CDN（默认） | 不用管，CDN 本身就是全的 | 浏览器 HTTP 缓存 |
-| 自托管（静态目录） | **你自己**——把用到的 wheel 拷进目录 | 浏览器 HTTP 缓存 |
-| 本仓的本地演示台 | vite 中间件代取：随包目录 → 仓内缓存目录 → jsdelivr | 两层（服务端目录 + 浏览器） |
+| 官方 CDN（默认） | 无需处理，CDN 本身即完整 | 浏览器 HTTP 缓存 |
+| 自托管（静态目录） | **使用者**——将用到的 wheel 拷入目录 | 浏览器 HTTP 缓存 |
+
+（本仓库的本地演示台采用第三种取法——vite 中间件代理获取，属开发期行为，见[开发与调试](/dev/)。）
 
 ### 默认（官方 CDN）
 
-什么都不用做。首次用到某个包会联网取一次，之后走浏览器 HTTP 缓存。
+无需任何配置。首次使用某个包时联网获取一次，之后走浏览器 HTTP 缓存。
 
 ### 自托管（内网 / 完全离线）
 
-1. 从 Pyodide 发行版把 `pyodide-lock.json` 与用到的 wheel 拷进你的静态目录
-   （核心文件 `pyodide.js` / `pyodide.asm.wasm` / `python_stdlib.zip` 当然也要）。
-2. wheel 的字节会被 lock 里的 sha256 校验，**换成别的版本会被 SRI 拒掉**——要换版本，
-   连 lock 一起换。
-3. 缺了哪个包，错误信息会**点名**（见下节），照着补文件即可。
+1. 从 Pyodide 发行版将 `pyodide-lock.json` 与用到的 wheel 拷入静态目录
+   （核心文件 `pyodide.js` / `pyodide.asm.wasm` / `python_stdlib.zip` 亦不可缺少）。
+2. wheel 的字节由 lock 中的 sha256 校验，**更换其他版本会被 SRI 拒绝**——更换版本时
+   须连同 lock 一起更换。
+3. 缺少哪个包，错误信息会**明确指出**（见下节），按提示补齐文件即可。
 
-体量参考：`pandas + matplotlib + scipy + scikit-learn + statsmodels` 连同依赖的完整闭包是
-**20 个 wheel / 41.3 MB**。核心（约 13 MB）另算。
+体量参考：`pandas + matplotlib + scipy + scikit-learn + statsmodels` 及其完整依赖闭包为
+**20 个 wheel / 41.3 MB**，核心（约 13 MB）另计。
 
-### 本地演示台（本仓开发用）
+## 获取包失败时的错误信息
 
-`pnpm playground` 起的 vite 开发服务器带一个代取中间件：随包目录里有就直接给，没有就按
-lock 的 sha256 校验后从 jsdelivr 取回、落在 `_dev/pyodide-cache/`（gitignored）。取一遍就够，
-之后离线也能跑。
-
-## 取包失败时，错误信息会说实话
-
-核心包内置了一份分档诊断，`Failed to fetch` 会被翻译成四种实话之一：
+核心包内置分档诊断，`Failed to fetch` 会被翻译为以下四类之一：
 
 | 档 | 说明 |
 | --- | --- |
-| 地址下没有这个文件 | `indexURL` 是静态目录，缺谁点谁 |
-| 连不上 | 这才是真的网络问题 |
-| 代取的那一头自己报错 | 转述服务端原话（比如 502） |
-| 字节与 sha256 对不上 | 文件在，但不是 lock 登记的那份 |
+| 地址下没有该文件 | `indexURL` 是静态目录，缺少哪个会明确指出 |
+| 无法连接 | 真正的网络问题 |
+| 代理获取的一端自身报错 | 转述服务端原始信息（如 502） |
+| 字节与 sha256 不符 | 文件存在，但与 lock 登记的版本不一致 |
 
-前两档长这样：
+前两档的示例如下：
 
 ```
 取不到代码里 import 的库（pandas）：Failed to fetch。真因多半不是网络：/pyodide/ 下没有
 pandas-2.2.3-…whl 这些文件——这个地址是静态目录，里面有什么就只能取什么……
 ```
 
-实现的位置：接缝是 `setPackageDiagnoser`（核心包默认给一句通用建议，宿主可以覆盖），
-浏览器侧的分档逻辑在 `src/engine/pyodide.ts`。如果你是宿主集成方、有自己的取包路由，
-可以注册自己的诊断器。
+扩展位置：接缝为 `setPackageDiagnoser`（核心包默认提供一句通用建议，宿主可覆盖），
+浏览器侧的分档逻辑位于 `src/engine/pyodide.ts`。宿主集成方如有自己的取包路由，
+可注册自定义诊断器。

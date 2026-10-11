@@ -126,7 +126,7 @@ type ExportResult =
 
 核心自带的 `browserRecorder` 也单独导出（`id: 'browser-recorder'`），可与其他接入者一起传进
 `createManimRenderer({ exporters })`。为什么录屏要递「渲染控制权」而不是源码，以及
-canvas 不能在 replay 中途换掉的原因，见[三条契约](/guide/contracts#复用画布的坑)。
+canvas 不能在 replay 中途换掉的原因，见[三条契约](/guide/contracts#复用画布的已知问题)。
 
 ## Node 入口（manim-live/node）
 
