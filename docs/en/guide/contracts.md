@@ -1,5 +1,7 @@
 # Three Contracts You Must Know
 
+Three behavioral contracts and one known issue you must understand before integrating — without them, something in your SPA will eventually break.
+
 The three contracts below are also written in the header of the source file `src/index.ts`.
 Read them before integrating this package into an SPA, otherwise you are very likely to run
 into the problems they describe.

@@ -6,14 +6,14 @@ layout: home
 
 hero:
   name: manim-live
-  text: 在浏览器里用真 Python 跑 Manim
-  tagline: 一块画布 + 一个运行时。Pyodide（真 CPython + 真 numpy）执行 Manim Community 的代码，WebGL 渲染画面。零 UI、零框架、零宿主、零本地 Manim。
+  text: 浏览器里的 Manim 渲染器
+  tagline: "一个 npm 包：在浏览器里执行 Manim（Python 数学动画库）代码，渲染为 WebGL 动画。内置 Pyodide 真 CPython 解释器——无需服务器、无需本地 Python，React / Vue / 原生 JS 均可接入。"
   actions:
     - theme: brand
       text: 快速开始
       link: /guide/quick-start
     - theme: alt
-      text: 渲染成品
+      text: 看渲染成品
       link: /examples/
     - theme: alt
       text: GitHub
@@ -21,17 +21,23 @@ hero:
 
 features:
   - icon: 🐍
-    title: 真 Python，不是转译
-    details: Pyodide 运行真 CPython：推导式、闭包、dataclass、itertools 原样可用；Manim CE 的写法由适配层翻译为 manim-web 调用。
+    title: 真 Python 执行
+    details: Pyodide 提供 CPython 与 numpy，推导式、闭包、dataclass 等语言特性原样可用；Manim CE 写法由适配层翻译为 manim-web 调用。
   - icon: 🧩
-    title: 零框架
-    details: 对外只涉及两个 DOM 原语——传入一个容器元素，获得 run / dispose。React、Vue、原生 JS 的差别仅是挂载时机。
+    title: 两个 DOM 原语接入
+    details: 传入一个容器元素，得到 run() 与 dispose()；React、Vue、原生 JS 的差别只在挂载与卸载时机。
   - icon: 🩺
-    title: 先预检再呈现
-    details: check() 先干跑一遍，语法错、未定义名、取不到的第三方包立即返回 ok:false，无需等到用户播放时才失败。
+    title: check() 干跑预检
+    details: 执行前干跑一遍，语法错误、未定义名称、缺失的第三方包立即返回错误，不会渲染出半截画面。
   - icon: 🎬
-    title: 支持录屏
-    details: 内置浏览器录屏导出（webm）；也可接入自定义导出器，例如本机 manim CLI 渲染 mp4。
+    title: 导出器可插拔
+    details: 内置浏览器录屏导出（.webm），可接入本机 manim CLI 导出 mp4。
+  - icon: 🖥
+    title: Node 入口
+    details: manim-live/node 不碰 DOM，可在 CI 中对生成的代码做预检。
+  - icon: 📦
+    title: 取数地址自选
+    details: Pyodide 与 KaTeX 的取数地址均可配置，支持官方 CDN 或完全离线的自托管。
 ---
 
 ## 快速开始
@@ -40,7 +46,7 @@ features:
 pnpm add manim-live
 ```
 
-安装后，传入一个容器元素、执行一段 Python，即完成全部流程；安装、执行与各框架挂载的完整写法见[快速开始](/guide/quick-start)与[在各框架里用](/guide/frameworks)。
+最小流程三步：`createManimRenderer()` 建渲染器 → `createSurface(容器)` 建画布 → `surface.run(python)` 执行一段 Manim 代码。完整示例（含预检与释放）见[快速开始](/guide/quick-start)，各框架的挂载写法见[在各框架里用](/guide/frameworks)。
 
 ## 渲染效果
 
@@ -69,7 +75,8 @@ pnpm add manim-live
 
 | 章节 | 内容 |
 | --- | --- |
-| [安装](/guide/installation) | 安装包、两项外部资源（Pyodide / KaTeX）、浏览器要求 |
+| [它是什么](/guide/overview) | 解决的问题、方案与适用场景 |
+| [安装](/guide/installation) | 安装命令、两项外部资源（Pyodide / KaTeX）、浏览器要求 |
 | [快速开始](/guide/quick-start) | 约二十行代码渲染出第一幅画面，逐步说明每一步不调用的后果 |
 | [在各框架里用](/guide/frameworks) | 原生 JS / React / Vue，以及画布生命周期的两个要点 |
 | [必须知道的三条契约](/guide/contracts) | 多实例单例、`dispose()` 真实释放、单段独立执行；以及「复用画布的已知问题」 |

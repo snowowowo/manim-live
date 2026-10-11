@@ -1,5 +1,7 @@
 # Quick Start
 
+This page renders your first frame in about twenty lines and explains each step along the way. Installing and environment requirements are in [Installation](/en/guide/installation).
+
 Using a vite project as the example (any bundler that resolves `node_modules` works).
 About twenty lines of code render your first scene.
 

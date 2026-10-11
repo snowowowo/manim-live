@@ -1,5 +1,7 @@
 # Using in Frameworks
 
+This page shows how to mount in vanilla JS / React / Vue, plus two canvas-lifecycle points. The core API is in [Quick Start](/en/guide/quick-start).
+
 **This package is completely framework-agnostic.** Only two DOM primitives are involved —
 you pass in a container element and get `run` / `dispose`. Any framework that can insert a
 `<div>` into the DOM works; the differences come down to two points: **when to create**,

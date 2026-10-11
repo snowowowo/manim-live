@@ -1,5 +1,7 @@
 # Dry-Run Precheck in Node
 
+This page is for prechecking Manim code in CI: how to use the Node entry, and what precheck can and cannot catch.
+
 The browser entry needs a DOM, which Node doesn't have. `manim-live/node` provides two
 pure-Node entry points for **DOM-free dry-run prechecks** — the typical scenario is CI:
 precheck AI-generated code in CI first, and whatever fails never needs to reach the browser.

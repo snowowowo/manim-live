@@ -36,11 +36,18 @@ export default defineConfig({
         ],
 
         sidebar: [
+          // 信息梯度：开始 = 装好就能用；深入 = 集成细节与机制；示例 / 参考 = 查阅；开发 = 改代码的人才需要。
           {
-            text: '指南',
+            text: '开始',
             items: [
+              { text: '它是什么', link: '/guide/overview' },
               { text: '安装', link: '/guide/installation' },
               { text: '快速开始', link: '/guide/quick-start' },
+            ],
+          },
+          {
+            text: '深入',
+            items: [
               { text: '在各框架里用', link: '/guide/frameworks' },
               { text: '必须知道的三条契约', link: '/guide/contracts' },
               { text: '第三方包从哪来、缓存在哪', link: '/guide/packages' },
@@ -52,10 +59,9 @@ export default defineConfig({
             items: [{ text: '渲染成品画廊', link: '/examples/' }],
           },
           {
-            text: 'API',
+            text: '参考',
             items: [{ text: '公开接口', link: '/api/' }],
           },
-          // 开发调试内容单独一小节，排在最后——使用者用不到，别混进上面的使用指南。
           {
             text: '开发',
             items: [{ text: '开发与调试', link: '/dev/' }],
@@ -102,10 +108,16 @@ export default defineConfig({
 
         sidebar: [
           {
-            text: 'Guide',
+            text: 'Getting Started',
             items: [
+              { text: 'What It Is', link: '/en/guide/overview' },
               { text: 'Installation', link: '/en/guide/installation' },
               { text: 'Quick Start', link: '/en/guide/quick-start' },
+            ],
+          },
+          {
+            text: 'In Depth',
+            items: [
               { text: 'Using in Frameworks', link: '/en/guide/frameworks' },
               { text: 'Three Contracts You Must Know', link: '/en/guide/contracts' },
               { text: 'Where Third-Party Packages Come From', link: '/en/guide/packages' },
@@ -117,7 +129,7 @@ export default defineConfig({
             items: [{ text: 'Rendered Gallery', link: '/en/examples/' }],
           },
           {
-            text: 'API',
+            text: 'Reference',
             items: [{ text: 'Public API', link: '/en/api/' }],
           },
           {

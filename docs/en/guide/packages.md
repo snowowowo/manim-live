@@ -1,5 +1,7 @@
 # Where Third-Party Packages Come From, and Where They Are Cached
 
+This page explains where third-party packages like `import pandas` are fetched from, why fetching fails, and where things are cached — read it before deploying to an intranet / offline environment.
+
 Some corpus entries need `import pandas` / `matplotlib` / `scipy` / `sklearn`. These packages
 are **not distributed with this package**, nor with the Pyodide core — they are fetched on
 demand. This page explains where they come from, why fetching can fail, and where they are

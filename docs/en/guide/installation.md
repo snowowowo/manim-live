@@ -1,5 +1,7 @@
 # Installation
 
+This page covers the install command, the two external assets, and browser requirements. For what this package is and where it fits, see [What It Is](/en/guide/overview).
+
 ```bash
 pnpm add manim-live
 ```

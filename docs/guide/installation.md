@@ -1,5 +1,7 @@
 # 安装
 
+本页覆盖安装命令、两项外部资源与浏览器要求。本包是什么、适用什么场景，见[它是什么](/guide/overview)。
+
 ```bash
 pnpm add manim-live
 ```
