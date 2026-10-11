@@ -1,80 +1,58 @@
-# Where Third-Party Packages Come From, and Where They Are Cached
+# Third-Party Packages
 
-This page explains where third-party packages like `import pandas` are fetched from, why fetching fails, and where things are cached — read it before deploying to an intranet / offline environment.
+Some code needs `import pandas`, `matplotlib`, `scipy`, or `sklearn`. These packages are not distributed with this package, nor with the Pyodide core; they are fetched on demand. This page covers where they come from, why fetching fails, and where they are cached — read it before deploying to an intranet or offline environment.
 
-Some corpus entries need `import pandas` / `matplotlib` / `scipy` / `sklearn`. These packages
-are **not distributed with this package**, nor with the Pyodide core — they are fetched on
-demand. This page explains where they come from, why fetching can fail, and where they are
-cached.
+## How fetching works
 
-## One Key Fact
-
-The source is a reading of Pyodide's `pyodide.asm.js` (not guesswork): fetching an
-on-demand package on the browser side works like this
+The following is taken from Pyodide's `pyodide.asm.js` source, not inferred: fetching one on-demand package in the browser is
 
 ```js
 fetch(new URL(file_name, indexURL), { integrity: 'sha256-' + base64(pkg.sha256) })
 ```
 
-Two corollaries:
+Two consequences:
 
-1. **There is only one address, `indexURL`, with no fallback to the official CDN** (the CDN
-   fallback in Pyodide's source sits on the Node branch and is a no-op in the browser).
-   Whatever is in the directory `indexURL` points to is all you can get.
-2. If the file does not exist, the symptom is `TypeError: Failed to fetch` — an SRI-tagged
-   fetch hitting a 404 with an empty body inevitably fails the integrity check, and the
-   thrown message is **identical** to "network is down". So when you see `Failed to fetch`,
-   check the static directory first, not the network.
+1. **There is exactly one address, `indexURL`, with no fallback to the official CDN** (the CDN fallback in Pyodide's source lives in the Node branch and is a no-op in the browser). Only the files present in the directory `indexURL` points at can be fetched.
+2. A missing file surfaces as `TypeError: Failed to fetch` — a fetch with SRI hitting a 404 empty body always fails integrity verification, and the thrown message is **identical** to "the network is down". So on `Failed to fetch`, check the static directory first, not the network.
 
-## Two Deployment Setups, Each with Its Own Recipe
+## Two deployment environments
 
-| Setup | Who puts wheels into `indexURL` | Cache location |
+| Environment | Who puts the wheels into `indexURL` | Cache location |
 | --- | --- | --- |
-| Official CDN (default) | Nothing to do — the CDN itself is complete | Browser HTTP cache |
-| Self-hosted (static directory) | **You** — copy the wheels you need into the directory | Browser HTTP cache |
+| Official CDN (default) | Nobody — the CDN is already complete | Browser HTTP cache |
+| Self-hosted (static directory) | **You** — copy the wheels you use into the directory | Browser HTTP cache |
 
-(This repository's local playground uses a third recipe — a vite middleware proxy that
-fetches them — which is a development-time behavior, see [Development & Debugging](/en/dev/).)
+This repository's local playground uses a third route — a vite middleware proxy fetch — which is development-time behaviour; see [Development & Debugging](/en/dev/).
 
-### Default (official CDN)
+### Official CDN (default)
 
-No configuration needed. The first use of a package fetches it over the network once; after
-that the browser HTTP cache serves it.
+No configuration at all. The first use of a package fetches it over the network once; afterwards it comes from the browser HTTP cache.
 
-### Self-hosted (intranet / fully offline)
+### Self-hosted (intranet or fully offline)
 
-1. From a Pyodide distribution, copy `pyodide-lock.json` and the wheels you use into a
-   static directory (the core files `pyodide.js` / `pyodide.asm.wasm` /
-   `python_stdlib.zip` are equally indispensable).
-2. Wheel bytes are verified against the sha256 in the lock — **swapping in another version
-   gets rejected by SRI**; when changing versions you must swap the lock along with it.
-3. Whichever package is missing, the error message **names it explicitly** (see the next
-   section); just add the file as prompted.
+1. Copy `pyodide-lock.json` and the wheels you use from a Pyodide release into the static directory; the core files `pyodide.js`, `pyodide.asm.wasm`, and `python_stdlib.zip` are also required.
+2. Wheel bytes are verified against the sha256 in the lock, so **swapping in another version is rejected by SRI** — when changing versions, change the lock together with them.
+3. Whichever package is missing, the error message **states it explicitly** (see below); add the file it names.
 
-Size reference: `pandas + matplotlib + scipy + scikit-learn + statsmodels` with their full
-dependency closure is **20 wheels / 41.3 MB**, not counting the core (~13 MB).
+Size reference (measured from this repository's playground fetch cache): `pandas + matplotlib + scipy + scikit-learn + statsmodels` with their full dependency closure is **19 wheels plus one openblas archive, about 73 MB in total**, with the core (~13 MB) counted separately.
 
-## Error Messages When Fetching Fails
+## Error messages on failure
 
-The core package ships tiered diagnostics; `Failed to fetch` gets translated into one of
-these four categories:
+The core ships a tiered diagnosis that translates `Failed to fetch` into one of four categories:
 
 | Tier | Meaning |
 | --- | --- |
-| File missing from the address | `indexURL` is a static directory; whichever file is missing is named explicitly |
-| Cannot connect | A genuine network problem |
-| The proxied fetch endpoint itself errored | Relays the server's original message (e.g. 502) |
-| Bytes don't match the sha256 | The file exists but doesn't match the version registered in the lock |
+| The file is not under the address | `indexURL` is a static directory; which file is missing is stated explicitly |
+| Cannot connect | A real network problem |
+| The proxying end errored itself | Relays the server's original message (e.g. 502) |
+| Bytes do not match the sha256 | The file exists but differs from the version registered in the lock |
 
-Examples of the first two tiers:
+Example of the first two tiers:
 
 ```
-Cannot fetch the library imported by the code (pandas): Failed to fetch. The real cause is
-most likely not the network: /pyodide/ doesn't have files like pandas-2.2.3-…whl — this
-address is a static directory, and it can only serve what's in it…
+Cannot fetch a library imported by the code (pandas): Failed to fetch. The real cause is
+usually not the network: files like pandas-2.2.3-…whl are missing under /pyodide/ — this
+address is a static directory, and you can only get what is in it…
 ```
 
-Extension point: the seam is `setPackageDiagnoser` (the core provides one generic hint by
-default; hosts may override it), and the browser-side tiering logic lives in
-`src/engine/pyodide.ts`. Host integrations with their own package-fetching routes can
-register a custom diagnoser.
+Extension point: the seam is `setPackageDiagnoser` (the core provides one generic suggestion by default; a host can override it). The browser-side tiering logic lives in `src/engine/pyodide.ts`. A host integration with its own package route can register a custom diagnoser.

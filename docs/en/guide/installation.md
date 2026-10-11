@@ -1,49 +1,36 @@
 # Installation
 
-This page covers the install command, the two external assets, and browser requirements. For what this package is and where it fits, see [What It Is](/en/guide/overview).
+This page covers three things: the install command, the two external assets, and browser requirements. For what the package is and where it fits, see [Overview](/en/guide/overview).
 
 ```bash
 pnpm add manim-live
 ```
 
-Pure ESM (`exports` contains only `import`); a bundler that resolves `node_modules` is required
-(vite / webpack / rspack all work). `manim-web` is installed along with the package (it sits in
-`dependencies`), but it is **not bundled into this package's output** — it is left for the
-consumer's bundler to resolve, which helps tree-shaking and caching.
+The package is pure ESM (`exports` contains only `import`) and needs a bundler that resolves `node_modules` — vite, webpack, and rspack all work. `manim-web` is installed with the package (it sits in `dependencies`) but is **not bundled into this package's output**: it is left for the consumer's bundler to resolve, which helps tree-shaking and caching.
 
-::: tip This package contains logic only
-The `files` allowlist is `dist`, `style.css`, `README.md`, `LICENSE`. The **static assets
-required at runtime are not distributed with the package** — see the two sections below.
+::: tip The package contains logic only
+The `files` allowlist is `dist`, `style.css`, `README.md`, `LICENSE`. The static assets required at runtime are **not distributed with the package** — see the two sections below.
 :::
 
-## Two External Resources
+## External assets
 
-### Pyodide (~13 MB core, includes numpy / sympy)
+### Pyodide
 
-Pointed to by `pyodideIndexURL` of `createManimRenderer`. **If omitted, the official CDN is used**
-(the default); for offline / self-hosted setups, pass your own address and note:
+About 13 MB for the core, plus about 7 MB for the bundled numpy and sympy. Pointed to by `pyodideIndexURL` of `createManimRenderer`; if omitted, the official CDN is used. For offline or self-hosted setups, pass your own address and note two things:
 
-- Pyodide's "core" and its "on-demand third-party packages" (pandas / matplotlib, etc.) read
-  **the same address**, and are SRI-verified against the sha256 in `pyodide-lock.json` —
-  whichever file is missing from the address, the corresponding import simply cannot be fetched.
-  The complete self-hosting recipe is in [Where Third-Party Packages Come From](/en/guide/packages).
-- Pyodide is licensed under **MPL-2.0**: when served from the CDN this package is not the
-  distributor; when self-hosted you must include its LICENSE and note where the source lives.
+- The Pyodide core and the on-demand third-party packages (pandas, matplotlib, and friends) read **the same address**, and are SRI-verified against the sha256 in `pyodide-lock.json` — whichever file is missing from that address, the corresponding `import` simply cannot be fetched. The complete self-hosting recipe is in [Third-Party Packages](/en/guide/packages).
+- Pyodide is licensed under **MPL-2.0**: when served from the CDN this package is not the distributor; when self-hosted you must include its LICENSE and note where the source lives.
 
-### KaTeX CSS and Fonts
+### KaTeX
 
-Pointed to by `katexBaseURL` (`MathTex` is rendered as KaTeX HTML and needs the styles to
-display correctly). If omitted, the DOM is left untouched — if your code uses no formula
-text, you can skip this entirely.
+`MathTex` renders to KaTeX HTML and needs the styles to display correctly; the CSS and fonts are pointed to by `katexBaseURL`. If omitted, the DOM is left untouched — if your code uses no formula text, you can skip this entirely.
 
-## Browser Requirements
+## Browser requirements
 
-A modern browser with **WebAssembly and WebGL** support is required (Pyodide runs WASM,
-manim-web renders with three.js). DOM-less environments (Node) use the `manim-live/node`
-entry, which supports the dry-run precheck only — see [the dedicated page](/en/guide/node).
+A modern browser with WebAssembly and WebGL support: Pyodide runs WASM and manim-web renders with three.js. DOM-less environments (Node) use the `manim-live/node` entry, which supports the dry-run precheck only; see [Node Precheck](/en/guide/node).
 
-## Next Steps
+## Next steps
 
-- [Quick Start](/en/guide/quick-start) — render your first scene in about twenty lines
-- [Using in Frameworks](/en/guide/frameworks) — vanilla JS / React / Vue
-- [Three Contracts You Must Know](/en/guide/contracts) — multi-instance, disposal, one segment per run
+- Your first frame in about twenty lines → [Quick Start](/en/guide/quick-start)
+- Mounting and cleanup in vanilla JS / React / Vue → [Framework Integration](/en/guide/frameworks)
+- The three contracts: singleton, real release, one segment per run → [Behavioural Contracts](/en/guide/contracts)

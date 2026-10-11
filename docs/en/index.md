@@ -3,15 +3,15 @@ layout: home
 
 hero:
   name: manim-live
-  text: Manim code, rendered live
-  tagline: "Turn standard Manim (Python) code into real-time animations in the web page. Generated on the fly while an AI explains, rendered anywhere in your site — no server, no local environment."
+  text: Standard Manim code, rendered live in the browser
+  tagline: "Turn standard Manim (Python) code into real-time animations in a web page: no server, no local Python."
   actions:
     - theme: brand
       text: Quick Start
       link: /en/guide/quick-start
     - theme: alt
-      text: Rendered Gallery
-      link: /en/examples/
+      text: API Reference
+      link: /en/api/
     - theme: alt
       text: GitHub
       link: https://github.com/snowowowo/manim-live
@@ -19,16 +19,16 @@ hero:
 features:
   - icon: 🐍
     title: Standard Manim, runs as-is
-    details: What you write is standard Manim CE Python — no new API to learn, no rewriting; paste it into a page and the animation renders on the spot.
-  - icon: 🤖
-    title: Built for AI generation
-    details: AI writes exactly standard Manim; check() dry-runs first and stops bad code before rendering. Animate while explaining — write it, watch it.
+    details: What you write is standard Manim CE Python — 385 of the 437 public API entries verified usable (~88%); the 52 missing ones report an alternative in the error itself.
+  - icon: 🧠
+    title: Real Python, real rendering
+    details: Pyodide runs real CPython in the browser (~13 MB core) and manim-web draws the picture; 239 corpus entries regression-tested and screenshotted on real machines.
   - icon: 🧩
-    title: Render anywhere in your site
-    details: One container element plus the run / dispose primitives; React, Vue, and vanilla JS differ only in mount timing.
-  - icon: 📦
-    title: Zero environment
-    details: No server, no local Python or manim; runtime assets can be self-hosted and it runs fully offline.
+    title: One container element to embed
+    details: The only entry is createManimRenderer() — pass a container, get run and dispose. React, Vue, and vanilla JS differ only in mount timing.
+  - icon: 🛡
+    title: Invalid code stopped before rendering
+    details: check() dry-runs the precheck — syntax errors, undefined names, and empirically missing capabilities return a reason on the spot, instead of failing later during rendering.
 ---
 
 ## One piece of code, one live animation
@@ -58,30 +58,30 @@ class AxesPlotScene(Scene):
 
 ## Compared with native Manim
 
-The code is the same standard Manim Python; the difference is entirely **where it runs and how you get the picture**:
+The code is the same standard Manim Python; the difference lies only in **where it runs and how the picture is produced**:
 
 | | Native Manim (CLI) | manim-live |
 | --- | --- | --- |
 | The code you write | Standard Manim Python | The same code, **runs as-is** |
 | Environment | Local install of Python + manim + ffmpeg (plus LaTeX for formulas) | **Just a browser, zero install** |
-| How you get the picture | Offline CLI render to an mp4, then figure out how to show it | **Real-time rendering in the page — paste the code and the animation plays** |
-| Embedding in pages / products | Not possible; a video file can only be embedded after the fact | **Embed anywhere; all it takes is a container element** |
-| AI drawing while explaining | One render waits on the whole pipeline — too slow for conversation | **Write it, watch it; check() stops bad code first** |
+| How you get the picture | Offline CLI render to an mp4; playback and embedding are left to you | **Real-time rendering in the page; the animation plays as soon as the code is submitted** |
+| Embedding in pages or products | Not possible; a video file can only be embedded after the fact | **Embed anywhere; all it takes is a container element** |
+| AI drawing while explaining | A single render waits for the whole pipeline, so it cannot keep pace with the explanation | **Write it, watch it; check() stops invalid code first** |
 | Deployment cost | Install the stack on every machine, or run a render server | **One npm package; assets can be self-hosted and it runs fully offline** |
 
 The single trade-off: about 88% of the 437 public API entries verified usable, with the main scenarios (basic shapes, coordinate systems, text and formulas, animations, updaters, 3D) fully covered — the item-by-item list is in [Support Surface](/en/guide/support).
 
-## Quick Start
+## Quick start
 
 ```bash
 pnpm add manim-live
 ```
 
-The minimal flow is three steps: `createManimRenderer()` creates a renderer → `createSurface(container)` creates a canvas → `surface.run(python)` executes a piece of Manim code. The full example is in [Quick Start](/en/guide/quick-start); mounting in each framework is in [Using in Frameworks](/en/guide/frameworks).
+The minimal flow is three steps: `createManimRenderer()` creates a renderer → `createSurface(container)` creates a canvas → `surface.run(python)` executes a piece of Manim code. The full example is in [Quick Start](/en/guide/quick-start); mounting in each framework is in [Framework Integration](/en/guide/frameworks).
 
-## More rendered results
+## Rendered results
 
-Every image below is a **real end state rendered on a real machine**: generated by `scripts/shot-corpus.mjs` running the corpus entry by entry in a real Chromium — not mockups. The source-to-image mapping is in the [Rendered Gallery](/en/examples/).
+Every image below is a **real end state rendered on a real machine**: generated by `scripts/shot-corpus.mjs` running the corpus entry by entry in a real Chromium — not mockups. The source-to-image mapping is in the [Gallery](/en/examples/).
 
 <div class="gallery">
   <figure>
@@ -98,23 +98,23 @@ Every image below is a **real end state rendered on a real machine**: generated 
   </figure>
 </div>
 
-::: warning Screenshots are end states, not animations
-A screenshot captures the frame after an animation finishes playing. The **animation process itself** (how objects move and morph) cannot be shown statically — this repository includes a local playground; after `pnpm playground`, all 239 corpus entries can be played for real. The playground is for local development only and is not deployed with these docs.
+::: warning Screenshots are end states and contain no animation
+A screenshot captures the frame after an animation finishes playing. The **animation process itself** (how objects move and morph) cannot be shown statically — this repository includes a local playground; after `pnpm playground`, all 239 corpus entries can be played one by one. The playground is for local development only and is not deployed with these docs.
 :::
 
-## All Sections
+## All sections
 
 | Section | Content |
 | --- | --- |
-| [What It Is](/en/guide/overview) | The comparison with native Manim, the approach, applicable scenarios |
+| [Overview](/en/guide/overview) | Differences from native Manim, package shape, applicable scenarios |
 | [Installation](/en/guide/installation) | Install command, the two external assets, browser requirements |
 | [Quick Start](/en/guide/quick-start) | Render your first frame in ~20 lines, what each step does if skipped |
-| [Using in Frameworks](/en/guide/frameworks) | Vanilla JS / React / Vue / Next.js (SSR findings) and more frameworks |
-| [Three Contracts You Must Know](/en/guide/contracts) | Page-level singleton, real dispose(), single-shot execution; known issues with reusing a canvas |
-| [Where Third-Party Packages Come From](/en/guide/packages) | Why `import pandas` can fail; fetching and caching in two deployment setups |
-| [Dry-Run Precheck in Node](/en/guide/node) | DOM-free precheck in CI |
-| [Rendered Gallery](/en/examples/) | 31 real rendered results with their corpus sources |
-| [Public API](/en/api/) | createManimRenderer / Surface / exporters / low-level entries |
+| [Framework Integration](/en/guide/frameworks) | Vanilla JS / React / Vue / Next.js (SSR findings) and more frameworks |
+| [Behavioural Contracts](/en/guide/contracts) | Page-level singleton, real release, one segment per run; known issues with reusing a canvas |
+| [Third-Party Packages](/en/guide/packages) | How on-demand fetching works, two deployment environments, tiered failure diagnosis |
+| [Node Precheck](/en/guide/node) | DOM-free precheck in CI and its limits |
+| [Gallery](/en/examples/) | Real rendered results with their corpus sources |
+| [API Reference](/en/api/) | Eight pages by object: entry, renderer, canvas, hooks, export, Node entry, corpus and test bench, low-level exports; every member with type definitions, parameters, and examples |
 | [Development & Debugging](/en/dev/) | For contributors of this repository: build, tests, playground, publication checks |
 
 <style>
@@ -126,5 +126,5 @@ A screenshot captures the frame after an animation finishes playing. The **anima
 .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 8px 0; }
 .gallery img { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--vp-c-divider); }
 .gallery figcaption { font-size: 13px; color: var(--vp-c-text-2); text-align: center; margin-top: 6px; }
-@media (max-width: 960px) { .gallery { grid-template-columns: 1fr; } }
+@media (max-width: 960px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
 </style>

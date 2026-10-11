@@ -1,17 +1,14 @@
 # Quick Start
 
-This page renders your first frame in about twenty lines and explains each step along the way. Installing and environment requirements are in [Installation](/en/guide/installation).
+This page renders your first frame in about twenty lines and explains what happens if you skip a step. Installation and environment requirements are in [Installation](/en/guide/installation).
 
-Using a vite project as the example (any bundler that resolves `node_modules` works).
-About twenty lines of code render your first scene.
-
-## 1. Minimal Flow
+## Minimal flow
 
 ```ts
 import { createManimRenderer } from 'manim-live'
 import 'manim-live/style.css' // Optional: only fixes the canvas baseline gap
 
-// ① Create the renderer. Omit pyodideIndexURL to use the official CDN (~13 MB, downloaded on first visit).
+// ① Create the renderer. Omit pyodideIndexURL to use the official CDN (~13 MB core, downloaded on first visit).
 const renderer = createManimRenderer({
   // To show "fetching pandas / matplotlib…", pass this callback:
   onLoading: (names) => console.log(names.length ? `Fetching packages: ${names.join(', ')}` : 'Done'),
@@ -46,14 +43,13 @@ surface.dispose()
 renderer.dispose()
 ```
 
-The container is provided by the caller and its lifecycle is managed by the caller — that is
-the entire meaning of "zero frameworks":
+The container is provided by the caller and its lifecycle is managed by the caller — that is the entire meaning of "zero frameworks":
 
 ```html
 <div id="stage"></div>
 ```
 
-## 2. What Each Step Does
+## What each step does
 
 | Step | Purpose | Cost of skipping |
 | --- | --- | --- |
@@ -63,18 +59,19 @@ the entire meaning of "zero frameworks":
 | `surface.run(code)` | Executes one segment of Manim Python | — |
 | `surface.dispose()` | Really releases WASM / WebGL | Memory leak |
 
-## 3. Two Common Follow-Ups
+Parameters, return values, and more examples for every method are in the [API Reference](/en/api/).
 
-**Re-render a fresh copy** (e.g. "replay after tweaking parameters") — use `replay()`, which
-swaps in a new canvas and plays the previous code segment from the beginning. Do not try to
-keep drawing on the old canvas: `Scene.clear()` removes the 3D lights along with everything
-else, so reusing a canvas only stacks two scenes on top of each other (see
-[the contracts](/en/guide/contracts#known-issues-with-reusing-a-canvas)).
+## Replay
 
-**Screen recording export** — the renderer's `exporters` include the browser recorder
-(`id: 'browser-recorder'`). It has no access to source code and can only record "a living
-canvas", so you must hand it **rendering control**. The correct approach is to first create a
-fresh canvas and let the recorder play from scratch on it:
+`replay()` swaps in a new canvas and plays the previous code segment from the beginning. Do not keep drawing on the old canvas: `Scene.clear()` removes the 3D lights along with everything else, so reusing a canvas only stacks two scenes on top of each other. See [Behavioural Contracts](/en/guide/contracts).
+
+```ts
+await surface.replay()
+```
+
+## Export video
+
+The renderer's `exporters` include the browser recorder (`id: 'browser-recorder'`). It has no access to the source code and can only record a live canvas, so the caller must hand it **rendering control**. The correct approach is to create a fresh canvas first and let the recorder play from the beginning on it:
 
 ```ts
 const recorder = renderer.exporters.find((e) => e.id === 'browser-recorder')!
@@ -86,7 +83,7 @@ const result = await recorder.run({
   controller: {
     canvas: () => fresh.canvas(),
     isRendered: () => fresh.isRendered(),
-    replay: async () => { await fresh.run(python) }, // play the whole thing from the beginning
+    replay: async () => { await fresh.run(python) },
   },
   onProgress: (note) => console.log(note),
 })
@@ -96,18 +93,14 @@ if (result.ok && result.kind === 'blob') {
 }
 ```
 
-::: warning Why you cannot just record the old canvas
-The recorder binds its canvas **before** playback starts; if you then call
-`surface.replay()` (which swaps in a new canvas), the recording stream stays on the
-discarded old canvas — the recording ends up as an empty file, and it **fails silently the
-whole way through**. That is why the example above first `createSurface`s a fresh canvas and
-then replays on it. See
-[the contracts](/en/guide/contracts#known-issues-with-reusing-a-canvas).
+::: warning Why the old canvas cannot be recorded directly
+The recorder binds its canvas **before** playback starts; if you then call `surface.replay()` (which swaps in a new canvas), the recording stream stays on the discarded old canvas — the recording ends up as an empty file, and **no error is raised at any point**. That is why the example above creates a fresh canvas first and replays on it. See [Behavioural Contracts](/en/guide/contracts).
 :::
 
-The complete interface of each exporter is in [API](/en/api/#exporters).
+The full export contract is in [API Reference: Export](/en/api/export).
 
-## Next Steps
+## Next steps
 
-- Mounting in React / Vue → [Using in Frameworks](/en/guide/frameworks)
-- `import pandas` in your code can't fetch the package → [Where Third-Party Packages Come From](/en/guide/packages)
+- Type definitions and examples for every method, property, and hook → [API Reference](/en/api/)
+- Mounting and cleanup in vanilla JS / React / Vue → [Framework Integration](/en/guide/frameworks)
+- `import pandas` in your code cannot fetch the package → [Third-Party Packages](/en/guide/packages)

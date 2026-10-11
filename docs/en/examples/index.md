@@ -1,9 +1,11 @@
-# Rendered Gallery
+# Gallery
 
-Every screenshot below comes from this repository's corpus (`corpus/examples/`, 239 entries / 19 groups), rendered entry by entry in **a real Chromium** by `scripts/shot-corpus.mjs` — not mockups; behind each image is a piece of Python that runs. Sections follow domains and APIs, from basic shapes through linear algebra, analysis, probability, discrete math, and group theory, to third-party library combos. To watch the animations, start the local playground with `pnpm playground`.
+Every screenshot below comes from this repository's corpus (`corpus/examples/`, 239 entries / 19 groups), rendered entry by entry in **a real Chromium** by `scripts/shot-corpus.mjs` — not mockups; each image corresponds to a piece of executable Python.
+
+Sections follow domains and APIs, from basic shapes through linear algebra, analysis, probability, discrete math, and group theory, to third-party library combos. The animation process requires the local playground: after `pnpm playground`, entries can be played one by one.
 
 ::: info Why these are end-state screenshots
-A screenshot captures the frame after the animation finishes. The **process** (how objects move and morph) cannot be shown statically, and a few animation-heavy entries end in a plain frame (e.g. "the object flew away"). Play those in the playground instead.
+A screenshot captures the frame after an animation finishes playing. The **process** (how objects move and morph) cannot be shown statically; a few animation-focused entries end in a simple frame (for example, the object has already moved out of frame). For these, playback in the playground is authoritative.
 :::
 
 ## Basic shapes and functions

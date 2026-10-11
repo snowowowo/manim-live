@@ -1,12 +1,8 @@
-# Dry-Run Precheck in Node
+# Node Precheck
 
-This page is for prechecking Manim code in CI: how to use the Node entry, and what precheck can and cannot catch.
+This page is for prechecking Manim code in CI: how to use the Node entry, and where the precheck's ability ends. The browser entry needs a DOM, which Node does not have; `manim-live/node` provides a DOM-free dry run — precheck AI-generated code in CI first, and what fails never reaches a browser.
 
-The browser entry needs a DOM, which Node doesn't have. `manim-live/node` provides two
-pure-Node entry points for **DOM-free dry-run prechecks** — the typical scenario is CI:
-precheck AI-generated code in CI first, and whatever fails never needs to reach the browser.
-
-## Two Entry Points
+## Usage
 
 ```ts
 import { runPython, createDryRunBridge } from 'manim-live/node'
@@ -14,27 +10,20 @@ import { runPython, createDryRunBridge } from 'manim-live/node'
 // Dry run: syntax errors / undefined names / empirically missing manim-web capabilities throw PyRuntimeError.
 try {
   await runPython(python, createDryRunBridge())
-  console.log('Precheck passed')
+  console.log('precheck passed')
 } catch (error) {
-  console.error('Precheck failed:', error instanceof Error ? error.message : error)
+  console.error('precheck failed:', error instanceof Error ? error.message : error)
 }
 ```
 
-### createDryRunBridge provides a "draw nothing" bridge
+`createDryRunBridge()` supplies a "draw nothing" bridge: the Manim code is genuinely executed by the Python interpreter — type errors, misspelled class names, and unfetchable packages are all caught — it just produces no picture.
 
-The Manim code is genuinely executed by the Python interpreter (type errors, misspelled
-class names, and unfetchable packages are all caught) — it just produces no picture.
+The Node entry has no separate warmup function: the first `runPython()` performs the Pyodide and adapter download and initialization along the way (~13 MB of core), which is why the first piece of code in a process is noticeably slower.
 
-### warmup is also available on the Node side
+The full member list and type definitions are in [API Reference: Node Entry](/en/api/node).
 
-Use it to warm up the Pyodide download in your process, so the first CI step doesn't burn
-its time on the 13 MB download.
+## Limits
 
-## Capability Boundary
-
-::: warning The precheck cannot catch "wrong pictures"
-The precheck catches "broken code", not "correct code rendering the wrong picture" — glyph
-issues, WebGL behavior, 3D lighting, and anything else only a real browser can expose still
-need real-machine verification (this repository's approach is `pnpm playground` +
-`pnpm check:playground` smoke tests).
+::: warning The precheck cannot catch "picture errors"
+The precheck catches "code errors", not "correct code with a wrong picture" — glyphs, WebGL, and 3D lighting are problems only a real browser exposes, and still need real-machine verification (this repository's approach is `pnpm playground` plus the `pnpm check:playground` smoke test).
 :::

@@ -1,29 +1,20 @@
-# Using in Frameworks
+# Framework Integration
 
-This page shows how to mount in vanilla JS / React / Vue, plus two canvas-lifecycle points. The core API is in [Quick Start](/en/guide/quick-start).
+This page gives mounting recipes for vanilla JS, React, Vue, and Next.js, plus the lifecycle points that matter. The package has no awareness of frameworks: externally it involves only two DOM primitives — pass in a container element, get `run` and `dispose`. Any framework that can insert a `<div>` into the page works; the only differences are **when to create** and **whether cleanup calls dispose**. The core API is in [Quick Start](/en/guide/quick-start).
 
-**This package is completely framework-agnostic.** Only two DOM primitives are involved —
-you pass in a container element and get `run` / `dispose`. Any framework that can insert a
-`<div>` into the DOM works; the differences come down to two points: **when to create**,
-and **calling dispose on unmount**.
-
-| Framework | Creation | Unmounting |
+| Framework | Create | Dispose |
 | --- | --- | --- |
-| Vanilla JS | Direct call | Call it yourself |
+| Vanilla JS | Call directly | Call yourself |
 | React | `useEffect` (runs twice under StrictMode, see below) | The effect's cleanup |
 | Vue | `onMounted` | `onUnmounted` |
-| Next.js (App Router) | `useEffect` in a `'use client'` component | the effect cleanup |
+| Next.js (App Router) | `useEffect` in a `'use client'` component | The effect's cleanup |
 
-::: info Every snippet is verified on a real machine
-The repo's `examples/` directory holds four minimal integration projects — `vanilla` / `react` / `vue` / `next` (each runs with `pnpm install && pnpm dev`) — verified end to end on **current latest versions** (React 19 + TypeScript 7, Vue 3.5, Vite 8, Next.js 16; 2026-10-11): every integration renders correctly, and the React / Vue projects pass strict-mode TypeScript / vue-tsc type checks (the package's `.d.ts` resolves for real consumers). Next.js and server-side rendering are covered in their own section below.
+::: info Every recipe here is verified on a real machine
+Under `examples/` in this repository there are four minimal integration projects — `vanilla` / `react` / `vue` / `next` (each starts with `pnpm install && pnpm dev`) — verified one by one against the current latest versions (React 19 + TypeScript 7, Vue 3.5, Vite 8, Next.js 16) on 2026-10-11: all three canvas mountings render correctly, and the React and Vue projects also pass strict-mode type checking (this package's `.d.ts` resolves for real consumers). The Next.js and SSR findings have their own section below.
 :::
 
-::: info Where these snippets come from
-The API has exactly **one public entry** (`createManimRenderer`), validated by two mutually
-independent React consumers: the DSH plugin and the development playground `playground/`
-(shipped in this repository, started with `pnpm playground`). The React snippet below is
-isomorphic to the playground; the vanilla JS one is the same calls minus the framework layer;
-Vue is a reference implementation against the same API.
+::: info Where these recipes come from
+The API has exactly one external entry (`createManimRenderer`), already validated by two independent React consumers: the DSH plugin and this repository's own development playground `playground/` (started with `pnpm playground`). The React recipe below is isomorphic with the playground; vanilla JS is the same call sequence minus the framework layer; Vue is a reference implementation over the same API.
 :::
 
 ## Vanilla JS
@@ -57,7 +48,7 @@ export function ManimStage({ python }: { python: string }) {
     let cancelled = false
 
     void renderer.createSurface(host.current!).then(async (s) => {
-      if (cancelled) { s.dispose(); return } // Component already unmounted: this canvas must not be kept
+      if (cancelled) { s.dispose(); return } // component already unmounted: keep no canvas
       surface = s
       const result = await s.run(python)
       if (!result.ok && result.cancelled !== true) console.error(result.error)
@@ -75,11 +66,7 @@ export function ManimStage({ python }: { python: string }) {
 ```
 
 ::: warning StrictMode runs the effect twice
-In development mode React deliberately performs mount → unmount → remount. This is exactly
-why the cleanup above must **perform a real release**: the first canvas is destroyed by
-`dispose()`. The WASM runtime is a page-level singleton (see
-[contract one](/en/guide/contracts)), so the two mounts do not start two 20 MB WASM
-instances — but canvases and cleanups must correspond one to one.
+In development React deliberately performs mount → unmount → remount. This is exactly why the cleanup above must **perform a real release**: the first canvas is destroyed by `dispose()`. The WASM runtime is a page-level singleton (see [Behavioural Contracts](/en/guide/contracts)), so the two mounts do not start two Pyodide runtimes — but canvases and cleanups must correspond one to one.
 :::
 
 ## Vue
@@ -117,13 +104,13 @@ onUnmounted(() => {
 </template>
 ```
 
-## Next.js (App Router) and server-side rendering
+## Next.js and server-side rendering
 
-Findings from `examples/next` (Next.js 16), verified on a real machine:
+Measured findings (`examples/next`, Next.js 16):
 
-- **Top-level `import` is safe on the server** — the package's module top level touches no browser globals. The example's server component does `import { DEFAULT_PYODIDE_INDEX_URL } from 'manim-live'` and reads the constant; both the `next build` static prerender and dev SSR pass.
-- **Canvas creation must happen on the client**: `createSurface()` needs a real DOM. Mark the canvas component `'use client'` and create the surface in `useEffect` — during SSR only the placeholder `<div>` renders, `useEffect` never runs on the server, so `dynamic(..., { ssr: false })` is unnecessary too.
-- No `next.config` changes are needed.
+- **Top-level `import` is safe on the server** — this package's module top level touches no browser globals. The example's server component page does `import { DEFAULT_PYODIDE_INDEX_URL } from 'manim-live'` at top level and reads the constant; both `next build` static prerender and dev SSR pass.
+- **Canvas creation must happen on the client**: `createSurface()` needs a real DOM. Mark the canvas component `'use client'` and build the canvas in `useEffect` — during SSR only the placeholder `<div>` renders, and `useEffect` does not run on the server, so `dynamic(..., { ssr: false })` is not needed either.
+- No changes to `next.config` are required.
 
 ```tsx
 // app/ClientCanvas.tsx
@@ -140,7 +127,7 @@ export function ClientCanvas({ python }: { python: string }) {
       await s.run(python)
     })
     return () => {
-      renderer.dispose() // disposes every surface it created
+      renderer.dispose() // destroys every canvas it created
     }
   }, [python])
 
@@ -148,28 +135,22 @@ export function ClientCanvas({ python }: { python: string }) {
 }
 ```
 
-## More frameworks
+## Other frameworks
 
-The package has zero framework dependencies — **any framework that can put a `<div>` into the page and run cleanup on unmount works**. You only need two things: the mount hook (call `createSurface` there) and the unmount hook (call `dispose` there). The integration is identical to the examples above; these are not individually verified:
+Any framework that can mount a `<div>` into the page and run cleanup on unmount works. There are only two things to find: the mount hook (create the surface there) and the unmount hook (dispose there). Integration is identical to the recipes above; examples are not built for each:
 
-| Framework | Create | Unmount |
+| Framework | Create | Dispose |
 | --- | --- | --- |
-| Svelte | `onMount` | the cleanup function returned by `onMount` |
+| Svelte | `onMount` | The cleanup function returned by `onMount` |
 | Solid | `createEffect` | `onCleanup` |
 | Angular | `ngAfterViewInit` | `ngOnDestroy` |
-| Preact | `useEffect` (same as React) | effect cleanup |
-| Astro | any UI framework as a client island, or the vanilla JS approach | whichever you chose |
+| Preact | `useEffect` (same as React) | Effect cleanup |
+| Astro | A client island in any UI framework, or the vanilla JS recipe directly | Same as the chosen framework |
 | Web Components | `connectedCallback` | `disconnectedCallback` |
 
-For SSR frameworks (Nuxt / SvelteKit / Remix, etc.): the same principle as the Next.js section above — top-level `import` is server-safe; keep canvas creation inside client-side lifecycle hooks.
+Frameworks with server-side rendering (Nuxt, SvelteKit, Remix, and friends) follow the same principle as the Next.js section: top-level `import` is safe on the server, and canvas creation stays in client-side lifecycle hooks.
 
-## Two Points About Canvas Lifecycle
+## Lifecycle points
 
-1. **Do not reuse a canvas to "replay after parameters changed"**. Call `surface.replay()`
-   (which swaps in a new canvas and replays the previous segment), or destroy the old canvas
-   and `createSurface` a new one. Continuing to `run()` on the old canvas stacks two scenes
-   on top of each other (see
-   [known issues with reusing a canvas](/en/guide/contracts#known-issues-with-reusing-a-canvas)).
-2. **Multiple instances are supported, but rendering is serialized**. Mounting two
-   `<ManimStage>`s on the same page does not start two WASM instances; their `run()`s execute
-   one after another in the same queue — this is by design, not a defect.
+1. **Do not reuse a canvas when re-rendering after a parameter change.** Call `surface.replay()` (new canvas, previous code from the top), or dispose the old canvas and `createSurface` a new one. Continuing to `run()` on the old canvas stacks the two pictures on top of each other; the reason is in [known issues with reusing a canvas](/en/guide/contracts#known-issues-with-reusing-a-canvas).
+2. **Multiple instances are supported, but rendering is serial.** Mounting two `<ManimStage>`s on one page does not start two WASM runtimes; their `run()` calls execute one after another in the same queue — this is by design, not a defect.

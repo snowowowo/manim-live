@@ -36,11 +36,11 @@ export default defineConfig({
         ],
 
         sidebar: [
-          // 信息梯度：开始 = 装好就能用；深入 = 集成细节与机制；示例 / 参考 = 查阅；开发 = 改代码的人才需要。
+          // 信息梯度：开始 = 装好就能用；深入 = 集成细节与机制；示例 / API 参考 = 查阅；开发 = 改代码的人才需要。
           {
             text: '开始',
             items: [
-              { text: '它是什么', link: '/guide/overview' },
+              { text: '概述', link: '/guide/overview' },
               { text: '安装', link: '/guide/installation' },
               { text: '快速开始', link: '/guide/quick-start' },
             ],
@@ -48,21 +48,28 @@ export default defineConfig({
           {
             text: '深入',
             items: [
-              { text: '在各框架里用', link: '/guide/frameworks' },
-              { text: '必须知道的三条契约', link: '/guide/contracts' },
-              { text: '第三方包从哪来、缓存在哪', link: '/guide/packages' },
-              { text: '在 Node 里干跑预检', link: '/guide/node' },
+              { text: '框架集成', link: '/guide/frameworks' },
+              { text: '行为契约', link: '/guide/contracts' },
+              { text: '第三方包', link: '/guide/packages' },
+              { text: 'Node 预检', link: '/guide/node' },
+              { text: '支持面', link: '/guide/support' },
             ],
           },
           {
             text: '示例',
-            items: [{ text: '渲染成品画廊', link: '/examples/' }],
+            items: [{ text: '示例画廊', link: '/examples/' }],
           },
           {
-            text: '参考',
+            text: 'API 参考',
             items: [
-              { text: '支持面', link: '/guide/support' },
-              { text: '公开接口', link: '/api/' },
+              { text: '总览与入口', link: '/api/' },
+              { text: '渲染器', link: '/api/renderer' },
+              { text: '画布', link: '/api/surface' },
+              { text: '钩子', link: '/api/hooks' },
+              { text: '导出', link: '/api/export' },
+              { text: 'Node 入口', link: '/api/node' },
+              { text: '语料与测试台', link: '/api/corpus' },
+              { text: '低层导出', link: '/api/internals' },
             ],
           },
           {
@@ -113,7 +120,7 @@ export default defineConfig({
           {
             text: 'Getting Started',
             items: [
-              { text: 'What It Is', link: '/en/guide/overview' },
+              { text: 'Overview', link: '/en/guide/overview' },
               { text: 'Installation', link: '/en/guide/installation' },
               { text: 'Quick Start', link: '/en/guide/quick-start' },
             ],
@@ -121,21 +128,28 @@ export default defineConfig({
           {
             text: 'In Depth',
             items: [
-              { text: 'Using in Frameworks', link: '/en/guide/frameworks' },
-              { text: 'Three Contracts You Must Know', link: '/en/guide/contracts' },
-              { text: 'Where Third-Party Packages Come From', link: '/en/guide/packages' },
-              { text: 'Dry-Run Precheck in Node', link: '/en/guide/node' },
+              { text: 'Framework Integration', link: '/en/guide/frameworks' },
+              { text: 'Behavioural Contracts', link: '/en/guide/contracts' },
+              { text: 'Third-Party Packages', link: '/en/guide/packages' },
+              { text: 'Node Precheck', link: '/en/guide/node' },
+              { text: 'Support Surface', link: '/en/guide/support' },
             ],
           },
           {
             text: 'Examples',
-            items: [{ text: 'Rendered Gallery', link: '/en/examples/' }],
+            items: [{ text: 'Gallery', link: '/en/examples/' }],
           },
           {
-            text: 'Reference',
+            text: 'API Reference',
             items: [
-              { text: 'Support Surface', link: '/en/guide/support' },
-              { text: 'Public API', link: '/en/api/' },
+              { text: 'Overview and Entry', link: '/en/api/' },
+              { text: 'Renderer', link: '/en/api/renderer' },
+              { text: 'Canvas', link: '/en/api/surface' },
+              { text: 'Hooks', link: '/en/api/hooks' },
+              { text: 'Export', link: '/en/api/export' },
+              { text: 'Node Entry', link: '/en/api/node' },
+              { text: 'Corpus and Test Bench', link: '/en/api/corpus' },
+              { text: 'Low-Level Exports', link: '/en/api/internals' },
             ],
           },
           {
