@@ -45,92 +45,94 @@ export default defineConfig({
           { text: 'API', link: '/api/', activeMatch: '^/api/' },
         ],
 
-        sidebar: [
-          // 信息梯度：开始 = 装好就能用；深入 = 集成细节与机制；示例 / API 参考 = 查阅；开发 = 改代码的人才需要。
-          {
-            text: '开始',
-            items: [
-              { text: '概述', link: '/guide/overview' },
-              { text: '安装', link: '/guide/installation' },
-              { text: '快速开始', link: '/guide/quick-start' },
-            ],
-          },
-          {
-            text: '深入',
-            items: [
-              { text: '框架集成', link: '/guide/frameworks' },
-              { text: '行为契约', link: '/guide/contracts' },
-              { text: '第三方包', link: '/guide/packages' },
-              { text: 'Node 预检', link: '/guide/node' },
-              { text: '支持面', link: '/guide/support' },
-            ],
-          },
-          {
-            text: '示例',
-            items: [
-              { text: '示例画廊', link: '/examples/' },
-              // 一页一个语料分组（17 组有截图）；子组顺序与 scripts/gen-examples-docs.mjs 的 SECTIONS 一致。
-              {
-                text: '基础与语法',
-                collapsed: false,
-                items: [
-                  { text: '基础几何', link: '/examples/basic' },
-                  { text: '构造器参数', link: '/examples/ctor' },
-                  { text: '方法与改写', link: '/examples/method' },
-                  { text: '坐标系与数据', link: '/examples/graph' },
-                  { text: '文字与公式', link: '/examples/text' },
-                  { text: '语法综合', link: '/examples/syntax' },
-                ],
-              },
-              {
-                text: '动画与场景',
-                collapsed: false,
-                items: [
-                  { text: '动画', link: '/examples/animate' },
-                  { text: '更新器与轨迹', link: '/examples/updater' },
-                  { text: '场景与分组', link: '/examples/scene' },
-                ],
-              },
-              {
-                text: '学科讲解',
-                collapsed: false,
-                items: [
-                  { text: '高等数学与数学分析', link: '/examples/math-calculus' },
-                  { text: '线性代数', link: '/examples/math-linear' },
-                  { text: '概率论与统计', link: '/examples/math-prob' },
-                  { text: '群论', link: '/examples/math-group' },
-                  { text: '离散数学', link: '/examples/math-discrete' },
-                  { text: '讲解场景（模板）', link: '/examples/lesson' },
-                ],
-              },
-              {
-                text: '支持面与第三方',
-                collapsed: false,
-                items: [
-                  { text: 'API 点名', link: '/examples/api' },
-                  { text: '综合场景（需联网）', link: '/examples/combo' },
-                ],
-              },
-            ],
-          },
-          {
-            text: 'API 参考',
-            items: [
-              { text: '总览与入口', link: '/api/' },
-              { text: '渲染器', link: '/api/renderer' },
-              { text: '画布', link: '/api/surface' },
-              { text: '钩子', link: '/api/hooks' },
-              { text: '导出', link: '/api/export' },
-              { text: 'Node 入口', link: '/api/node' },
-              { text: '语料与测试台', link: '/api/corpus' },
-              { text: '低层导出', link: '/api/internals' },
-            ],
-          },
-          {
-            text: '开发',
-            items: [{ text: '开发与调试', link: '/dev/' }],
-          },
-        ],
+        // 侧栏按路径分区：示例章 17 页单独一套，其余页面共用一套。VitePress 用
+        // page.relativePath 做前缀匹配、键按段数从多到少排序，所以 '/examples/' 比
+        // 兜底的 '/' 先命中；折叠组里若有当前页会自动展开。
+        sidebar: {
+          '/examples/': [
+            { text: '示例画廊', link: '/examples/' },
+            // 一页一个语料分组（17 组有截图）；子组顺序与 scripts/gen-examples-docs.mjs 的 SECTIONS 一致。
+            {
+              text: '基础与语法',
+              collapsed: false,
+              items: [
+                { text: '基础几何', link: '/examples/basic' },
+                { text: '构造器参数', link: '/examples/ctor' },
+                { text: '方法与改写', link: '/examples/method' },
+                { text: '坐标系与数据', link: '/examples/graph' },
+                { text: '文字与公式', link: '/examples/text' },
+                { text: '语法综合', link: '/examples/syntax' },
+              ],
+            },
+            {
+              text: '动画与场景',
+              collapsed: false,
+              items: [
+                { text: '动画', link: '/examples/animate' },
+                { text: '更新器与轨迹', link: '/examples/updater' },
+                { text: '场景与分组', link: '/examples/scene' },
+              ],
+            },
+            {
+              text: '学科讲解',
+              collapsed: true,
+              items: [
+                { text: '高等数学与数学分析', link: '/examples/math-calculus' },
+                { text: '线性代数', link: '/examples/math-linear' },
+                { text: '概率论与统计', link: '/examples/math-prob' },
+                { text: '群论', link: '/examples/math-group' },
+                { text: '离散数学', link: '/examples/math-discrete' },
+                { text: '讲解场景（模板）', link: '/examples/lesson' },
+              ],
+            },
+            {
+              text: '支持面与第三方',
+              collapsed: true,
+              items: [
+                { text: 'API 点名', link: '/examples/api' },
+                { text: '综合场景（需联网）', link: '/examples/combo' },
+              ],
+            },
+          ],
+          '/': [
+            // 信息梯度：开始 = 装好就能用；深入 = 集成细节与机制；API 参考 = 查阅；开发 = 改代码的人才需要。
+            {
+              text: '开始',
+              items: [
+                { text: '概述', link: '/guide/overview' },
+                { text: '安装', link: '/guide/installation' },
+                { text: '快速开始', link: '/guide/quick-start' },
+              ],
+            },
+            {
+              text: '深入',
+              items: [
+                { text: '框架集成', link: '/guide/frameworks' },
+                { text: '行为契约', link: '/guide/contracts' },
+                { text: '第三方包', link: '/guide/packages' },
+                { text: 'Node 预检', link: '/guide/node' },
+                { text: '支持面', link: '/guide/support' },
+              ],
+            },
+            {
+              text: 'API 参考',
+              items: [
+                { text: '总览与入口', link: '/api/' },
+                { text: '渲染器', link: '/api/renderer' },
+                { text: '画布', link: '/api/surface' },
+                { text: '钩子', link: '/api/hooks' },
+                { text: '导出', link: '/api/export' },
+                { text: 'Node 入口', link: '/api/node' },
+                { text: '语料与测试台', link: '/api/corpus' },
+                { text: '低层导出', link: '/api/internals' },
+              ],
+            },
+            {
+              text: '开发',
+              items: [{ text: '开发与调试', link: '/dev/' }],
+            },
+          ],
+        },
 
         outline: { level: [2, 3], label: '本页目录' },
         sidebarMenuLabel: '目录',
@@ -170,91 +172,91 @@ export default defineConfig({
           { text: 'API', link: '/en/api/', activeMatch: '^/en/api/' },
         ],
 
-        sidebar: [
-          {
-            text: 'Getting Started',
-            items: [
-              { text: 'Overview', link: '/en/guide/overview' },
-              { text: 'Installation', link: '/en/guide/installation' },
-              { text: 'Quick Start', link: '/en/guide/quick-start' },
-            ],
-          },
-          {
-            text: 'In Depth',
-            items: [
-              { text: 'Framework Integration', link: '/en/guide/frameworks' },
-              { text: 'Behavioural Contracts', link: '/en/guide/contracts' },
-              { text: 'Third-Party Packages', link: '/en/guide/packages' },
-              { text: 'Node Precheck', link: '/en/guide/node' },
-              { text: 'Support Surface', link: '/en/guide/support' },
-            ],
-          },
-          {
-            text: 'Examples',
-            items: [
-              { text: 'Gallery', link: '/en/examples/' },
-              // One page per corpus group (the 17 groups with screenshots); section order matches SECTIONS in scripts/gen-examples-docs.mjs.
-              {
-                text: 'Basics and syntax',
-                collapsed: false,
-                items: [
-                  { text: 'Basic shapes', link: '/en/examples/basic' },
-                  { text: 'Constructor arguments', link: '/en/examples/ctor' },
-                  { text: 'Methods and rewrites', link: '/en/examples/method' },
-                  { text: 'Axes and data', link: '/en/examples/graph' },
-                  { text: 'Text and formulas', link: '/en/examples/text' },
-                  { text: 'Syntax (offline)', link: '/en/examples/syntax' },
-                ],
-              },
-              {
-                text: 'Animation and scenes',
-                collapsed: false,
-                items: [
-                  { text: 'Animations', link: '/en/examples/animate' },
-                  { text: 'Updaters and trails', link: '/en/examples/updater' },
-                  { text: 'Scenes and groups', link: '/en/examples/scene' },
-                ],
-              },
-              {
-                text: 'Subject lessons',
-                collapsed: false,
-                items: [
-                  { text: 'Calculus and analysis', link: '/en/examples/math-calculus' },
-                  { text: 'Linear algebra', link: '/en/examples/math-linear' },
-                  { text: 'Probability and statistics', link: '/en/examples/math-prob' },
-                  { text: 'Group theory', link: '/en/examples/math-group' },
-                  { text: 'Discrete mathematics', link: '/en/examples/math-discrete' },
-                  { text: 'Lesson scenes (templates)', link: '/en/examples/lesson' },
-                ],
-              },
-              {
-                text: 'Support surface and third-party',
-                collapsed: false,
-                items: [
-                  { text: 'API roll call (offline)', link: '/en/examples/api' },
-                  { text: 'Combined pipelines (network)', link: '/en/examples/combo' },
-                ],
-              },
-            ],
-          },
-          {
-            text: 'API Reference',
-            items: [
-              { text: 'Overview and Entry', link: '/en/api/' },
-              { text: 'Renderer', link: '/en/api/renderer' },
-              { text: 'Canvas', link: '/en/api/surface' },
-              { text: 'Hooks', link: '/en/api/hooks' },
-              { text: 'Export', link: '/en/api/export' },
-              { text: 'Node Entry', link: '/en/api/node' },
-              { text: 'Corpus and Test Bench', link: '/en/api/corpus' },
-              { text: 'Low-Level Exports', link: '/en/api/internals' },
-            ],
-          },
-          {
-            text: 'Development',
-            items: [{ text: 'Development & Debugging', link: '/en/dev/' }],
-          },
-        ],
+        // 英文侧栏同样按路径分区；键要带 en/ 前缀（匹配的是 relativePath）。
+        sidebar: {
+          '/en/examples/': [
+            { text: 'Gallery', link: '/en/examples/' },
+            // One page per corpus group (the 17 groups with screenshots); section order matches SECTIONS in scripts/gen-examples-docs.mjs.
+            {
+              text: 'Basics and syntax',
+              collapsed: false,
+              items: [
+                { text: 'Basic shapes', link: '/en/examples/basic' },
+                { text: 'Constructor arguments', link: '/en/examples/ctor' },
+                { text: 'Methods and rewrites', link: '/en/examples/method' },
+                { text: 'Axes and data', link: '/en/examples/graph' },
+                { text: 'Text and formulas', link: '/en/examples/text' },
+                { text: 'Syntax (offline)', link: '/en/examples/syntax' },
+              ],
+            },
+            {
+              text: 'Animation and scenes',
+              collapsed: false,
+              items: [
+                { text: 'Animations', link: '/en/examples/animate' },
+                { text: 'Updaters and trails', link: '/en/examples/updater' },
+                { text: 'Scenes and groups', link: '/en/examples/scene' },
+              ],
+            },
+            {
+              text: 'Subject lessons',
+              collapsed: true,
+              items: [
+                { text: 'Calculus and analysis', link: '/en/examples/math-calculus' },
+                { text: 'Linear algebra', link: '/en/examples/math-linear' },
+                { text: 'Probability and statistics', link: '/en/examples/math-prob' },
+                { text: 'Group theory', link: '/en/examples/math-group' },
+                { text: 'Discrete mathematics', link: '/en/examples/math-discrete' },
+                { text: 'Lesson scenes (templates)', link: '/en/examples/lesson' },
+              ],
+            },
+            {
+              text: 'Support surface and third-party',
+              collapsed: true,
+              items: [
+                { text: 'API roll call (offline)', link: '/en/examples/api' },
+                { text: 'Combined pipelines (network)', link: '/en/examples/combo' },
+              ],
+            },
+          ],
+          '/': [
+            {
+              text: 'Getting Started',
+              items: [
+                { text: 'Overview', link: '/en/guide/overview' },
+                { text: 'Installation', link: '/en/guide/installation' },
+                { text: 'Quick Start', link: '/en/guide/quick-start' },
+              ],
+            },
+            {
+              text: 'In Depth',
+              items: [
+                { text: 'Framework Integration', link: '/en/guide/frameworks' },
+                { text: 'Behavioural Contracts', link: '/en/guide/contracts' },
+                { text: 'Third-Party Packages', link: '/en/guide/packages' },
+                { text: 'Node Precheck', link: '/en/guide/node' },
+                { text: 'Support Surface', link: '/en/guide/support' },
+              ],
+            },
+            {
+              text: 'API Reference',
+              items: [
+                { text: 'Overview and Entry', link: '/en/api/' },
+                { text: 'Renderer', link: '/en/api/renderer' },
+                { text: 'Canvas', link: '/en/api/surface' },
+                { text: 'Hooks', link: '/en/api/hooks' },
+                { text: 'Export', link: '/en/api/export' },
+                { text: 'Node Entry', link: '/en/api/node' },
+                { text: 'Corpus and Test Bench', link: '/en/api/corpus' },
+                { text: 'Low-Level Exports', link: '/en/api/internals' },
+              ],
+            },
+            {
+              text: 'Development',
+              items: [{ text: 'Development & Debugging', link: '/en/dev/' }],
+            },
+          ],
+        },
 
         outline: { level: [2, 3], label: 'On this page' },
         sidebarMenuLabel: 'Contents',

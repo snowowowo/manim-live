@@ -21,6 +21,9 @@ pnpm build       # 产物在 .vitepress/dist/
 语料 docstring（唯一出处），英文文案在 `docs/examples-i18n.json`，代码走 snippet import——页面里不复制任何字节。
 改语料或翻译表后重跑脚本；想换截图先去 `corpus/shots/` 重挑，或跑 `pnpm shot:corpus` 重截。
 
+示例章另有自己的一套侧栏：`sidebar` 是按路径前缀分的对象（示例章一套、兜底 `/` 一套），前缀匹配的是页面的
+`relativePath`，所以英文侧栏的键要写成 `/en/examples/`。子组按 `collapsed` 收起，含当前页的子组会自动展开。
+
 截图统一经 `docs/shots`（→ `../corpus/shots` 的符号链接）引用，**不要改回 `corpus/shots` 的相对路径**：
 dev 模式不重写 markdown 里的图片 URL（按页面 URL 解析），只有落在 `docs/` 内的路径才能 dev / build 都取得到；
 build 会把它收进 `assets/` 并哈希。代价是 Windows 检出需要 symlink 权限。仓里不再存复制图（旧的 `docs/images/` 已删）。
