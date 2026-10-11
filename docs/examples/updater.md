@@ -13,7 +13,9 @@ TracedPath 轨迹、tracker 驱动、(m, dt) 更新器、clear_updaters 与 Upda
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/updater/01-traced-path.png" alt="TracedPath 跟随物体" />
+
+![TracedPath 跟随物体](../shots/updater/01-traced-path.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/01-traced-path.py[代码]
@@ -27,7 +29,9 @@ tracker 的值被动画推进时，点跟着移到对应位置（print 出的坐
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/updater/02-value-driven.png" alt="用 tracker 驱动位置" />
+
+![用 tracker 驱动位置](../shots/updater/02-value-driven.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/02-value-driven.py[代码]
@@ -41,7 +45,9 @@ tracker 的值被动画推进时，点跟着移到对应位置（print 出的坐
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/updater/03-with-dt.png" alt="更新器收 (m, dt) 两个参数" />
+
+![更新器收 (m, dt) 两个参数](../shots/updater/03-with-dt.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/03-with-dt.py[代码]
@@ -55,7 +61,9 @@ clear_updaters 之后物体停住：tracker 再变它也不跟。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/updater/04-clear.png" alt="clear_updaters 停掉跟随" />
+
+![clear_updaters 停掉跟随](../shots/updater/04-clear.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/04-clear.py[代码]
@@ -69,7 +77,9 @@ clear_updaters 之后物体停住：tracker 再变它也不跟。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/updater/05-decimal.png" alt="数字跟着 tracker 变" />
+
+![数字跟着 tracker 变](../shots/updater/05-decimal.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/05-decimal.py[代码]
@@ -83,7 +93,9 @@ clear_updaters 之后物体停住：tracker 再变它也不跟。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/updater/06-update-from-func.png" alt="用动画驱动更新函数（UpdateFromFunc / UpdateFromAlphaFunc）" />
+
+![用动画驱动更新函数（UpdateFromFunc / UpdateFromAlphaFunc）](../shots/updater/06-update-from-func.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/06-update-from-func.py[代码]

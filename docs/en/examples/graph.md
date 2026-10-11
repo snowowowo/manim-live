@@ -13,7 +13,9 @@ One number line; ticks and tick numbers agree and the spacing is even.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/01-number-line.png" alt="Number line with numbers" />
+
+![Number line with numbers](../../shots/graph/01-number-line.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/01-number-line.py[Code]
@@ -27,7 +29,9 @@ A plane grid with both directions of lines complete and evenly spaced.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/02-number-plane.png" alt="Plane grid" />
+
+![Plane grid](../../shots/graph/02-number-plane.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/02-number-plane.py[Code]
@@ -41,7 +45,9 @@ Axes with arrow tips and x / y labels; the labels sit at the axis ends.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/03-axes-labels.png" alt="Axes with axis labels" />
+
+![Axes with axis labels](../../shots/graph/03-axes-labels.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/03-axes-labels.py[Code]
@@ -55,7 +61,9 @@ A label hugs its curve without leaving the frame or covering the line.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/04-graph-label.png" alt="Label on a curve" />
+
+![Label on a curve](../../shots/graph/04-graph-label.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/04-graph-label.py[Code]
@@ -69,7 +77,9 @@ The marker lands exactly at the position c2p computes; the printed numbers match
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/05-c2p.png" alt="c2p maps coordinates to canvas positions" />
+
+![c2p maps coordinates to canvas positions](../../shots/graph/05-c2p.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/05-c2p.py[Code]
@@ -83,7 +93,9 @@ A translucent fill between the curve and the x axis, bounded by the curve segmen
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/06-area.png" alt="Area under a curve" />
+
+![Area under a curve](../../shots/graph/06-area.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/06-area.py[Code]
@@ -97,7 +109,9 @@ A row of rectangles along the underside of the curve, heights following the samp
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/07-riemann.png" alt="Riemann rectangles" />
+
+![Riemann rectangles](../../shots/graph/07-riemann.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/07-riemann.py[Code]
@@ -111,7 +125,9 @@ Three bars in red / blue / green with heights matching the data and even spacing
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/08-bar-chart.png" alt="Bar chart" />
+
+![Bar chart](../../shots/graph/08-bar-chart.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/08-bar-chart.py[Code]
@@ -125,7 +141,9 @@ A matrix laid out by rows and columns; the entries match the input.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/09-matrix.png" alt="Matrix" />
+
+![Matrix](../../shots/graph/09-matrix.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/09-matrix.py[Code]
@@ -139,7 +157,9 @@ A table with a header row; rows and columns aligned and all grid lines present.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/10-table.png" alt="Table with a header" />
+
+![Table with a header](../../shots/graph/10-table.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/10-table.py[Code]
@@ -153,7 +173,9 @@ Integers fill the cells directly (no LaTeX number formatting); the contents matc
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/11-integer-table.png" alt="IntegerTable (numbers written directly)" />
+
+![IntegerTable (numbers written directly)](../../shots/graph/11-integer-table.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/11-integer-table.py[Code]
@@ -167,7 +189,9 @@ The table content is typeset as LaTeX (math fonts), not plain text fonts.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/graph/12-math-table.png" alt="LaTeX table" />
+
+![LaTeX table](../../shots/graph/12-math-table.png)
+
 </div>
 
 <<< @/../corpus/examples/graph/12-math-table.py[Code]

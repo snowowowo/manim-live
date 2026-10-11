@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/01-circle-positional.png" alt="Circle 位置参数（半径）" />
+
+![Circle 位置参数（半径）](../shots/ctor/01-circle-positional.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/01-circle-positional.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/02-square-positional.png" alt="Square 位置参数（边长）" />
+
+![Square 位置参数（边长）](../shots/ctor/02-square-positional.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/02-square-positional.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/03-dot-positional.png" alt="Dot 位置参数（坐标）" />
+
+![Dot 位置参数（坐标）](../shots/ctor/03-dot-positional.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/03-dot-positional.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/04-text-kwargs.png" alt="Text 字重、字形与字号" />
+
+![Text 字重、字形与字号](../shots/ctor/04-text-kwargs.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/04-text-kwargs.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/05-vector.png" alt="Vector 位置参数" />
+
+![Vector 位置参数](../shots/ctor/05-vector.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/05-vector.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/06-parametric.png" alt="ParametricFunction 位置参数" />
+
+![ParametricFunction 位置参数](../shots/ctor/06-parametric.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/06-parametric.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/07-function-graph.png" alt="FunctionGraph 收函数" />
+
+![FunctionGraph 收函数](../shots/ctor/07-function-graph.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/07-function-graph.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/08-right-angle.png" alt="RightAngle 收两条线" />
+
+![RightAngle 收两条线](../shots/ctor/08-right-angle.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/08-right-angle.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/09-angle-points.png" alt="Angle 收三个点" />
+
+![Angle 收三个点](../shots/ctor/09-angle-points.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/09-angle-points.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/10-brace.png" alt="Brace 收一个物体" />
+
+![Brace 收一个物体](../shots/ctor/10-brace.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/10-brace.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/11-brace-between.png" alt="BraceBetweenPoints 收两点" />
+
+![BraceBetweenPoints 收两点](../shots/ctor/11-brace-between.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/11-brace-between.py[代码]
@@ -167,7 +189,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/12-cubic-bezier.png" alt="CubicBezier 收四个点" />
+
+![CubicBezier 收四个点](../shots/ctor/12-cubic-bezier.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/12-cubic-bezier.py[代码]
@@ -181,7 +205,9 @@ ValueTracker 不画任何东西（它只是数值），场景渲染不炸、其�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/13-value-tracker.png" alt="ValueTracker 收一个初值" />
+
+![ValueTracker 收一个初值](../shots/ctor/13-value-tracker.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/13-value-tracker.py[代码]
@@ -195,7 +221,9 @@ ValueTracker 不画任何东西（它只是数值），场景渲染不炸、其�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/ctor/14-vgroup-variadic.png" alt="VGroup 变长位置参数" />
+
+![VGroup 变长位置参数](../shots/ctor/14-vgroup-variadic.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/14-vgroup-variadic.py[代码]

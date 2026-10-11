@@ -50,8 +50,11 @@ class AxesPlotScene(Scene):
 ```
 
 <figure>
-  <img src="../../corpus/shots/basic/09-axes-plot.png" alt="Live-rendered result of the code above" loading="lazy" />
-  <figcaption>The live-rendered result of the code above (end state) —— <code>corpus/examples/basic/09-axes-plot.py</code></figcaption>
+
+![Live-rendered result of the code above](../shots/basic/09-axes-plot.png)
+
+<figcaption>The live-rendered result of the code above (end state) —— <code>corpus/examples/basic/09-axes-plot.py</code></figcaption>
+
 </figure>
 
 </div>
@@ -85,16 +88,25 @@ Every image below is a **real end state rendered on a real machine**: generated 
 
 <div class="gallery">
   <figure>
-    <img src="../../corpus/shots/math-linear/02-determinant-area.png" alt="Geometric meaning of the determinant" loading="lazy" />
+
+    ![Geometric meaning of the determinant](../shots/math-linear/02-determinant-area.png)
+
     <figcaption>Linear map: the unit square's area scales by |det|</figcaption>
+
   </figure>
   <figure>
-    <img src="../../corpus/shots/math-prob/10-monte-carlo-pi.png" alt="Monte Carlo estimate of π" loading="lazy" />
+
+    ![Monte Carlo estimate of π](../shots/math-prob/10-monte-carlo-pi.png)
+
     <figcaption>Scatter points into a square and estimate π ≈ 3.140</figcaption>
+
   </figure>
   <figure>
-    <img src="../../corpus/shots/lesson/13-space-cube-camera.png" alt="A real 3D scene" loading="lazy" />
+
+    ![A real 3D scene](../shots/lesson/13-space-cube-camera.png)
+
     <figcaption>ThreeDScene: real 3D with lighting and depth</figcaption>
+
   </figure>
 </div>
 

@@ -13,7 +13,9 @@ A point travels on the unit circle while the sine / cosine lines stretch with th
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/01-unit-circle.png" alt="Unit circle and trigonometric lines" />
+
+![Unit circle and trigonometric lines](../../shots/lesson/01-unit-circle.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/01-unit-circle.py[Code]
@@ -27,7 +29,9 @@ As the point on the circle turns, the wave unfolds to the right and what is draw
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/02-sine-wave-trace.png" alt="Tracing a sine wave from a point on the circle" />
+
+![Tracing a sine wave from a point on the circle](../../shots/lesson/02-sine-wave-trace.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/02-sine-wave-trace.py[Code]
@@ -41,7 +45,9 @@ Squares on the three sides of a right triangle present the area relation a² + b
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/03-pythagorean.png" alt="The Pythagorean theorem" />
+
+![The Pythagorean theorem](../../shots/lesson/03-pythagorean.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/03-pythagorean.py[Code]
@@ -55,7 +61,9 @@ The petal count matches the equation parameters: left k=5 gives 5 petals (k odd)
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/04-polar-rose.png" alt="Polar rose curve" />
+
+![Polar rose curve](../../shots/lesson/04-polar-rose.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/04-polar-rose.py[Code]
@@ -69,7 +77,9 @@ The spiral widens turn by turn with a constant gap between turns (the defining t
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/05-polar-spiral.png" alt="Archimedean spiral" />
+
+![Archimedean spiral](../../shots/lesson/05-polar-spiral.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/05-polar-spiral.py[Code]
@@ -83,7 +93,9 @@ The secant rotates about the tangency point, hugging the tangent ever closer unt
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/06-secant-tangent.png" alt="Secants approaching the tangent (the definition of the derivative)" />
+
+![Secants approaching the tangent (the definition of the derivative)](../../shots/lesson/06-secant-tangent.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/06-secant-tangent.py[Code]
@@ -97,7 +109,9 @@ The rectangles get finer and their area sum approaches the definite integral: th
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/07-riemann-sum.png" alt="Riemann sums approaching the integral" />
+
+![Riemann sums approaching the integral](../../shots/lesson/07-riemann-sum.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/07-riemann-sum.py[Code]
@@ -111,7 +125,9 @@ Grid and vectors rotate 30° as a whole (not a multiple of 90°, so the tilted o
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/08-linear-rotate.png" alt="Linear map: rotation" />
+
+![Linear map: rotation](../../shots/lesson/08-linear-rotate.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/08-linear-rotate.py[Code]
@@ -125,7 +141,9 @@ The grid is sheared: rows shift horizontally and columns tilt; the pre-image gri
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/09-linear-shear.png" alt="Linear map: shear" />
+
+![Linear map: shear](../../shots/lesson/09-linear-shear.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/09-linear-shear.py[Code]
@@ -139,7 +157,9 @@ Vectors on an eigen direction stay on that direction after the map (red v₁ str
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/10-eigenvector.png" alt="Linear map: eigen directions" />
+
+![Linear map: eigen directions](../../shots/lesson/10-eigenvector.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/10-eigenvector.py[Code]
@@ -153,7 +173,9 @@ The more rolls, the flatter the six frequency bars become (approaching uniform):
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/11-probability-dice.png" alt="Probability: frequency of dice rolls" />
+
+![Probability: frequency of dice rolls](../../shots/lesson/11-probability-dice.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/11-probability-dice.py[Code]
@@ -167,7 +189,9 @@ Two binomial pmf polylines side by side: n=10 peaks near 0.25 and n=30 near 0.14
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/12-probability-binomial.png" alt="Probability: binomial distribution" />
+
+![Probability: binomial distribution](../../shots/lesson/12-probability-binomial.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/12-probability-binomial.py[Code]
@@ -181,7 +205,9 @@ A cube of edge 2 seen at an angle: three faces visible at once with different sh
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/lesson/13-space-cube-camera.png" alt="Spatial Cartesian coordinates and a cube" />
+
+![Spatial Cartesian coordinates and a cube](../../shots/lesson/13-space-cube-camera.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/13-space-cube-camera.py[Code]

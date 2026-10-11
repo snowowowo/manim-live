@@ -13,7 +13,9 @@ The two column vectors a₁ / a₂ (blue, green) are scaled by their coefficient
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/01-matrix-vector-product.png" alt="Matrix times vector = linear combination of columns" />
+
+![Matrix times vector = linear combination of columns](../../shots/math-linear/01-matrix-vector-product.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/01-matrix-vector-product.py[Code]
@@ -27,7 +29,9 @@ The yellow unit square in the grid is stretched into a parallelogram; its area g
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/02-determinant-area.png" alt="Geometric meaning of the determinant: the unit square's area scales by |det|" />
+
+![Geometric meaning of the determinant: the unit square's area scales by |det|](../../shots/math-linear/02-determinant-area.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/02-determinant-area.py[Code]
@@ -41,7 +45,9 @@ The grid and the yellow square collapse onto one slanted line; the square can ne
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/03-singular-matrix.png" alt="Singular matrix: det=0 collapses the whole plane onto a line" />
+
+![Singular matrix: det=0 collapses the whole plane onto a line](../../shots/math-linear/03-singular-matrix.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/03-singular-matrix.py[Code]
@@ -55,7 +61,9 @@ A dashed line drops perpendicularly from the tip of b onto the line a, with a ri
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/04-orthogonal-projection.png" alt="Orthogonal projection: the shadow of b on a" />
+
+![Orthogonal projection: the shadow of b on a](../../shots/math-linear/04-orthogonal-projection.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/04-orthogonal-projection.py[Code]
@@ -69,7 +77,9 @@ The green vector slides along the dashed line to the red position and then stand
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/05-gram-schmidt.png" alt="Gram–Schmidt: subtracting the projection onto the first vector" />
+
+![Gram–Schmidt: subtracting the projection onto the first vector](../../shots/math-linear/05-gram-schmidt.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/05-gram-schmidt.py[Code]
@@ -83,7 +93,9 @@ On the two dashed directions the vectors stay on the same line after the map (on
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/06-eigen-decomposition.png" alt="Eigen directions: vectors whose direction survives the map" />
+
+![Eigen directions: vectors whose direction survives the map](../../shots/math-linear/06-eigen-decomposition.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/06-eigen-decomposition.py[Code]
@@ -97,7 +109,9 @@ The arrow along (-2,1) (red) collapses to a point after the map (a red dot at th
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/07-rank-nullspace.png" alt="Null space: the directions mapped to 0" />
+
+![Null space: the directions mapped to 0](../../shots/math-linear/07-rank-nullspace.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/07-rank-nullspace.py[Code]
@@ -111,7 +125,9 @@ The blue basis and the green basis close into a parallelogram (the 0.6·b₂ clo
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/08-basis-change.png" alt="Basis change: two coordinate systems for the same vector" />
+
+![Basis change: two coordinate systems for the same vector](../../shots/math-linear/08-basis-change.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/08-basis-change.py[Code]
@@ -125,7 +141,9 @@ Grid and yellow square are turned 30° and then 30° again; the final pose coinc
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/09-rotation-composition.png" alt="Composing rotation matrices: two 30° turns equal one 60° turn" />
+
+![Composing rotation matrices: two 30° turns equal one 60° turn](../../shots/math-linear/09-rotation-composition.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/09-rotation-composition.py[Code]
@@ -139,7 +157,9 @@ A blue fitted line above five data points, with each point's vertical residual d
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/10-least-squares.png" alt="Least squares: fitted line and residuals" />
+
+![Least squares: fitted line and residuals](../../shots/math-linear/10-least-squares.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/10-least-squares.py[Code]
@@ -153,7 +173,9 @@ Concentric ellipses on the left (positive definite: every direction curves upwar
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/11-quadratic-form.png" alt="Quadratic forms: positive-definite ellipses vs indefinite hyperbolas" />
+
+![Quadratic forms: positive-definite ellipses vs indefinite hyperbolas](../../shots/math-linear/11-quadratic-form.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/11-quadratic-form.py[Code]
@@ -167,7 +189,9 @@ The yellow circle becomes a tilted ellipse in three steps (rotate 40°, stretch 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-linear/12-svd-geometry.png" alt="Geometric meaning of SVD: rotate, stretch, rotate again" />
+
+![Geometric meaning of SVD: rotate, stretch, rotate again](../../shots/math-linear/12-svd-geometry.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/12-svd-geometry.py[Code]

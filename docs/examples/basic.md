@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/01-circle.png" alt="画一个圆" />
+
+![画一个圆](../shots/basic/01-circle.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/01-circle.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/02-square-rotate.png" alt="方块旋转 45°" />
+
+![方块旋转 45°](../shots/basic/02-square-rotate.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/02-square-rotate.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/03-rect-rounded.png" alt="矩形与圆角矩形" />
+
+![矩形与圆角矩形](../shots/basic/03-rect-rounded.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/03-rect-rounded.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/04-ellipse-annulus.png" alt="椭圆与圆环" />
+
+![椭圆与圆环](../shots/basic/04-ellipse-annulus.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/04-ellipse-annulus.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/05-arc-sector.png" alt="圆弧与扇形" />
+
+![圆弧与扇形](../shots/basic/05-arc-sector.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/05-arc-sector.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/06-polygons.png" alt="三角形与正六边形" />
+
+![三角形与正六边形](../shots/basic/06-polygons.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/06-polygons.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/07-star.png" alt="六角星" />
+
+![六角星](../shots/basic/07-star.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/07-star.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/08-polygon-vertices.png" alt="按顶点画多边形" />
+
+![按顶点画多边形](../shots/basic/08-polygon-vertices.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/08-polygon-vertices.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/09-axes-plot.png" alt="坐标系 + 函数曲线" />
+
+![坐标系 + 函数曲线](../shots/basic/09-axes-plot.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/09-axes-plot.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/10-line-dot-arrow.png" alt="线、点、箭头" />
+
+![线、点、箭头](../shots/basic/10-line-dot-arrow.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/10-line-dot-arrow.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/basic/11-line-variants.png" alt="虚线、双箭头、弧线箭头" />
+
+![虚线、双箭头、弧线箭头](../shots/basic/11-line-variants.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/11-line-variants.py[代码]

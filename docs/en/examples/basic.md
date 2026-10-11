@@ -13,7 +13,9 @@ A circle in the default stroke colour appears at the centre of the frame, drawn 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/01-circle.png" alt="Draw a circle" />
+
+![Draw a circle](../../shots/basic/01-circle.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/01-circle.py[Code]
@@ -27,7 +29,9 @@ The square rotates 45° about its own centre; position and size stay put.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/02-square-rotate.png" alt="Rotate a square by 45°" />
+
+![Rotate a square by 45°](../../shots/basic/02-square-rotate.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/02-square-rotate.py[Code]
@@ -41,7 +45,9 @@ A plain rectangle beside a rounded one; the smoothed corners are a visible diffe
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/03-rect-rounded.png" alt="Rectangle and rounded rectangle" />
+
+![Rectangle and rounded rectangle](../../shots/basic/03-rect-rounded.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/03-rect-rounded.py[Code]
@@ -55,7 +61,9 @@ An ellipse and an annulus; the ring is hollow (an inner and an outer radius).
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/04-ellipse-annulus.png" alt="Ellipse and annulus" />
+
+![Ellipse and annulus](../../shots/basic/04-ellipse-annulus.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/04-ellipse-annulus.py[Code]
@@ -69,7 +77,9 @@ An arc (stroke only) and a sector (arc plus two radii plus fill).
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/05-arc-sector.png" alt="Arc and sector" />
+
+![Arc and sector](../../shots/basic/05-arc-sector.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/05-arc-sector.py[Code]
@@ -83,7 +93,9 @@ A triangle and a regular hexagon side by side; the edge counts match the names.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/06-polygons.png" alt="Triangle and regular hexagon" />
+
+![Triangle and regular hexagon](../../shots/basic/06-polygons.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/06-polygons.py[Code]
@@ -97,7 +109,9 @@ A six-pointed star outline with six crisp tips.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/07-star.png" alt="Six-pointed star" />
+
+![Six-pointed star](../../shots/basic/07-star.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/07-star.py[Code]
@@ -111,7 +125,9 @@ A polygon connecting the given vertices in order; the shape matches the coordina
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/08-polygon-vertices.png" alt="Polygon from vertices" />
+
+![Polygon from vertices](../../shots/basic/08-polygon-vertices.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/08-polygon-vertices.py[Code]
@@ -125,7 +141,9 @@ A function curve on a set of axes; the curve follows the function and sits on th
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/09-axes-plot.png" alt="Axes plus a function curve" />
+
+![Axes plus a function curve](../../shots/basic/09-axes-plot.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/09-axes-plot.py[Code]
@@ -139,7 +157,9 @@ One line, one dot and one arrow: the arrow carries a tip on one end and the dot 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/10-line-dot-arrow.png" alt="Line, dot, arrow" />
+
+![Line, dot, arrow](../../shots/basic/10-line-dot-arrow.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/10-line-dot-arrow.py[Code]
@@ -153,7 +173,9 @@ The dashed line is broken, the double arrow has tips on both ends and the arc ar
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/basic/11-line-variants.png" alt="Dashed, double arrow, arc arrow" />
+
+![Dashed, double arrow, arc arrow](../../shots/basic/11-line-variants.png)
+
 </div>
 
 <<< @/../corpus/examples/basic/11-line-variants.py[Code]

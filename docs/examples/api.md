@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/01-colors.png" alt="API 覆盖：颜色常量一览（全部 76 个可用色）" />
+
+![API 覆盖：颜色常量一览（全部 76 个可用色）](../shots/api/01-colors.png)
+
 </div>
 
 <<< @/../corpus/examples/api/01-colors.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/02-rates.png" alt="API 点名：全部 16 个速率函数" />
+
+![API 点名：全部 16 个速率函数](../shots/api/02-rates.png)
+
 </div>
 
 <<< @/../corpus/examples/api/02-rates.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/03-const.png" alt="API 点名：方向与轴向常量" />
+
+![API 点名：方向与轴向常量](../shots/api/03-const.png)
+
 </div>
 
 <<< @/../corpus/examples/api/03-const.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/04-methods.png" alt="API 点名：方法面（改写 / 取几何 / 坐标映射）" />
+
+![API 点名：方法面（改写 / 取几何 / 坐标映射）](../shots/api/04-methods.png)
+
 </div>
 
 <<< @/../corpus/examples/api/04-methods.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/06-classes-2d.png" alt="API 点名：形状与标记（表里 ok、语料未用到的那一批）" />
+
+![API 点名：形状与标记（表里 ok、语料未用到的那一批）](../shots/api/06-classes-2d.png)
+
 </div>
 
 <<< @/../corpus/examples/api/06-classes-2d.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/07-classes-3d.png" alt="API 点名：矩阵 / 表 / 3D / 杂项" />
+
+![API 点名：矩阵 / 表 / 3D / 杂项](../shots/api/07-classes-3d.png)
+
 </div>
 
 <<< @/../corpus/examples/api/07-classes-3d.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/08-scenes.png" alt="API 点名：场景家族" />
+
+![API 点名：场景家族](../shots/api/08-scenes.png)
+
 </div>
 
 <<< @/../corpus/examples/api/08-scenes.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/09-anims.png" alt="API 点名：动画面（表里 ok、语料未用到的那一批）" />
+
+![API 点名：动画面（表里 ok、语料未用到的那一批）](../shots/api/09-anims.png)
+
 </div>
 
 <<< @/../corpus/examples/api/09-anims.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/10-anims-func.png" alt="API 点名：动画面（函数 / 文字 / 包装那一批）" />
+
+![API 点名：动画面（函数 / 文字 / 包装那一批）](../shots/api/10-anims-func.png)
+
 </div>
 
 <<< @/../corpus/examples/api/10-anims-func.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/11-classes-extra.png" alt="API 点名：形状 / 标记 / 图（表里 ok、语料此前没点到的那一批）" />
+
+![API 点名：形状 / 标记 / 图（表里 ok、语料此前没点到的那一批）](../shots/api/11-classes-extra.png)
+
 </div>
 
 <<< @/../corpus/examples/api/11-classes-extra.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/12-anims-extra.png" alt="API 点名：动画补遗（表里 ok、语料此前没点到的那一批）" />
+
+![API 点名：动画补遗（表里 ok、语料此前没点到的那一批）](../shots/api/12-anims-extra.png)
+
 </div>
 
 <<< @/../corpus/examples/api/12-anims-extra.py[代码]
@@ -167,7 +189,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/12-classes-3d-extra.png" alt="API 点名：3D 实体（线 / 箭头 / 凸包）——必须落在 ThreeDScene 上" />
+
+![API 点名：3D 实体（线 / 箭头 / 凸包）——必须落在 ThreeDScene 上](../shots/api/12-classes-3d-extra.png)
+
 </div>
 
 <<< @/../corpus/examples/api/12-classes-3d-extra.py[代码]
@@ -181,7 +205,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/13-svg-browser.png" alt="API 点名：整段 SVG 字符串（要浏览器 DOM，只在实验场核）" />
+
+![API 点名：整段 SVG 字符串（要浏览器 DOM，只在实验场核）](../shots/api/13-svg-browser.png)
+
 </div>
 
 <<< @/../corpus/examples/api/13-svg-browser.py[代码]
@@ -195,7 +221,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/api/14-planes.png" alt="复平面与极坐标网格：整幅画布就是它们的画布" />
+
+![复平面与极坐标网格：整幅画布就是它们的画布](../shots/api/14-planes.png)
+
 </div>
 
 <<< @/../corpus/examples/api/14-planes.py[代码]

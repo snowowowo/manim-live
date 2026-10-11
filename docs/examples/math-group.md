@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/01-cyclic-rotation-group.png" alt="循环群 C4：正方形旋转 4 次回到原样" />
+
+![循环群 C4：正方形旋转 4 次回到原样](../shots/math-group/01-cyclic-rotation-group.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/01-cyclic-rotation-group.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/02-cayley-table.png" alt="Cayley 表：一张表就把群的三条公理读出来" />
+
+![Cayley 表：一张表就把群的三条公理读出来](../shots/math-group/02-cayley-table.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/02-cayley-table.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/03-dihedral-symmetry.png" alt="二面体群 D4：正方形的 8 个对称（4 旋转 + 4 镜像）" />
+
+![二面体群 D4：正方形的 8 个对称（4 旋转 + 4 镜像）](../shots/math-group/03-dihedral-symmetry.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/03-dihedral-symmetry.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/04-modular-multiplication.png" alt="乘法群 (Z/7)*：谁是生成元，一眼看出阶" />
+
+![乘法群 (Z/7)*：谁是生成元，一眼看出阶](../shots/math-group/04-modular-multiplication.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/04-modular-multiplication.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/05-generator-subgroups.png" alt="由生成元「带出来」的子群，阶永远整除全群" />
+
+![由生成元「带出来」的子群，阶永远整除全群](../shots/math-group/05-generator-subgroups.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/05-generator-subgroups.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/06-lagrange-theorem.png" alt="拉格朗日定理：子群把群等分成若干块，块数 × 块大小 = 群大小" />
+
+![拉格朗日定理：子群把群等分成若干块，块数 × 块大小 = 群大小](../shots/math-group/06-lagrange-theorem.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/06-lagrange-theorem.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/07-permutation-composition.png" alt="置换的复合：先做谁、后做谁，结果不一样" />
+
+![置换的复合：先做谁、后做谁，结果不一样](../shots/math-group/07-permutation-composition.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/07-permutation-composition.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/08-homomorphism-kernel.png" alt="同态：核有多大，像就有多小" />
+
+![同态：核有多大，像就有多小](../shots/math-group/08-homomorphism-kernel.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/08-homomorphism-kernel.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/09-quotient-group.png" alt="商群 G/N：把整个陪集「粘成」一个新元素" />
+
+![商群 G/N：把整个陪集「粘成」一个新元素](../shots/math-group/09-quotient-group.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/09-quotient-group.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/10-subgroup-lattice.png" alt="子群格：Z/12 的全部子群连成一张偏序图" />
+
+![子群格：Z/12 的全部子群连成一张偏序图](../shots/math-group/10-subgroup-lattice.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/10-subgroup-lattice.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/11-symmetric-group-order.png" alt="对称群的阶按 n! 爆炸" />
+
+![对称群的阶按 n! 爆炸](../shots/math-group/11-symmetric-group-order.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/11-symmetric-group-order.py[代码]
@@ -167,7 +189,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-group/12-orbit-stabilizer.png" alt="轨道与稳定子：一个点被群推到哪些地方，谁又让它原地不动" />
+
+![轨道与稳定子：一个点被群推到哪些地方，谁又让它原地不动](../shots/math-group/12-orbit-stabilizer.png)
+
 </div>
 
 <<< @/../corpus/examples/math-group/12-orbit-stabilizer.py[代码]

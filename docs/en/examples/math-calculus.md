@@ -13,7 +13,9 @@ A row of points crowds denser as n grows and settles onto the dashed line y=1 wi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/01-sequence-limit.png" alt="Sequence limit: a_n = 1 + 1/n approaching 1" />
+
+![Sequence limit: a_n = 1 + 1/n approaching 1](../../shots/math-calculus/01-sequence-limit.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/01-sequence-limit.py[Code]
@@ -27,7 +29,9 @@ The high-frequency oscillating curve in the middle stays between the two lines y
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/02-squeeze-theorem.png" alt="Squeeze theorem: x·sin(1/x) squeezed by ±x" />
+
+![Squeeze theorem: x·sin(1/x) squeezed by ±x](../../shots/math-calculus/02-squeeze-theorem.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/02-squeeze-theorem.py[Code]
@@ -41,7 +45,9 @@ The degree-1, 3, 5 and 7 polynomials each hug the sine curve more closely, match
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/03-taylor-sin.png" alt="Taylor expansion: polynomials approaching sin x order by order" />
+
+![Taylor expansion: polynomials approaching sin x order by order](../../shots/math-calculus/03-taylor-sin.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/03-taylor-sin.py[Code]
@@ -55,7 +61,9 @@ The point sequence rises monotonically as n grows and always stays below the das
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/04-e-definition.png" alt="Definition of e: (1+1/n)^n increases monotonically towards e" />
+
+![Definition of e: (1+1/n)^n increases monotonically towards e](../../shots/math-calculus/04-e-definition.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/04-e-definition.py[Code]
@@ -69,7 +77,9 @@ The chord through the endpoints (blue secant) is parallel to the tangent (yellow
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/05-mean-value-theorem.png" alt="Lagrange mean value theorem: secant parallel to tangent" />
+
+![Lagrange mean value theorem: secant parallel to tangent](../../shots/math-calculus/05-mean-value-theorem.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/05-mean-value-theorem.py[Code]
@@ -83,7 +93,9 @@ Left-endpoint (low) and right-endpoint (high) rectangle sets drawn on the same p
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/06-upper-lower-sum.png" alt="Upper and lower integrals: two sampling rules bracketing the true value" />
+
+![Upper and lower integrals: two sampling rules bracketing the true value](../../shots/math-calculus/06-upper-lower-sum.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/06-upper-lower-sum.py[Code]
@@ -97,7 +109,9 @@ The area under the curve grows block by block to the right while the number S(x)
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/07-accumulation-function.png" alt="Accumulation function: the area function S(x) and its derivative" />
+
+![Accumulation function: the area function S(x) and its derivative](../../shots/math-calculus/07-accumulation-function.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/07-accumulation-function.py[Code]
@@ -111,7 +125,9 @@ The left panel draws how f changes with x at y=1 fixed, the right how f changes 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/08-partial-derivative.png" alt="Partial derivatives: slopes seen with y fixed and with x fixed" />
+
+![Partial derivatives: slopes seen with y fixed and with x fixed](../../shots/math-calculus/08-partial-derivative.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/08-partial-derivative.py[Code]
@@ -125,7 +141,9 @@ Five concentric ellipses are the contour lines (lower towards the centre); the p
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/09-gradient-descent.png" alt="Gradient descent: stepping along the negative gradient towards the minimum" />
+
+![Gradient descent: stepping along the negative gradient towards the minimum](../../shots/math-calculus/09-gradient-descent.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/09-gradient-descent.py[Code]
@@ -139,7 +157,9 @@ The rectangular region is tiled with small cells; cells inside the circle are hi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/10-double-integral-grid.png" alt="Double integral: cutting the region into small squares" />
+
+![Double integral: cutting the region into small squares](../../shots/math-calculus/10-double-integral-grid.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/10-double-integral-grid.py[Code]
@@ -153,7 +173,9 @@ A square wave (step-shaped) overlaid with four partial-sum curves: more terms ma
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/11-fourier-square.png" alt="Fourier series approaching a square wave" />
+
+![Fourier series approaching a square wave](../../shots/math-calculus/11-fourier-square.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/11-fourier-square.py[Code]
@@ -167,7 +189,9 @@ The blue line (harmonic partial sums) climbs without levelling off; the yellow l
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-calculus/12-series-partial-sums.png" alt="Partial sums: harmonic series diverges vs Σ1/n² converges" />
+
+![Partial sums: harmonic series diverges vs Σ1/n² converges](../../shots/math-calculus/12-series-partial-sums.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/12-series-partial-sums.py[Code]

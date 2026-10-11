@@ -13,7 +13,9 @@ pandas / scipy / sklearn / statsmodels / matplotlib 与 Manim 串成一条讲解
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/combo/01-pandas-sklearn-fit.png" alt="综合场景：pandas 洗数 → sklearn 拟合 → Manim 画线" />
+
+![综合场景：pandas 洗数 → sklearn 拟合 → Manim 画线](../shots/combo/01-pandas-sklearn-fit.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/01-pandas-sklearn-fit.py[代码]
@@ -27,7 +29,9 @@ pandas / scipy / sklearn / statsmodels / matplotlib 与 Manim 串成一条讲解
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/combo/02-pandas-scipy-signal.png" alt="综合场景：pandas 滚动统计 + scipy.signal 平滑与寻峰" />
+
+![综合场景：pandas 滚动统计 + scipy.signal 平滑与寻峰](../shots/combo/02-pandas-scipy-signal.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/02-pandas-scipy-signal.py[代码]
@@ -41,7 +45,9 @@ pandas / scipy / sklearn / statsmodels / matplotlib 与 Manim 串成一条讲解
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/combo/03-scipy-numpy-ode.png" alt="综合场景：scipy 解 ODE + numpy 取解 + Manim 画两条对照曲线" />
+
+![综合场景：scipy 解 ODE + numpy 取解 + Manim 画两条对照曲线](../shots/combo/03-scipy-numpy-ode.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/03-scipy-numpy-ode.py[代码]
@@ -55,7 +61,9 @@ pandas / scipy / sklearn / statsmodels / matplotlib 与 Manim 串成一条讲解
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/combo/04-pandas-statsmodels-ols.png" alt="综合场景：pandas 造表 → statsmodels OLS 拟合与预测 → Manim 画回归" />
+
+![综合场景：pandas 造表 → statsmodels OLS 拟合与预测 → Manim 画回归](../shots/combo/04-pandas-statsmodels-ols.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/04-pandas-statsmodels-ols.py[代码]
@@ -69,7 +77,9 @@ pandas / scipy / sklearn / statsmodels / matplotlib 与 Manim 串成一条讲解
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/combo/05-sklearn-matplotlib-clusters.png" alt="综合场景：numpy 造簇 → sklearn KMeans → matplotlib 取色 → Manim 上色" />
+
+![综合场景：numpy 造簇 → sklearn KMeans → matplotlib 取色 → Manim 上色](../shots/combo/05-sklearn-matplotlib-clusters.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/05-sklearn-matplotlib-clusters.py[代码]

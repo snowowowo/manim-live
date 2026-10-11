@@ -13,7 +13,9 @@ Two circles given only a radius differ in size; the radius values match the pict
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/01-circle-positional.png" alt="Circle positional argument (radius)" />
+
+![Circle positional argument (radius)](../../shots/ctor/01-circle-positional.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/01-circle-positional.py[Code]
@@ -27,7 +29,9 @@ Two squares given only a side length differ in size.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/02-square-positional.png" alt="Square positional argument (side length)" />
+
+![Square positional argument (side length)](../../shots/ctor/02-square-positional.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/02-square-positional.py[Code]
@@ -41,7 +45,9 @@ The dot lands at the given coordinates, not at the default origin.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/03-dot-positional.png" alt="Dot positional argument (coordinates)" />
+
+![Dot positional argument (coordinates)](../../shots/ctor/03-dot-positional.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/03-dot-positional.py[Code]
@@ -55,7 +61,9 @@ Several Text runs differ visibly in weight, italics and font size.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/04-text-kwargs.png" alt="Text weight, style and size" />
+
+![Text weight, style and size](../../shots/ctor/04-text-kwargs.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/04-text-kwargs.py[Code]
@@ -69,7 +77,9 @@ One arrow whose direction and length match the vector passed in.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/05-vector.png" alt="Vector positional argument" />
+
+![Vector positional argument](../../shots/ctor/05-vector.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/05-vector.py[Code]
@@ -83,7 +93,9 @@ A curve drawn from the parametric equations; the shape matches them (neither a c
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/06-parametric.png" alt="ParametricFunction positional argument" />
+
+![ParametricFunction positional argument](../../shots/ctor/06-parametric.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/06-parametric.py[Code]
@@ -97,7 +109,9 @@ The curve's shape matches the function passed in.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/07-function-graph.png" alt="FunctionGraph takes a function" />
+
+![FunctionGraph takes a function](../../shots/ctor/07-function-graph.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/07-function-graph.py[Code]
@@ -111,7 +125,9 @@ A right-angle mark (a small elbow) stands at the intersection of the two lines.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/08-right-angle.png" alt="RightAngle takes two lines" />
+
+![RightAngle takes two lines](../../shots/ctor/08-right-angle.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/08-right-angle.py[Code]
@@ -125,7 +141,9 @@ The arc opens across the angle determined by the three points; its opening match
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/09-angle-points.png" alt="Angle takes three points" />
+
+![Angle takes three points](../../shots/ctor/09-angle-points.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/09-angle-points.py[Code]
@@ -139,7 +157,9 @@ A brace hugs one side of the mobject, its length matching the mobject.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/10-brace.png" alt="Brace takes one mobject" />
+
+![Brace takes one mobject](../../shots/ctor/10-brace.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/10-brace.py[Code]
@@ -153,7 +173,9 @@ A brace spans the two points, aligned with their connecting line and scaled to t
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/11-brace-between.png" alt="BraceBetweenPoints takes two points" />
+
+![BraceBetweenPoints takes two points](../../shots/ctor/11-brace-between.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/11-brace-between.py[Code]
@@ -167,7 +189,9 @@ The curve follows a cubic Bézier through the four control points, with its endp
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/12-cubic-bezier.png" alt="CubicBezier takes four points" />
+
+![CubicBezier takes four points](../../shots/ctor/12-cubic-bezier.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/12-cubic-bezier.py[Code]
@@ -181,7 +205,9 @@ ValueTracker draws nothing (it is only a number); the scene renders without erro
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/13-value-tracker.png" alt="ValueTracker takes an initial value" />
+
+![ValueTracker takes an initial value](../../shots/ctor/13-value-tracker.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/13-value-tracker.py[Code]
@@ -195,7 +221,9 @@ Several mobjects gathered into one VGroup move as a whole; their relative positi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/ctor/14-vgroup-variadic.png" alt="VGroup variadic positional arguments" />
+
+![VGroup variadic positional arguments](../../shots/ctor/14-vgroup-variadic.png)
+
 </div>
 
 <<< @/../corpus/examples/ctor/14-vgroup-variadic.py[Code]

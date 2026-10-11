@@ -13,7 +13,9 @@ Text renders with real glyphs (no boxes or mojibake); the content matches.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/01-basic.png" alt="Text" />
+
+![Text](../../shots/text/01-basic.png)
+
 </div>
 
 <<< @/../corpus/examples/text/01-basic.py[Code]
@@ -27,7 +29,9 @@ The fraction has its bar and the root covers its radicand, in math typesetting.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/02-mathtex-frac.png" alt="MathTex fraction and root" />
+
+![MathTex fraction and root](../../shots/text/02-mathtex-frac.png)
+
 </div>
 
 <<< @/../corpus/examples/text/02-mathtex-frac.py[Code]
@@ -41,7 +45,9 @@ A whole LaTeX string typeset as a formula with normal fonts and spacing.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/03-tex-plain.png" alt="Tex takes a LaTeX string" />
+
+![Tex takes a LaTeX string](../../shots/text/03-tex-plain.png)
+
 </div>
 
 <<< @/../corpus/examples/text/03-tex-plain.py[Code]
@@ -55,7 +61,9 @@ Local bold / colour changes in the rich text take effect; the rest is unaffected
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/04-markup.png" alt="MarkupText rich text" />
+
+![MarkupText rich text](../../shots/text/04-markup.png)
+
 </div>
 
 <<< @/../corpus/examples/text/04-markup.py[Code]
@@ -69,7 +77,9 @@ Each list line carries a bullet and the line spacing is even.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/05-bulleted-list.png" alt="BulletedList" />
+
+![BulletedList](../../shots/text/05-bulleted-list.png)
+
 </div>
 
 <<< @/../corpus/examples/text/05-bulleted-list.py[Code]
@@ -83,7 +93,9 @@ A long string wraps into several lines without exceeding the line width.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/06-paragraph.png" alt="Paragraph auto-wraps" />
+
+![Paragraph auto-wraps](../../shots/text/06-paragraph.png)
+
 </div>
 
 <<< @/../corpus/examples/text/06-paragraph.py[Code]
@@ -97,7 +109,9 @@ A line under the text, its length matching the text.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/07-underline.png" alt="Underline" />
+
+![Underline](../../shots/text/07-underline.png)
+
 </div>
 
 <<< @/../corpus/examples/text/07-underline.py[Code]
@@ -111,7 +125,9 @@ A number animation: digit and decimal counts follow the parameters and the value
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/08-decimal-number.png" alt="DecimalNumber animation" />
+
+![DecimalNumber animation](../../shots/text/08-decimal-number.png)
+
 </div>
 
 <<< @/../corpus/examples/text/08-decimal-number.py[Code]
@@ -125,7 +141,9 @@ A two-digit label sits at the target's top-right corner, inside the frame and of
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/09-mathtex-corner.png" alt="Two-digit label at the top-right corner" />
+
+![Two-digit label at the top-right corner](../../shots/text/09-mathtex-corner.png)
+
 </div>
 
 <<< @/../corpus/examples/text/09-mathtex-corner.py[Code]
@@ -139,7 +157,9 @@ Several parts laid out on one line with sensible spacing and the given order.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/10-mathtex-parts.png" alt="MathTex multiple positional parts" />
+
+![MathTex multiple positional parts](../../shots/text/10-mathtex-parts.png)
+
 </div>
 
 <<< @/../corpus/examples/text/10-mathtex-parts.py[Code]
@@ -153,7 +173,9 @@ The title appears centred at the top of the frame, larger than body text.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/text/11-title.png" alt="Title" />
+
+![Title](../../shots/text/11-title.png)
+
 </div>
 
 <<< @/../corpus/examples/text/11-title.py[Code]

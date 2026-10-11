@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/syntax/01-comprehensions.png" alt="语法综合：推导式 / 解包 / 生成器表达式一起建图" />
+
+![语法综合：推导式 / 解包 / 生成器表达式一起建图](../shots/syntax/01-comprehensions.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/01-comprehensions.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/syntax/02-closures-itertools.png" alt="语法综合：闭包 / 生成器函数 / itertools 链" />
+
+![语法综合：闭包 / 生成器函数 / itertools 链](../shots/syntax/02-closures-itertools.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/02-closures-itertools.py[代码]
@@ -41,7 +45,9 @@ dataclass / 装饰器 / 类属性跑通，建出的图形与数据一致。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/syntax/03-dataclass-decorator.png" alt="语法综合：dataclass / 装饰器 / 类属性一起建图" />
+
+![语法综合：dataclass / 装饰器 / 类属性一起建图](../shots/syntax/03-dataclass-decorator.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/03-dataclass-decorator.py[代码]
@@ -55,7 +61,9 @@ dataclass / 装饰器 / 类属性跑通，建出的图形与数据一致。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/syntax/04-try-context.png" alt="语法综合：异常处理 / 上下文管理器 / 自定义异常" />
+
+![语法综合：异常处理 / 上下文管理器 / 自定义异常](../shots/syntax/04-try-context.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/04-try-context.py[代码]
@@ -69,7 +77,9 @@ dataclass / 装饰器 / 类属性跑通，建出的图形与数据一致。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/syntax/05-unpack-format.png" alt="语法综合：解包 / 格式化 / 切片与排序" />
+
+![语法综合：解包 / 格式化 / 切片与排序](../shots/syntax/05-unpack-format.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/05-unpack-format.py[代码]
@@ -83,7 +93,9 @@ for 遍历 VGroup 正常收尾（不无限取下去），越界下标抛 IndexEr
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/syntax/06-group-iteration.png" alt="语法综合：遍历 VGroup（for / 推导式 / 越界下标）" />
+
+![语法综合：遍历 VGroup（for / 推导式 / 越界下标）](../shots/syntax/06-group-iteration.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/06-group-iteration.py[代码]

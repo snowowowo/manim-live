@@ -13,7 +13,9 @@ clear empties the frame; the mobjects drawn afterwards appear on their own.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/scene/01-clear.png" alt="Redraw after clear" />
+
+![Redraw after clear](../../shots/scene/01-clear.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/01-clear.py[Code]
@@ -27,7 +29,9 @@ The removed mobject disappears while the others stay as they were: the scene hol
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/scene/02-remove.png" alt="remove takes a mobject out" />
+
+![remove takes a mobject out](../../shots/scene/02-remove.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/02-remove.py[Code]
@@ -41,7 +45,9 @@ An indexed child is manipulated on its own; an out-of-range index raises IndexEr
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/scene/03-vgroup-index.png" alt="VGroup plus index access" />
+
+![VGroup plus index access](../../shots/scene/03-vgroup-index.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/03-vgroup-index.py[Code]
@@ -55,7 +61,9 @@ The outer group moves as a whole and the inner group moves on its own; the two l
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/scene/04-vgroup-nested.png" alt="VGroup inside VGroup" />
+
+![VGroup inside VGroup](../../shots/scene/04-vgroup-nested.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/04-vgroup-nested.py[Code]
@@ -69,7 +77,9 @@ A row (column) of squares built in a loop; the count matches the iteration count
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/scene/05-loop-build.png" alt="Building a row of squares in a loop" />
+
+![Building a row of squares in a loop](../../shots/scene/05-loop-build.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/05-loop-build.py[Code]
@@ -83,7 +93,9 @@ Five cubes form a true cross: red (x=-4) on the left and blue (x=+4) on the righ
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/scene/07-three-d-upright.png" alt="The upright 3D camera: the x axis must be horizontal on screen" />
+
+![The upright 3D camera: the x axis must be horizontal on screen](../../shots/scene/07-three-d-upright.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/07-three-d-upright.py[Code]

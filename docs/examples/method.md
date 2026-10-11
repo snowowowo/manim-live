@@ -13,7 +13,9 @@ set_stroke / set_fill 这类改写、shift / rotate 这类变换链、save_state
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/01-set-stroke.png" alt="set_stroke（改写为 setStyle）" />
+
+![set_stroke（改写为 setStyle）](../shots/method/01-set-stroke.png)
+
 </div>
 
 <<< @/../corpus/examples/method/01-set-stroke.py[代码]
@@ -27,7 +29,9 @@ set_stroke / set_fill 这类改写、shift / rotate 这类变换链、save_state
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/02-set-opacity.png" alt="set_opacity（拆成描边 + 填充）" />
+
+![set_opacity（拆成描边 + 填充）](../shots/method/02-set-opacity.png)
+
 </div>
 
 <<< @/../corpus/examples/method/02-set-opacity.py[代码]
@@ -41,7 +45,9 @@ set_stroke / set_fill 这类改写、shift / rotate 这类变换链、save_state
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/03-set-fill.png" alt="set_fill 关键字不透明度" />
+
+![set_fill 关键字不透明度](../shots/method/03-set-fill.png)
+
 </div>
 
 <<< @/../corpus/examples/method/03-set-fill.py[代码]
@@ -55,7 +61,9 @@ set_stroke / set_fill 这类改写、shift / rotate 这类变换链、save_state
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/04-put-start-and-end-on.png" alt="put_start_and_end_on（Line 拆两步）" />
+
+![put_start_and_end_on（Line 拆两步）](../shots/method/04-put-start-and-end-on.png)
+
 </div>
 
 <<< @/../corpus/examples/method/04-put-start-and-end-on.py[代码]
@@ -69,7 +77,9 @@ set_stroke / set_fill 这类改写、shift / rotate 这类变换链、save_state
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/05-next-to-buff.png" alt="next_to 带 buff" />
+
+![next_to 带 buff](../shots/method/05-next-to-buff.png)
+
 </div>
 
 <<< @/../corpus/examples/method/05-next-to-buff.py[代码]
@@ -83,7 +93,9 @@ set_stroke / set_fill 这类改写、shift / rotate 这类变换链、save_state
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/06-edge-corner.png" alt="to_edge / to_corner" />
+
+![to_edge / to_corner](../shots/method/06-edge-corner.png)
+
 </div>
 
 <<< @/../corpus/examples/method/06-edge-corner.py[代码]
@@ -97,7 +109,9 @@ shift / move_to / scale / rotate 依次链上去，最终位置朝向与链的�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/07-process-family.png" alt="shift / move_to / scale / rotate 链" />
+
+![shift / move_to / scale / rotate 链](../shots/method/07-process-family.png)
+
 </div>
 
 <<< @/../corpus/examples/method/07-process-family.py[代码]
@@ -111,7 +125,9 @@ shift / move_to / scale / rotate 依次链上去，最终位置朝向与链的�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/08-arrange-grid.png" alt="arrange_in_grid" />
+
+![arrange_in_grid](../shots/method/08-arrange-grid.png)
+
 </div>
 
 <<< @/../corpus/examples/method/08-arrange-grid.py[代码]
@@ -125,7 +141,9 @@ shift / move_to / scale / rotate 依次链上去，最终位置朝向与链的�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/09-save-restore.png" alt="save_state / restore" />
+
+![save_state / restore](../shots/method/09-save-restore.png)
+
 </div>
 
 <<< @/../corpus/examples/method/09-save-restore.py[代码]
@@ -139,7 +157,9 @@ shift / move_to / scale / rotate 依次链上去，最终位置朝向与链的�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/10-become.png" alt="become 换形" />
+
+![become 换形](../shots/method/10-become.png)
+
 </div>
 
 <<< @/../corpus/examples/method/10-become.py[代码]
@@ -153,7 +173,9 @@ print 出的 width 与物体实际宽度一致（数值断言为准）。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/11-attr-read.png" alt="读 width 属性" />
+
+![读 width 属性](../shots/method/11-attr-read.png)
+
 </div>
 
 <<< @/../corpus/examples/method/11-attr-read.py[代码]
@@ -167,7 +189,9 @@ print 出的 width 与物体实际宽度一致（数值断言为准）。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/12-get-center.png" alt="get_center 参与定位" />
+
+![get_center 参与定位](../shots/method/12-get-center.png)
+
 </div>
 
 <<< @/../corpus/examples/method/12-get-center.py[代码]
@@ -181,7 +205,9 @@ print 出的 width 与物体实际宽度一致（数值断言为准）。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/method/13-copy.png" alt="copy 出新物体" />
+
+![copy 出新物体](../shots/method/13-copy.png)
+
 </div>
 
 <<< @/../corpus/examples/method/13-copy.py[代码]

@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/01-truth-table.png" alt="真值表：p → q 和 ¬p ∨ q 逐行等价" />
+
+![真值表：p → q 和 ¬p ∨ q 逐行等价](../shots/math-discrete/01-truth-table.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/01-truth-table.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/02-power-set-lattice.png" alt="幂集格：{1,2,3} 的 8 个子集按包含关系排成一个立方体" />
+
+![幂集格：{1,2,3} 的 8 个子集按包含关系排成一个立方体](../shots/math-discrete/02-power-set-lattice.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/02-power-set-lattice.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/03-relation-matrix.png" alt="关系矩阵：把「自反」和「对称」读成矩阵的样子" />
+
+![关系矩阵：把「自反」和「对称」读成矩阵的样子](../shots/math-discrete/03-relation-matrix.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/03-relation-matrix.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/04-equivalence-classes.png" alt="等价类：模 3 同余把 0~8 切成三堆" />
+
+![等价类：模 3 同余把 0~8 切成三堆](../shots/math-discrete/04-equivalence-classes.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/04-equivalence-classes.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/05-hasse-diagram.png" alt="哈斯图：只画「覆盖关系」，不可比的两个元素一眼看出" />
+
+![哈斯图：只画「覆盖关系」，不可比的两个元素一眼看出](../shots/math-discrete/05-hasse-diagram.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/05-hasse-diagram.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/06-mathematical-induction.png" alt="数学归纳法的经典图示：两段阶梯拼成一个矩形" />
+
+![数学归纳法的经典图示：两段阶梯拼成一个矩形](../shots/math-discrete/06-mathematical-induction.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/06-mathematical-induction.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/07-pigeonhole.png" alt="鸽巢原理：13 只鸽子放进 12 个巢" />
+
+![鸽巢原理：13 只鸽子放进 12 个巢](../shots/math-discrete/07-pigeonhole.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/07-pigeonhole.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/08-bipartite-graph.png" alt="二分图：顶点能分成两组、边只在组间出现" />
+
+![二分图：顶点能分成两组、边只在组间出现](../shots/math-discrete/08-bipartite-graph.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/08-bipartite-graph.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/09-graph-coloring.png" alt="图着色：相邻顶点不能同色，最少要几种" />
+
+![图着色：相邻顶点不能同色，最少要几种](../shots/math-discrete/09-graph-coloring.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/09-graph-coloring.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/10-spanning-tree.png" alt="最小生成树：按权重从小到大加边，成环的边就丢掉" />
+
+![最小生成树：按权重从小到大加边，成环的边就丢掉](../shots/math-discrete/10-spanning-tree.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/10-spanning-tree.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/11-euler-hamilton.png" alt="欧拉回路与哈密顿回路：一个数「边」，一个数「点」" />
+
+![欧拉回路与哈密顿回路：一个数「边」，一个数「点」](../shots/math-discrete/11-euler-hamilton.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/11-euler-hamilton.py[代码]
@@ -167,7 +189,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-discrete/12-hanoi-recurrence.png" alt="汉诺塔的递推：T(n) = 2T(n−1) + 1，所以是 2ⁿ − 1" />
+
+![汉诺塔的递推：T(n) = 2T(n−1) + 1，所以是 2ⁿ − 1](../shots/math-discrete/12-hanoi-recurrence.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/12-hanoi-recurrence.py[代码]

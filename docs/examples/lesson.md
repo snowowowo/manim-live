@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/01-unit-circle.png" alt="单位圆与三角函数线" />
+
+![单位圆与三角函数线](../shots/lesson/01-unit-circle.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/01-unit-circle.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/02-sine-wave-trace.png" alt="从圆上一点画出正弦波" />
+
+![从圆上一点画出正弦波](../shots/lesson/02-sine-wave-trace.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/02-sine-wave-trace.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/03-pythagorean.png" alt="勾股定理" />
+
+![勾股定理](../shots/lesson/03-pythagorean.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/03-pythagorean.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/04-polar-rose.png" alt="极坐标玫瑰线" />
+
+![极坐标玫瑰线](../shots/lesson/04-polar-rose.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/04-polar-rose.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/05-polar-spiral.png" alt="阿基米德螺线" />
+
+![阿基米德螺线](../shots/lesson/05-polar-spiral.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/05-polar-spiral.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/06-secant-tangent.png" alt="割线趋近切线（导数的定义）" />
+
+![割线趋近切线（导数的定义）](../shots/lesson/06-secant-tangent.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/06-secant-tangent.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/07-riemann-sum.png" alt="黎曼和逼近积分" />
+
+![黎曼和逼近积分](../shots/lesson/07-riemann-sum.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/07-riemann-sum.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/08-linear-rotate.png" alt="线性变换：旋转" />
+
+![线性变换：旋转](../shots/lesson/08-linear-rotate.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/08-linear-rotate.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/09-linear-shear.png" alt="线性变换：剪切" />
+
+![线性变换：剪切](../shots/lesson/09-linear-shear.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/09-linear-shear.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/10-eigenvector.png" alt="线性变换：特征方向" />
+
+![线性变换：特征方向](../shots/lesson/10-eigenvector.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/10-eigenvector.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/11-probability-dice.png" alt="概率：投骰子的频率" />
+
+![概率：投骰子的频率](../shots/lesson/11-probability-dice.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/11-probability-dice.py[代码]
@@ -167,7 +189,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/12-probability-binomial.png" alt="概率：二项分布" />
+
+![概率：二项分布](../shots/lesson/12-probability-binomial.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/12-probability-binomial.py[代码]
@@ -181,7 +205,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/lesson/13-space-cube-camera.png" alt="空间直角坐标系与立方体" />
+
+![空间直角坐标系与立方体](../shots/lesson/13-space-cube-camera.png)
+
 </div>
 
 <<< @/../corpus/examples/lesson/13-space-cube-camera.py[代码]

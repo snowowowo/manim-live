@@ -13,7 +13,9 @@ This page lists 14 examples. The code is imported from `corpus/examples/api/`; t
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/01-colors.png" alt="API roll call: the colour constants (all 76 usable colours)" />
+
+![API roll call: the colour constants (all 76 usable colours)](../../shots/api/01-colors.png)
+
 </div>
 
 <<< @/../corpus/examples/api/01-colors.py[Code]
@@ -27,7 +29,9 @@ Sixteen rows, each a rate name plus one dot: every dot travels left to right ove
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/02-rates.png" alt="API roll call: all 16 rate functions" />
+
+![API roll call: all 16 rate functions](../../shots/api/02-rates.png)
+
 </div>
 
 <<< @/../corpus/examples/api/02-rates.py[Code]
@@ -41,7 +45,9 @@ Several arrows pointing in the directions the RIGHT / UP / OUT constants name, d
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/03-const.png" alt="API roll call: direction and axis constants" />
+
+![API roll call: direction and axis constants](../../shots/api/03-const.png)
+
 </div>
 
 <<< @/../corpus/examples/api/03-const.py[Code]
@@ -55,7 +61,9 @@ The method surface exercised item by item: style rewrites, geometry reads and co
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/04-methods.png" alt="API roll call: the method surface (rewrites, geometry reads, coordinate mapping)" />
+
+![API roll call: the method surface (rewrites, geometry reads, coordinate mapping)](../../shots/api/04-methods.png)
+
 </div>
 
 <<< @/../corpus/examples/api/04-methods.py[Code]
@@ -69,7 +77,9 @@ A grid layout: each named shape occupies one cell with its name label under the 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/06-classes-2d.png" alt="API roll call: shapes and markers (ok in the table, unused by the corpus)" />
+
+![API roll call: shapes and markers (ok in the table, unused by the corpus)](../../shots/api/06-classes-2d.png)
+
 </div>
 
 <<< @/../corpus/examples/api/06-classes-2d.py[Code]
@@ -83,7 +93,9 @@ A grid layout: one 3D solid per cell (each coloured and shaded with volume, not 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/07-classes-3d.png" alt="API roll call: matrices, tables, 3D and miscellany" />
+
+![API roll call: matrices, tables, 3D and miscellany](../../shots/api/07-classes-3d.png)
+
 </div>
 
 <<< @/../corpus/examples/api/07-classes-3d.py[Code]
@@ -97,7 +109,9 @@ A blue cube standing at an angle in the centre of the frame: top face and two si
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/08-scenes.png" alt="API roll call: the scene family" />
+
+![API roll call: the scene family](../../shots/api/08-scenes.png)
+
 </div>
 
 <<< @/../corpus/examples/api/08-scenes.py[Code]
@@ -111,7 +125,9 @@ Each animation played through: every one has a recognizable effect, none crashes
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/09-anims.png" alt="API roll call: the animation surface (ok in the table, unused by the corpus)" />
+
+![API roll call: the animation surface (ok in the table, unused by the corpus)](../../shots/api/09-anims.png)
+
 </div>
 
 <<< @/../corpus/examples/api/09-anims.py[Code]
@@ -125,7 +141,9 @@ Function, text and wrapper animations played through: callbacks really fire and 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/10-anims-func.png" alt="API roll call: the animation surface (functions, text and wrappers)" />
+
+![API roll call: the animation surface (functions, text and wrappers)](../../shots/api/10-anims-func.png)
+
 </div>
 
 <<< @/../corpus/examples/api/10-anims-func.py[Code]
@@ -139,7 +157,9 @@ A four-row grid (six cells per row, five in the last): each named class in one c
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/11-classes-extra.png" alt="API roll call: shapes, markers and graphs (ok in the table, previously unrolled)" />
+
+![API roll call: shapes, markers and graphs (ok in the table, previously unrolled)](../../shots/api/11-classes-extra.png)
+
 </div>
 
 <<< @/../corpus/examples/api/11-classes-extra.py[Code]
@@ -153,7 +173,9 @@ Each animation in this batch played once with its object in its own place, nothi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/12-anims-extra.png" alt="API roll call: animation addenda (ok in the table, previously unrolled)" />
+
+![API roll call: animation addenda (ok in the table, previously unrolled)](../../shots/api/12-anims-extra.png)
+
 </div>
 
 <<< @/../corpus/examples/api/12-anims-extra.py[Code]
@@ -167,7 +189,9 @@ Three 3D solids in a row at x = -4 / 0 / +4: a cyan horizontal line segment on t
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/12-classes-3d-extra.png" alt="API roll call: 3D solids (line, arrow, convex hull) — must land on ThreeDScene" />
+
+![API roll call: 3D solids (line, arrow, convex hull) — must land on ThreeDScene](../../shots/api/12-classes-3d-extra.png)
+
 </div>
 
 <<< @/../corpus/examples/api/12-classes-3d-extra.py[Code]
@@ -181,7 +205,9 @@ A shape (a circle) parsed out of an inline SVG string and drawn.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/13-svg-browser.png" alt="API roll call: a whole inline SVG string (needs browser DOM, checked in the playground only)" />
+
+![API roll call: a whole inline SVG string (needs browser DOM, checked in the playground only)](../../shots/api/13-svg-browser.png)
+
 </div>
 
 <<< @/../corpus/examples/api/13-svg-browser.py[Code]
@@ -195,7 +221,9 @@ First a complex plane fills the canvas with a yellow dot marked at 60° on the u
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/api/14-planes.png" alt="Complex plane and polar grid: the whole canvas is their canvas" />
+
+![Complex plane and polar grid: the whole canvas is their canvas](../../shots/api/14-planes.png)
+
 </div>
 
 <<< @/../corpus/examples/api/14-planes.py[Code]

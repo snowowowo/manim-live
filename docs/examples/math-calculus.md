@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/01-sequence-limit.png" alt="数列极限：a_n = 1 + 1/n 逼近 1" />
+
+![数列极限：a_n = 1 + 1/n 逼近 1](../shots/math-calculus/01-sequence-limit.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/01-sequence-limit.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/02-squeeze-theorem.png" alt="夹逼定理：x·sin(1/x) 被 ±x 夹住" />
+
+![夹逼定理：x·sin(1/x) 被 ±x 夹住](../shots/math-calculus/02-squeeze-theorem.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/02-squeeze-theorem.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/03-taylor-sin.png" alt="泰勒展开：多项式逐阶逼近 sin x" />
+
+![泰勒展开：多项式逐阶逼近 sin x](../shots/math-calculus/03-taylor-sin.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/03-taylor-sin.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/04-e-definition.png" alt="e 的定义：(1+1/n)^n 单调递增趋近 e" />
+
+![e 的定义：(1+1/n)^n 单调递增趋近 e](../shots/math-calculus/04-e-definition.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/04-e-definition.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/05-mean-value-theorem.png" alt="拉格朗日中值定理：割线与切线平行" />
+
+![拉格朗日中值定理：割线与切线平行](../shots/math-calculus/05-mean-value-theorem.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/05-mean-value-theorem.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/06-upper-lower-sum.png" alt="上积分与下积分：同一段区间两种取点法夹住真值" />
+
+![上积分与下积分：同一段区间两种取点法夹住真值](../shots/math-calculus/06-upper-lower-sum.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/06-upper-lower-sum.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/07-accumulation-function.png" alt="变上限积分：面积函数 S(x) 与它的导数" />
+
+![变上限积分：面积函数 S(x) 与它的导数](../shots/math-calculus/07-accumulation-function.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/07-accumulation-function.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/08-partial-derivative.png" alt="偏导数：分别固定 y 与固定 x 去看的斜率" />
+
+![偏导数：分别固定 y 与固定 x 去看的斜率](../shots/math-calculus/08-partial-derivative.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/08-partial-derivative.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/09-gradient-descent.png" alt="梯度下降：沿负梯度方向一步步走向最小值" />
+
+![梯度下降：沿负梯度方向一步步走向最小值](../shots/math-calculus/09-gradient-descent.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/09-gradient-descent.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/10-double-integral-grid.png" alt="二重积分：把区域切成小方块" />
+
+![二重积分：把区域切成小方块](../shots/math-calculus/10-double-integral-grid.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/10-double-integral-grid.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/11-fourier-square.png" alt="傅里叶级数逼近方波" />
+
+![傅里叶级数逼近方波](../shots/math-calculus/11-fourier-square.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/11-fourier-square.py[代码]
@@ -167,7 +189,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-calculus/12-series-partial-sums.png" alt="部分和：调和级数发散 vs Σ1/n² 收敛" />
+
+![部分和：调和级数发散 vs Σ1/n² 收敛](../shots/math-calculus/12-series-partial-sums.png)
+
 </div>
 
 <<< @/../corpus/examples/math-calculus/12-series-partial-sums.py[代码]

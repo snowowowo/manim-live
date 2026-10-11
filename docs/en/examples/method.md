@@ -13,7 +13,9 @@ Only the stroke changes (width / colour) while the fill stays as it was — set_
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/01-set-stroke.png" alt="set_stroke (mapped to setStyle)" />
+
+![set_stroke (mapped to setStyle)](../../shots/method/01-set-stroke.png)
+
 </div>
 
 <<< @/../corpus/examples/method/01-set-stroke.py[Code]
@@ -27,7 +29,9 @@ Stroke and fill fade together; the colour is unchanged.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/02-set-opacity.png" alt="set_opacity (split into stroke + fill)" />
+
+![set_opacity (split into stroke + fill)](../../shots/method/02-set-opacity.png)
+
 </div>
 
 <<< @/../corpus/examples/method/02-set-opacity.py[Code]
@@ -41,7 +45,9 @@ The fill becomes the given colour with the given opacity; the stroke is untouche
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/03-set-fill.png" alt="set_fill keyword opacity" />
+
+![set_fill keyword opacity](../../shots/method/03-set-fill.png)
+
 </div>
 
 <<< @/../corpus/examples/method/03-set-fill.py[Code]
@@ -55,7 +61,9 @@ The line's two ends land exactly on the two given points.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/04-put-start-and-end-on.png" alt="put_start_and_end_on (Line in two steps)" />
+
+![put_start_and_end_on (Line in two steps)](../../shots/method/04-put-start-and-end-on.png)
+
 </div>
 
 <<< @/../corpus/examples/method/04-put-start-and-end-on.py[Code]
@@ -69,7 +77,9 @@ The gap between the two mobjects matches the buff value — neither touching nor
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/05-next-to-buff.png" alt="next_to with buff" />
+
+![next_to with buff](../../shots/method/05-next-to-buff.png)
+
 </div>
 
 <<< @/../corpus/examples/method/05-next-to-buff.py[Code]
@@ -83,7 +93,9 @@ The mobject sticks to the given edge or corner, keeping a buff from the border.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/06-edge-corner.png" alt="to_edge / to_corner" />
+
+![to_edge / to_corner](../../shots/method/06-edge-corner.png)
+
 </div>
 
 <<< @/../corpus/examples/method/06-edge-corner.py[Code]
@@ -97,7 +109,9 @@ The four calls chain in order; the final position and orientation match the chai
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/07-process-family.png" alt="shift / move_to / scale / rotate chain" />
+
+![shift / move_to / scale / rotate chain](../../shots/method/07-process-family.png)
+
 </div>
 
 <<< @/../corpus/examples/method/07-process-family.py[Code]
@@ -111,7 +125,9 @@ A set of mobjects laid out in a tidy grid with the requested rows, columns and s
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/08-arrange-grid.png" alt="arrange_in_grid" />
+
+![arrange_in_grid](../../shots/method/08-arrange-grid.png)
+
 </div>
 
 <<< @/../corpus/examples/method/08-arrange-grid.py[Code]
@@ -125,7 +141,9 @@ After the changes, restore returns the mobject to its save_state look — positi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/09-save-restore.png" alt="save_state / restore" />
+
+![save_state / restore](../../shots/method/09-save-restore.png)
+
 </div>
 
 <<< @/../corpus/examples/method/09-save-restore.py[Code]
@@ -139,7 +157,9 @@ After playback the mobject has become the target shape; become replaces rather t
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/10-become.png" alt="become swaps the shape" />
+
+![become swaps the shape](../../shots/method/10-become.png)
+
 </div>
 
 <<< @/../corpus/examples/method/10-become.py[Code]
@@ -153,7 +173,9 @@ The printed width matches the mobject's real width (the numeric assertion is aut
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/11-attr-read.png" alt="Reading the width attribute" />
+
+![Reading the width attribute](../../shots/method/11-attr-read.png)
+
 </div>
 
 <<< @/../corpus/examples/method/11-attr-read.py[Code]
@@ -167,7 +189,9 @@ A mobject placed with get_center's return value has its centre exactly where exp
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/12-get-center.png" alt="get_center used for placement" />
+
+![get_center used for placement](../../shots/method/12-get-center.png)
+
 </div>
 
 <<< @/../corpus/examples/method/12-get-center.py[Code]
@@ -181,7 +205,9 @@ Changing the copy leaves the original untouched — the two are independent and 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/method/13-copy.png" alt="copy produces a new mobject" />
+
+![copy produces a new mobject](../../shots/method/13-copy.png)
+
 </div>
 
 <<< @/../corpus/examples/method/13-copy.py[Code]

@@ -13,7 +13,9 @@ The square moves right, then changes colour, then scales (several changes on one
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/01-chain.png" alt="m.animate chain" />
+
+![m.animate chain](../../shots/animate/01-chain.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/01-chain.py[Code]
@@ -27,7 +29,9 @@ At the end the fill is the target colour, reached by a gradient rather than an i
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/02-chain-fill.png" alt="Changing the fill inside an animate chain" />
+
+![Changing the fill inside an animate chain](../../shots/animate/02-chain-fill.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/02-chain-fill.py[Code]
@@ -41,7 +45,9 @@ Two mobjects travel the same distance left to right in the same run_time, one wi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/03-rate-func.png" alt="Rate and duration (rate_func comparison)" />
+
+![Rate and duration (rate_func comparison)](../../shots/animate/03-rate-func.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/03-rate-func.py[Code]
@@ -55,7 +61,9 @@ The mobject reaches the target and returns along the same path to the start (the
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/04-rate-variants.png" alt="there_and_back rate" />
+
+![there_and_back rate](../../shots/animate/04-rate-variants.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/04-rate-variants.py[Code]
@@ -69,7 +77,9 @@ Mobject A morphs continuously into mobject B (shape and position interpolated to
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/05-transform.png" alt="Transform" />
+
+![Transform](../../shots/animate/05-transform.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/05-transform.py[Code]
@@ -83,7 +93,9 @@ After the morph the scene holds B and A is gone — moving A afterwards never br
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/06-replacement-transform.png" alt="ReplacementTransform replaces the old mobject" />
+
+![ReplacementTransform replaces the old mobject](../../shots/animate/06-replacement-transform.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/06-replacement-transform.py[Code]
@@ -97,7 +109,9 @@ Identical fragments of the formula stay in place while different fragments move 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/07-transform-matching-tex.png" alt="TransformMatchingTex formula morph" />
+
+![TransformMatchingTex formula morph](../../shots/animate/07-transform-matching-tex.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/07-transform-matching-tex.py[Code]
@@ -111,7 +125,9 @@ Several mobjects enter one after another with a stagger; lag_ratio sets how much
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/08-lagged-start.png" alt="LaggedStart staggered entrance" />
+
+![LaggedStart staggered entrance](../../shots/animate/08-lagged-start.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/08-lagged-start.py[Code]
@@ -125,7 +141,9 @@ The animations in the group run at the same time and finish together, not one by
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/09-animation-group.png" alt="AnimationGroup in parallel" />
+
+![AnimationGroup in parallel](../../shots/animate/09-animation-group.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/09-animation-group.py[Code]
@@ -139,7 +157,9 @@ Indicate is a scale flash in place, Flash is a burst of light at a point, Circum
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/10-indicate-family.png" alt="Indicate / Flash / Circumscribe" />
+
+![Indicate / Flash / Circumscribe](../../shots/animate/10-indicate-family.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/10-indicate-family.py[Code]
@@ -153,7 +173,9 @@ The dot travels along the given path curve, not along a straight line.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/11-move-along-path.png" alt="MoveAlongPath follows a path" />
+
+![MoveAlongPath follows a path](../../shots/animate/11-move-along-path.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/11-move-along-path.py[Code]
@@ -167,7 +189,9 @@ The mobject turns continuously about the given axis (several turns or a given an
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/12-rotating.png" alt="Rotating about an axis" />
+
+![Rotating about an axis](../../shots/animate/12-rotating.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/12-rotating.py[Code]
@@ -181,7 +205,9 @@ The mobject scales up or down in place; its centre does not move.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/13-scale-in-place.png" alt="ScaleInPlace" />
+
+![ScaleInPlace](../../shots/animate/13-scale-in-place.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/13-scale-in-place.py[Code]
@@ -195,7 +221,9 @@ The outline is drawn first and only then does the fill arrive — two visible ph
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/14-draw-border.png" alt="DrawBorderThenFill" />
+
+![DrawBorderThenFill](../../shots/animate/14-draw-border.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/14-draw-border.py[Code]
@@ -209,7 +237,9 @@ The mobject is skewed or rotated by the matrix — a shear or rotation deformati
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/15-apply-matrix.png" alt="ApplyMatrix" />
+
+![ApplyMatrix](../../shots/animate/15-apply-matrix.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/15-apply-matrix.py[Code]
@@ -223,7 +253,9 @@ FadeIn fades in from transparent and FadeOut fades out to nothing; everything el
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/16-fade-family.png" alt="FadeIn / FadeOut" />
+
+![FadeIn / FadeOut](../../shots/animate/16-fade-family.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/16-fade-family.py[Code]
@@ -237,7 +269,9 @@ GrowFromCenter grows out of the centre while GrowFromEdge grows along the given 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/animate/17-grow-family.png" alt="GrowFromEdge / GrowFromCenter" />
+
+![GrowFromEdge / GrowFromCenter](../../shots/animate/17-grow-family.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/17-grow-family.py[Code]

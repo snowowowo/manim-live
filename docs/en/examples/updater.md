@@ -13,7 +13,9 @@ A trail line grows behind the moving dot and coincides with the path travelled.
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/updater/01-traced-path.png" alt="TracedPath follows a mobject" />
+
+![TracedPath follows a mobject](../../shots/updater/01-traced-path.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/01-traced-path.py[Code]
@@ -27,7 +29,9 @@ As the tracker's value is animated, the dot moves to the matching position (prin
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/updater/02-value-driven.png" alt="Position driven by a tracker" />
+
+![Position driven by a tracker](../../shots/updater/02-value-driven.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/02-value-driven.py[Code]
@@ -41,7 +45,9 @@ A (m, dt) updater advances with real time during wait, not only during animation
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/updater/03-with-dt.png" alt="Updater taking (m, dt)" />
+
+![Updater taking (m, dt)](../../shots/updater/03-with-dt.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/03-with-dt.py[Code]
@@ -55,7 +61,9 @@ After clear_updaters the mobject stays put: further tracker changes no longer mo
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/updater/04-clear.png" alt="clear_updaters stops the following" />
+
+![clear_updaters stops the following](../../shots/updater/04-clear.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/04-clear.py[Code]
@@ -69,7 +77,9 @@ The number follows the tracker live; it does not jump to the final value at the 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/updater/05-decimal.png" alt="Number follows the tracker" />
+
+![Number follows the tracker](../../shots/updater/05-decimal.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/05-decimal.py[Code]
@@ -83,7 +93,9 @@ The update function is driven during the animation and the m it receives answers
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/updater/06-update-from-func.png" alt="Animations driving update functions (UpdateFromFunc / UpdateFromAlphaFunc)" />
+
+![Animations driving update functions (UpdateFromFunc / UpdateFromAlphaFunc)](../../shots/updater/06-update-from-func.png)
+
 </div>
 
 <<< @/../corpus/examples/updater/06-update-from-func.py[Code]

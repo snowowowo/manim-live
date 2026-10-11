@@ -13,7 +13,9 @@ m.animate 链、速率函数、Transform 一族、入场与高亮动画、沿路
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/01-chain.png" alt="m.animate 链式" />
+
+![m.animate 链式](../shots/animate/01-chain.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/01-chain.py[代码]
@@ -27,7 +29,9 @@ m.animate 链、速率函数、Transform 一族、入场与高亮动画、沿路
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/02-chain-fill.png" alt="animate 链里改填充" />
+
+![animate 链里改填充](../shots/animate/02-chain-fill.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/02-chain-fill.py[代码]
@@ -41,7 +45,9 @@ m.animate 链、速率函数、Transform 一族、入场与高亮动画、沿路
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/03-rate-func.png" alt="速率与时长（rate_func 对照）" />
+
+![速率与时长（rate_func 对照）](../shots/animate/03-rate-func.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/03-rate-func.py[代码]
@@ -55,7 +61,9 @@ m.animate 链、速率函数、Transform 一族、入场与高亮动画、沿路
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/04-rate-variants.png" alt="there_and_back 速率" />
+
+![there_and_back 速率](../shots/animate/04-rate-variants.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/04-rate-variants.py[代码]
@@ -69,7 +77,9 @@ A 物体连续变形为 B 物体（形状与位置同时插值），过程中两
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/05-transform.png" alt="Transform 变形" />
+
+![Transform 变形](../shots/animate/05-transform.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/05-transform.py[代码]
@@ -83,7 +93,9 @@ A 物体连续变形为 B 物体（形状与位置同时插值），过程中两
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/06-replacement-transform.png" alt="ReplacementTransform 换掉旧物体" />
+
+![ReplacementTransform 换掉旧物体](../shots/animate/06-replacement-transform.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/06-replacement-transform.py[代码]
@@ -97,7 +109,9 @@ A 物体连续变形为 B 物体（形状与位置同时插值），过程中两
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/07-transform-matching-tex.png" alt="TransformMatchingTex 公式变换" />
+
+![TransformMatchingTex 公式变换](../shots/animate/07-transform-matching-tex.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/07-transform-matching-tex.py[代码]
@@ -111,7 +125,9 @@ A 物体连续变形为 B 物体（形状与位置同时插值），过程中两
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/08-lagged-start.png" alt="LaggedStart 依次入场" />
+
+![LaggedStart 依次入场](../shots/animate/08-lagged-start.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/08-lagged-start.py[代码]
@@ -125,7 +141,9 @@ A 物体连续变形为 B 物体（形状与位置同时插值），过程中两
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/09-animation-group.png" alt="AnimationGroup 并行" />
+
+![AnimationGroup 并行](../shots/animate/09-animation-group.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/09-animation-group.py[代码]
@@ -139,7 +157,9 @@ Indicate 是原地缩放闪一下、Flash 是某点迸一下光、Circumscribe �
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/10-indicate-family.png" alt="Indicate / Flash / Circumscribe" />
+
+![Indicate / Flash / Circumscribe](../shots/animate/10-indicate-family.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/10-indicate-family.py[代码]
@@ -153,7 +173,9 @@ Indicate 是原地缩放闪一下、Flash 是某点迸一下光、Circumscribe �
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/11-move-along-path.png" alt="MoveAlongPath 沿路径走" />
+
+![MoveAlongPath 沿路径走](../shots/animate/11-move-along-path.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/11-move-along-path.py[代码]
@@ -167,7 +189,9 @@ Indicate 是原地缩放闪一下、Flash 是某点迸一下光、Circumscribe �
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/12-rotating.png" alt="Rotating 绕轴转" />
+
+![Rotating 绕轴转](../shots/animate/12-rotating.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/12-rotating.py[代码]
@@ -181,7 +205,9 @@ Indicate 是原地缩放闪一下、Flash 是某点迸一下光、Circumscribe �
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/13-scale-in-place.png" alt="ScaleInPlace 缩放" />
+
+![ScaleInPlace 缩放](../shots/animate/13-scale-in-place.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/13-scale-in-place.py[代码]
@@ -195,7 +221,9 @@ Indicate 是原地缩放闪一下、Flash 是某点迸一下光、Circumscribe �
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/14-draw-border.png" alt="DrawBorderThenFill 描边后填充" />
+
+![DrawBorderThenFill 描边后填充](../shots/animate/14-draw-border.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/14-draw-border.py[代码]
@@ -209,7 +237,9 @@ Indicate 是原地缩放闪一下、Flash 是某点迸一下光、Circumscribe �
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/15-apply-matrix.png" alt="ApplyMatrix 矩阵变换" />
+
+![ApplyMatrix 矩阵变换](../shots/animate/15-apply-matrix.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/15-apply-matrix.py[代码]
@@ -223,7 +253,9 @@ FadeIn 是从透明渐显、FadeOut 是渐隐到消失，其余状态不变。�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/16-fade-family.png" alt="FadeIn / FadeOut" />
+
+![FadeIn / FadeOut](../shots/animate/16-fade-family.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/16-fade-family.py[代码]
@@ -237,7 +269,9 @@ GrowFromCenter 从中心冒出来，GrowFromEdge 沿指定边长出来，方向�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/animate/17-grow-family.png" alt="GrowFromEdge / GrowFromCenter" />
+
+![GrowFromEdge / GrowFromCenter](../shots/animate/17-grow-family.png)
+
 </div>
 
 <<< @/../corpus/examples/animate/17-grow-family.py[代码]

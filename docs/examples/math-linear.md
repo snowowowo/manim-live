@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/01-matrix-vector-product.png" alt="矩阵乘向量 = 列的线性组合" />
+
+![矩阵乘向量 = 列的线性组合](../shots/math-linear/01-matrix-vector-product.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/01-matrix-vector-product.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/02-determinant-area.png" alt="行列式的几何意义：单位正方形的面积被放大 |det| 倍" />
+
+![行列式的几何意义：单位正方形的面积被放大 |det| 倍](../shots/math-linear/02-determinant-area.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/02-determinant-area.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/03-singular-matrix.png" alt="奇异矩阵：det=0 把整个平面压成一条线" />
+
+![奇异矩阵：det=0 把整个平面压成一条线](../shots/math-linear/03-singular-matrix.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/03-singular-matrix.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/04-orthogonal-projection.png" alt="正交投影：b 在 a 上的影子" />
+
+![正交投影：b 在 a 上的影子](../shots/math-linear/04-orthogonal-projection.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/04-orthogonal-projection.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/05-gram-schmidt.png" alt="Gram–Schmidt：把第二个向量减掉它在第一个上的投影" />
+
+![Gram–Schmidt：把第二个向量减掉它在第一个上的投影](../shots/math-linear/05-gram-schmidt.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/05-gram-schmidt.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/06-eigen-decomposition.png" alt="特征方向：变换后方向不变的向量" />
+
+![特征方向：变换后方向不变的向量](../shots/math-linear/06-eigen-decomposition.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/06-eigen-decomposition.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/07-rank-nullspace.png" alt="零空间：被映到 0 的那些方向" />
+
+![零空间：被映到 0 的那些方向](../shots/math-linear/07-rank-nullspace.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/07-rank-nullspace.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/08-basis-change.png" alt="基变换：同一个向量的两套坐标" />
+
+![基变换：同一个向量的两套坐标](../shots/math-linear/08-basis-change.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/08-basis-change.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/09-rotation-composition.png" alt="旋转矩阵的复合：转两次 30° 等于转一次 60°" />
+
+![旋转矩阵的复合：转两次 30° 等于转一次 60°](../shots/math-linear/09-rotation-composition.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/09-rotation-composition.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/10-least-squares.png" alt="最小二乘：拟合直线与残差" />
+
+![最小二乘：拟合直线与残差](../shots/math-linear/10-least-squares.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/10-least-squares.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/11-quadratic-form.png" alt="二次型：正定的椭圆 vs 不定的双曲" />
+
+![二次型：正定的椭圆 vs 不定的双曲](../shots/math-linear/11-quadratic-form.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/11-quadratic-form.py[代码]
@@ -167,7 +189,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-linear/12-svd-geometry.png" alt="SVD 的几何含义：旋转 → 拉伸 → 再旋转" />
+
+![SVD 的几何含义：旋转 → 拉伸 → 再旋转](../shots/math-linear/12-svd-geometry.png)
+
 </div>
 
 <<< @/../corpus/examples/math-linear/12-svd-geometry.py[代码]

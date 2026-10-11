@@ -53,8 +53,11 @@ class AxesPlotScene(Scene):
 ```
 
 <figure>
-  <img src="../corpus/shots/basic/09-axes-plot.png" alt="上段代码实时渲染的结果" loading="lazy" />
-  <figcaption>上段代码的实时渲染结果（终态）—— <code>corpus/examples/basic/09-axes-plot.py</code></figcaption>
+
+![上段代码实时渲染的结果](./shots/basic/09-axes-plot.png)
+
+<figcaption>上段代码的实时渲染结果（终态）—— <code>corpus/examples/basic/09-axes-plot.py</code></figcaption>
+
 </figure>
 
 </div>
@@ -88,16 +91,25 @@ pnpm add manim-live
 
 <div class="gallery">
   <figure>
-    <img src="../corpus/shots/math-linear/02-determinant-area.png" alt="行列式的几何意义" loading="lazy" />
+
+    ![行列式的几何意义](./shots/math-linear/02-determinant-area.png)
+
     <figcaption>线性变换：单位正方形面积被放大 |det| 倍</figcaption>
+
   </figure>
   <figure>
-    <img src="../corpus/shots/math-prob/10-monte-carlo-pi.png" alt="蒙特卡洛估算 π" loading="lazy" />
+
+    ![蒙特卡洛估算 π](./shots/math-prob/10-monte-carlo-pi.png)
+
     <figcaption>向正方形内撒点，估算出 π ≈ 3.140</figcaption>
+
   </figure>
   <figure>
-    <img src="../corpus/shots/lesson/13-space-cube-camera.png" alt="真 3D 场景" loading="lazy" />
+
+    ![真 3D 场景](./shots/lesson/13-space-cube-camera.png)
+
     <figcaption>ThreeDScene：带光照与深度的真实 3D</figcaption>
+
   </figure>
 </div>
 

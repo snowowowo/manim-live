@@ -13,7 +13,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/01-inclusion-exclusion.png" alt="概率的加法公式（容斥）：P(A∪B) = P(A) + P(B) - P(A∩B)" />
+
+![概率的加法公式（容斥）：P(A∪B) = P(A) + P(B) - P(A∩B)](../shots/math-prob/01-inclusion-exclusion.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/01-inclusion-exclusion.py[代码]
@@ -27,7 +29,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/02-conditional-probability.png" alt="条件概率：换一个样本空间重新归一化" />
+
+![条件概率：换一个样本空间重新归一化](../shots/math-prob/02-conditional-probability.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/02-conditional-probability.py[代码]
@@ -41,7 +45,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/03-bayes-tree.png" alt="贝叶斯公式：一棵树上把先验和似然合成后验" />
+
+![贝叶斯公式：一棵树上把先验和似然合成后验](../shots/math-prob/03-bayes-tree.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/03-bayes-tree.py[代码]
@@ -55,7 +61,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/04-expectation-balance.png" alt="期望：概率分布的「重心」，也是这根杠杆的支点" />
+
+![期望：概率分布的「重心」，也是这根杠杆的支点](../shots/math-prob/04-expectation-balance.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/04-expectation-balance.py[代码]
@@ -69,7 +77,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/05-variance-spread.png" alt="方差刻画离散程度：同期望，不同「撒得开」" />
+
+![方差刻画离散程度：同期望，不同「撒得开」](../shots/math-prob/05-variance-spread.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/05-variance-spread.py[代码]
@@ -83,7 +93,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/06-law-of-large-numbers.png" alt="大数定律：频率随试验次数增加而贴向真实概率" />
+
+![大数定律：频率随试验次数增加而贴向真实概率](../shots/math-prob/06-law-of-large-numbers.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/06-law-of-large-numbers.py[代码]
@@ -97,7 +109,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/07-central-limit-theorem.png" alt="中心极限定理：独立同分布求和，分布形状必然向正态靠拢" />
+
+![中心极限定理：独立同分布求和，分布形状必然向正态靠拢](../shots/math-prob/07-central-limit-theorem.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/07-central-limit-theorem.py[代码]
@@ -111,7 +125,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/08-poisson-arrivals.png" alt="泊松分布：稀有事件在时间轴上的到达" />
+
+![泊松分布：稀有事件在时间轴上的到达](../shots/math-prob/08-poisson-arrivals.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/08-poisson-arrivals.py[代码]
@@ -125,7 +141,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/09-normal-sigma.png" alt="正态分布的 3σ 法则：钟形曲线下的面积怎么分" />
+
+![正态分布的 3σ 法则：钟形曲线下的面积怎么分](../shots/math-prob/09-normal-sigma.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/09-normal-sigma.py[代码]
@@ -139,7 +157,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/10-monte-carlo-pi.png" alt="蒙特卡洛估算 π：往正方形里撒点，数落在四分之一圆内的比例" />
+
+![蒙特卡洛估算 π：往正方形里撒点，数落在四分之一圆内的比例](../shots/math-prob/10-monte-carlo-pi.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/10-monte-carlo-pi.py[代码]
@@ -153,7 +173,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/11-random-walk.png" alt="随机游走：每一步无记忆，但整体呈现出 √n 的尺度" />
+
+![随机游走：每一步无记忆，但整体呈现出 √n 的尺度](../shots/math-prob/11-random-walk.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/11-random-walk.py[代码]
@@ -167,7 +189,9 @@
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/math-prob/12-hypothesis-test.png" alt="假设检验的两类错误：α 是弃真，β 是取伪" />
+
+![假设检验的两类错误：α 是弃真，β 是取伪](../shots/math-prob/12-hypothesis-test.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/12-hypothesis-test.py[代码]

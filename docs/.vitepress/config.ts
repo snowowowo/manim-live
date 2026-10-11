@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import { fileURLToPath } from 'node:url'
 
 // base 与部署地址对齐：仓库是 github.com/snowowowo/manim-live，项目页即
 // https://snowowowo.github.io/manim-live/ 。换自定义域名（或改成 <user>.github.io
@@ -19,6 +20,15 @@ export default defineConfig({
   srcExclude: ['README.md'],
   // 每页底部显示「上次更新」：取 git 提交时间。
   lastUpdated: true,
+
+  // 示例页与首页的截图在仓根 corpus/shots/（docs/ 之外）。dev 下 vite 的 fs 白名单默认只放
+  // docs/ 自己：解析不到就把相对 URL 原样留在页面上（一点就 404）。把仓根加进白名单，
+  // dev 与 build 才能走同一条相对路径（build 不受白名单限制，已验）。
+  vite: {
+    server: {
+      fs: { allow: [fileURLToPath(new URL('..', import.meta.url))] },
+    },
+  },
 
   locales: {
     // 中文 = 源语言，页面在根目录。

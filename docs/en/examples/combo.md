@@ -13,7 +13,9 @@ Scattered data points plus a fitted line: the line follows the data trend with s
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/combo/01-pandas-sklearn-fit.png" alt="Combined: pandas cleaning → sklearn fit → Manim drawing the line" />
+
+![Combined: pandas cleaning → sklearn fit → Manim drawing the line](../../shots/combo/01-pandas-sklearn-fit.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/01-pandas-sklearn-fit.py[Code]
@@ -27,7 +29,9 @@ Raw data, smoothed curve and peak markers all present in three layers; peak posi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/combo/02-pandas-scipy-signal.png" alt="Combined: pandas rolling statistics + scipy.signal smoothing and peak finding" />
+
+![Combined: pandas rolling statistics + scipy.signal smoothing and peak finding](../../shots/combo/02-pandas-scipy-signal.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/02-pandas-scipy-signal.py[Code]
@@ -41,7 +45,9 @@ Two comparison curves whose shapes match the ODE's numerical solution, with lege
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/combo/03-scipy-numpy-ode.png" alt="Combined: scipy solving an ODE + numpy extracting the solution + Manim drawing two comparison curves" />
+
+![Combined: scipy solving an ODE + numpy extracting the solution + Manim drawing two comparison curves](../../shots/combo/03-scipy-numpy-ode.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/03-scipy-numpy-ode.py[Code]
@@ -55,7 +61,9 @@ Table building, fitting and drawing in one pipeline: the fitted line follows the
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/combo/04-pandas-statsmodels-ols.png" alt="Combined: pandas building a table → statsmodels OLS fit and prediction → Manim drawing the regression" />
+
+![Combined: pandas building a table → statsmodels OLS fit and prediction → Manim drawing the regression](../../shots/combo/04-pandas-statsmodels-ols.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/04-pandas-statsmodels-ols.py[Code]
@@ -69,7 +77,9 @@ Scatter points coloured by KMeans cluster with colours taken from matplotlib: sa
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/combo/05-sklearn-matplotlib-clusters.png" alt="Combined: numpy making clusters → sklearn KMeans → matplotlib colours → Manim colouring" />
+
+![Combined: numpy making clusters → sklearn KMeans → matplotlib colours → Manim colouring](../../shots/combo/05-sklearn-matplotlib-clusters.png)
+
 </div>
 
 <<< @/../corpus/examples/combo/05-sklearn-matplotlib-clusters.py[Code]

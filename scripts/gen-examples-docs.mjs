@@ -50,7 +50,10 @@ function groupTitle(group, locale) {
 }
 
 function examplePage(group, list, locale) {
-  const shots = locale === 'zh' ? '../../corpus/shots/' : '../../../corpus/shots/'
+  // 截图走 docs/shots（指向仓根 corpus/shots 的符号链接）。相对深度要同时满足两种解析：
+  // build 按 md 文件位置、dev 按页面 URL（base /manim-live/ 占一层，与 docs/ 一一对应），
+  // 两者在这里恰好同构：zh 领域页在 docs/examples/（URL 深 1）→ ../shots/。
+  const shots = locale === 'zh' ? '../shots/' : '../../shots/'
   const codeTab = locale === 'zh' ? '代码' : 'Code'
   const shotTab = locale === 'zh' ? '画面' : 'Rendered'
   const countLine =
@@ -70,8 +73,12 @@ function examplePage(group, list, locale) {
         '',
         // 画面放第一个 tab 并默认激活：内置 code-group 的初始 active 只加给第一个**代码围栏**，
         // 图片块（html_block）拿不到，所以这里手写 active 类（CSS 认 .vp-block.active）。
+        // 图片用 markdown 语法且前后留空行：裸 <img src> 在 dev 下按页面 URL 解析会 404，
+        // markdown 图片在 dev 与 build 两个模式都走 vite 的资源管线。
         `<div class="vp-block active" data-title="${shotTab}">`,
-        `<img src="${shots}${item.shot}" alt="${title}" />`,
+        '',
+        `![${title}](${shots}${item.shot})`,
+        '',
         '</div>',
         '',
         `<<< @/../corpus/examples/${group.id}/${name}[${codeTab}]`,
@@ -88,15 +95,24 @@ function examplePage(group, list, locale) {
 function overviewPage(locale) {
   const prose = i18n.overview[locale]
   // 总览页与领域页同深度：docs/examples/ 与 docs/en/examples/。
-  const shots = locale === 'zh' ? '../../corpus/shots/' : '../../../corpus/shots/'
+  const shots = locale === 'zh' ? '../shots/' : '../../shots/'
   const cards = SECTIONS.flatMap((section) => section.groups)
     .map((id) => {
       const group = groups.find((item) => item.id === id)
       const list = byGroup.get(id) ?? []
       const title = groupTitle(group, locale)
-      return `  <a href="./${id}"><figure><img src="${shots}${list[0].shot}" alt="${title}" loading="lazy" /><figcaption>${title} · ${list.length}</figcaption></figure></a>`
+      // 每个标签独占一段（前后空行）：html 块里不解析 markdown，图片语法必须自成一段。
+      return [
+        '<figure>',
+        '',
+        `[![${title}](${shots}${list[0].shot})](./${id})`,
+        '',
+        `<figcaption>${title} · ${list.length}</figcaption>`,
+        '',
+        '</figure>',
+      ].join('\n')
     })
-    .join('\n')
+    .join('\n\n')
   return [
     GENERATED,
     '',
@@ -107,7 +123,9 @@ function overviewPage(locale) {
     prose.note,
     '',
     '<div class="gallery">',
+    '',
     cards,
+    '',
     '</div>',
     '',
   ].join('\n')

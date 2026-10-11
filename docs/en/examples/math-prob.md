@@ -13,7 +13,9 @@ Inside the sample space Ω two translucent rectangular events A and B overlap, t
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/01-inclusion-exclusion.png" alt="Addition rule (inclusion–exclusion): P(A∪B) = P(A) + P(B) - P(A∩B)" />
+
+![Addition rule (inclusion–exclusion): P(A∪B) = P(A) + P(B) - P(A∩B)](../../shots/math-prob/01-inclusion-exclusion.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/01-inclusion-exclusion.py[Code]
@@ -27,7 +29,9 @@ Event A is cut in two by B's boundary; the half inside B is lit first, then ever
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/02-conditional-probability.png" alt="Conditional probability: renormalizing on a new sample space" />
+
+![Conditional probability: renormalizing on a new sample space](../../shots/math-prob/02-conditional-probability.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/02-conditional-probability.py[Code]
@@ -41,7 +45,9 @@ A two-level branching tree on the left lays out the two routes sick 1% × detect
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/03-bayes-tree.png" alt="Bayes' formula: a tree combining prior and likelihood into posterior" />
+
+![Bayes' formula: a tree combining prior and likelihood into posterior](../../shots/math-prob/03-bayes-tree.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/03-bayes-tree.py[Code]
@@ -55,7 +61,9 @@ Blocks whose heights are proportional to probabilities stand at six values, and 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/04-expectation-balance.png" alt="Expectation: the centre of mass of a distribution, and this lever's fulcrum" />
+
+![Expectation: the centre of mass of a distribution, and this lever's fulcrum](../../shots/math-prob/04-expectation-balance.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/04-expectation-balance.py[Code]
@@ -69,7 +77,9 @@ Two data sets share one number line and one mean tick, yet one crowds into a clu
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/05-variance-spread.png" alt="Variance measures spread: same expectation, different scatter" />
+
+![Variance measures spread: same expectation, different scatter](../../shots/math-prob/05-variance-spread.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/05-variance-spread.py[Code]
@@ -83,7 +93,9 @@ A polyline starts with violent oscillation and narrows towards the dashed line y
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/06-law-of-large-numbers.png" alt="Law of large numbers: frequency settling onto the true probability" />
+
+![Law of large numbers: frequency settling onto the true probability](../../shots/math-prob/06-law-of-large-numbers.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/06-law-of-large-numbers.py[Code]
@@ -97,7 +109,9 @@ Three histograms side by side: one die (flat), the sum of two (triangular), the 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/07-central-limit-theorem.png" alt="Central limit theorem: sums of i.i.d. variables approach the normal shape" />
+
+![Central limit theorem: sums of i.i.d. variables approach the normal shape](../../shots/math-prob/07-central-limit-theorem.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/07-central-limit-theorem.py[Code]
@@ -111,7 +125,9 @@ Arrival times scattered unevenly along a time axis (events cannot overlap), besi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/08-poisson-arrivals.png" alt="Poisson distribution: rare-event arrivals on a time axis" />
+
+![Poisson distribution: rare-event arrivals on a time axis](../../shots/math-prob/08-poisson-arrivals.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/08-poisson-arrivals.py[Code]
@@ -125,7 +141,9 @@ Dashed cuts at ±1σ, ±2σ and ±3σ under the bell with the covered areas list
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/09-normal-sigma.png" alt="The 3σ rule of the normal distribution: how the area under the bell splits" />
+
+![The 3σ rule of the normal distribution: how the area under the bell splits](../../shots/math-prob/09-normal-sigma.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/09-normal-sigma.py[Code]
@@ -139,7 +157,9 @@ A quarter circle inside a square of side 2 with blue points scattered at random:
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/10-monte-carlo-pi.png" alt="Monte Carlo estimate of π: scatter points and count those inside the quarter circle" />
+
+![Monte Carlo estimate of π: scatter points and count those inside the quarter circle](../../shots/math-prob/10-monte-carlo-pi.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/10-monte-carlo-pi.py[Code]
@@ -153,7 +173,9 @@ Four independent one-dimensional walks leave the origin together, each wandering
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/11-random-walk.png" alt="Random walk: memoryless steps, yet a √n scale overall" />
+
+![Random walk: memoryless steps, yet a √n scale overall](../../shots/math-prob/11-random-walk.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/11-random-walk.py[Code]
@@ -167,7 +189,9 @@ Two offset bell curves stand for H0 and H1; H0's right tail is cut into a red re
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-prob/12-hypothesis-test.png" alt="The two errors of hypothesis testing: α rejects the true, β accepts the false" />
+
+![The two errors of hypothesis testing: α rejects the true, β accepts the false](../../shots/math-prob/12-hypothesis-test.png)
+
 </div>
 
 <<< @/../corpus/examples/math-prob/12-hypothesis-test.py[Code]

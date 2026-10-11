@@ -13,7 +13,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/01-basic.png" alt="Text 文字" />
+
+![Text 文字](../shots/text/01-basic.png)
+
 </div>
 
 <<< @/../corpus/examples/text/01-basic.py[代码]
@@ -27,7 +29,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/02-mathtex-frac.png" alt="MathTex 分式与根号" />
+
+![MathTex 分式与根号](../shots/text/02-mathtex-frac.png)
+
 </div>
 
 <<< @/../corpus/examples/text/02-mathtex-frac.py[代码]
@@ -41,7 +45,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/03-tex-plain.png" alt="Tex 收一段 LaTeX" />
+
+![Tex 收一段 LaTeX](../shots/text/03-tex-plain.png)
+
 </div>
 
 <<< @/../corpus/examples/text/03-tex-plain.py[代码]
@@ -55,7 +61,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/04-markup.png" alt="MarkupText 富文本" />
+
+![MarkupText 富文本](../shots/text/04-markup.png)
+
 </div>
 
 <<< @/../corpus/examples/text/04-markup.py[代码]
@@ -69,7 +77,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/05-bulleted-list.png" alt="BulletedList 项目列表" />
+
+![BulletedList 项目列表](../shots/text/05-bulleted-list.png)
+
 </div>
 
 <<< @/../corpus/examples/text/05-bulleted-list.py[代码]
@@ -83,7 +93,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/06-paragraph.png" alt="Paragraph 单串自动折行" />
+
+![Paragraph 单串自动折行](../shots/text/06-paragraph.png)
+
 </div>
 
 <<< @/../corpus/examples/text/06-paragraph.py[代码]
@@ -97,7 +109,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/07-underline.png" alt="Underline 下划线" />
+
+![Underline 下划线](../shots/text/07-underline.png)
+
 </div>
 
 <<< @/../corpus/examples/text/07-underline.py[代码]
@@ -111,7 +125,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/08-decimal-number.png" alt="DecimalNumber 数字动画" />
+
+![DecimalNumber 数字动画](../shots/text/08-decimal-number.png)
+
 </div>
 
 <<< @/../corpus/examples/text/08-decimal-number.py[代码]
@@ -125,7 +141,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/09-mathtex-corner.png" alt="两位数标签贴右上角" />
+
+![两位数标签贴右上角](../shots/text/09-mathtex-corner.png)
+
 </div>
 
 <<< @/../corpus/examples/text/09-mathtex-corner.py[代码]
@@ -139,7 +157,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/10-mathtex-parts.png" alt="MathTex 多段位置参数" />
+
+![MathTex 多段位置参数](../shots/text/10-mathtex-parts.png)
+
 </div>
 
 <<< @/../corpus/examples/text/10-mathtex-parts.py[代码]
@@ -153,7 +173,9 @@ Text / MathTex / Tex / MarkupText 的渲染与排版，列表、折行、下划�
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/text/11-title.png" alt="Title 标题" />
+
+![Title 标题](../shots/text/11-title.png)
+
 </div>
 
 <<< @/../corpus/examples/text/11-title.py[代码]

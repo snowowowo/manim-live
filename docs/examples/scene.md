@@ -13,7 +13,9 @@ clear 后画面清空，随后新画的物体单独出现。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/scene/01-clear.png" alt="clear 后重新画" />
+
+![clear 后重新画](../shots/scene/01-clear.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/01-clear.py[代码]
@@ -27,7 +29,9 @@ clear 后画面清空，随后新画的物体单独出现。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/scene/02-remove.png" alt="remove 摘掉物体" />
+
+![remove 摘掉物体](../shots/scene/02-remove.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/02-remove.py[代码]
@@ -41,7 +45,9 @@ clear 后画面清空，随后新画的物体单独出现。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/scene/03-vgroup-index.png" alt="VGroup + 下标取子物体" />
+
+![VGroup + 下标取子物体](../shots/scene/03-vgroup-index.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/03-vgroup-index.py[代码]
@@ -55,7 +61,9 @@ clear 后画面清空，随后新画的物体单独出现。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/scene/04-vgroup-nested.png" alt="VGroup 套 VGroup" />
+
+![VGroup 套 VGroup](../shots/scene/04-vgroup-nested.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/04-vgroup-nested.py[代码]
@@ -69,7 +77,9 @@ clear 后画面清空，随后新画的物体单独出现。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/scene/05-loop-build.png" alt="循环搭一组方块" />
+
+![循环搭一组方块](../shots/scene/05-loop-build.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/05-loop-build.py[代码]
@@ -83,7 +93,9 @@ clear 后画面清空，随后新画的物体单独出现。
 ::: code-group
 
 <div class="vp-block active" data-title="画面">
-<img src="../../corpus/shots/scene/07-three-d-upright.png" alt="3D 相机的「正」：x 轴该在屏幕上水平" />
+
+![3D 相机的「正」：x 轴该在屏幕上水平](../shots/scene/07-three-d-upright.png)
+
 </div>
 
 <<< @/../corpus/examples/scene/07-three-d-upright.py[代码]

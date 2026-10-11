@@ -13,7 +13,9 @@ A five-column table with all values of p, q, ¬p, p→q and ¬p∨q filled in; t
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/01-truth-table.png" alt="Truth table: p → q and ¬p ∨ q equivalent row by row" />
+
+![Truth table: p → q and ¬p ∨ q equivalent row by row](../../shots/math-discrete/01-truth-table.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/01-truth-table.py[Code]
@@ -27,7 +29,9 @@ Eight nodes in four layers by subset size: ∅ on top, three each in the two mid
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/02-power-set-lattice.png" alt="Power-set lattice: the 8 subsets of {1,2,3} as a cube" />
+
+![Power-set lattice: the 8 subsets of {1,2,3} as a cube](../../shots/math-discrete/02-power-set-lattice.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/02-power-set-lattice.py[Code]
@@ -41,7 +45,9 @@ A 4×4 grid of ordered pairs on {1,2,3,4}, filled cells meaning the relation hol
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/03-relation-matrix.png" alt="Relation matrix: reading reflexivity and symmetry off a matrix" />
+
+![Relation matrix: reading reflexivity and symmetry off a matrix](../../shots/math-discrete/03-relation-matrix.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/03-relation-matrix.py[Code]
@@ -55,7 +61,9 @@ The nine digits 0–8 in a line on top; below they are rearranged into three row
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/04-equivalence-classes.png" alt="Equivalence classes: congruence mod 3 cuts 0–8 into three piles" />
+
+![Equivalence classes: congruence mod 3 cuts 0–8 into three piles](../../shots/math-discrete/04-equivalence-classes.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/04-equivalence-classes.py[Code]
@@ -69,7 +77,9 @@ The nine digits 0–8 in a line on top; below they are rearranged into three row
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/05-hasse-diagram.png" alt="Hasse diagram: only cover relations; incomparable elements at a glance" />
+
+![Hasse diagram: only cover relations; incomparable elements at a glance](../../shots/math-discrete/05-hasse-diagram.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/05-hasse-diagram.py[Code]
@@ -83,7 +93,9 @@ The blue staircase on the left has column heights 1, 2, 3, 4 and the yellow one 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/06-mathematical-induction.png" alt="The classic picture of induction: two staircases making one rectangle" />
+
+![The classic picture of induction: two staircases making one rectangle](../../shots/math-discrete/06-mathematical-induction.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/06-mathematical-induction.py[Code]
@@ -97,7 +109,9 @@ Twelve holes each take one pigeon first, leaving one with nowhere to go; when it
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/07-pigeonhole.png" alt="Pigeonhole principle: 13 pigeons into 12 holes" />
+
+![Pigeonhole principle: 13 pigeons into 12 holes](../../shots/math-discrete/07-pigeonhole.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/07-pigeonhole.py[Code]
@@ -111,7 +125,9 @@ Six vertices in a blue and a yellow column on the left with all six edges crossi
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/08-bipartite-graph.png" alt="Bipartite graphs: vertices split in two, edges only across" />
+
+![Bipartite graphs: vertices split in two, edges only across](../../shots/math-discrete/08-bipartite-graph.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/08-bipartite-graph.py[Code]
@@ -125,7 +141,9 @@ On the left a 5-cycle where red and blue alone collide at the closure, forcing a
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/09-graph-coloring.png" alt="Graph colouring: adjacent vertices differ; how few colours suffice" />
+
+![Graph colouring: adjacent vertices differ; how few colours suffice](../../shots/math-discrete/09-graph-coloring.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/09-graph-coloring.py[Code]
@@ -139,7 +157,9 @@ All 8 weighted edges first laid faintly over six vertices, then judged in weight
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/10-spanning-tree.png" alt="Minimum spanning tree: add edges by weight, drop those that close a cycle" />
+
+![Minimum spanning tree: add edges by weight, drop those that close a cycle](../../shots/math-discrete/10-spanning-tree.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/10-spanning-tree.py[Code]
@@ -153,7 +173,9 @@ On the left two triangles sharing a vertex: the centre vertex has degree 4 and t
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/11-euler-hamilton.png" alt="Euler vs Hamilton cycles: one counts edges, the other counts vertices" />
+
+![Euler vs Hamilton cycles: one counts edges, the other counts vertices](../../shots/math-discrete/11-euler-hamilton.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/11-euler-hamilton.py[Code]
@@ -167,7 +189,9 @@ Three pegs at the bottom left with three discs stacked small-to-large on the fir
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/math-discrete/12-hanoi-recurrence.png" alt="The Hanoi recurrence: T(n) = 2T(n−1) + 1, hence 2ⁿ − 1" />
+
+![The Hanoi recurrence: T(n) = 2T(n−1) + 1, hence 2ⁿ − 1](../../shots/math-discrete/12-hanoi-recurrence.png)
+
 </div>
 
 <<< @/../corpus/examples/math-discrete/12-hanoi-recurrence.py[Code]

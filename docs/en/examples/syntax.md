@@ -13,7 +13,9 @@ The mobjects built by comprehensions, unpacking and generator expressions match 
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/syntax/01-comprehensions.png" alt="Syntax: comprehensions, unpacking and generator expressions building a scene" />
+
+![Syntax: comprehensions, unpacking and generator expressions building a scene](../../shots/syntax/01-comprehensions.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/01-comprehensions.py[Code]
@@ -27,7 +29,9 @@ Closures, generator functions and itertools chains build their mobjects normally
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/syntax/02-closures-itertools.png" alt="Syntax: closures, generator functions and itertools chains" />
+
+![Syntax: closures, generator functions and itertools chains](../../shots/syntax/02-closures-itertools.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/02-closures-itertools.py[Code]
@@ -41,7 +45,9 @@ dataclass, decorators and class attributes run through; the mobjects built match
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/syntax/03-dataclass-decorator.png" alt="Syntax: dataclass, decorators and class attributes together" />
+
+![Syntax: dataclass, decorators and class attributes together](../../shots/syntax/03-dataclass-decorator.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/03-dataclass-decorator.py[Code]
@@ -55,7 +61,9 @@ The exception is caught and the context manager enters and exits normally (the p
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/syntax/04-try-context.png" alt="Syntax: exception handling, context managers and custom exceptions" />
+
+![Syntax: exception handling, context managers and custom exceptions](../../shots/syntax/04-try-context.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/04-try-context.py[Code]
@@ -69,7 +77,9 @@ Unpacking, formatting and slice/sort results are correct (the print assertions a
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/syntax/05-unpack-format.png" alt="Syntax: unpacking, formatting, slicing and sorting" />
+
+![Syntax: unpacking, formatting, slicing and sorting](../../shots/syntax/05-unpack-format.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/05-unpack-format.py[Code]
@@ -83,7 +93,9 @@ for over a VGroup terminates normally (it does not iterate forever) and an out-o
 ::: code-group
 
 <div class="vp-block active" data-title="Rendered">
-<img src="../../../corpus/shots/syntax/06-group-iteration.png" alt="Syntax: iterating a VGroup (for, comprehension, out-of-range index)" />
+
+![Syntax: iterating a VGroup (for, comprehension, out-of-range index)](../../shots/syntax/06-group-iteration.png)
+
 </div>
 
 <<< @/../corpus/examples/syntax/06-group-iteration.py[Code]
