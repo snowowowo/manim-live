@@ -17,6 +17,10 @@ pnpm check:pkg     # publint + attw, pre-release artifact self-check
 pnpm setup:assets  # prepare assets/ (Pyodide distribution, etc.)
 ```
 
+## The single home of corpus regression
+
+`corpus/` (239 examples + real-machine screenshots) is this library's **exclusive** responsibility: support-surface probing, regression tests, and re-running screenshots all happen here. Downstream consumers (e.g. the dsh-manim-live laboratory) **no longer carry corpus regression** — they only verify their own behavior inside the host, and bundle a small sample set of their own when needed.
+
 ## The Playground
 
 `pnpm playground` starts a vite dev server (`playground/vite.config.ts`) — this
