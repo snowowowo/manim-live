@@ -60,7 +60,10 @@ export default defineConfig({
           },
           {
             text: '参考',
-            items: [{ text: '公开接口', link: '/api/' }],
+            items: [
+              { text: '支持面', link: '/guide/support' },
+              { text: '公开接口', link: '/api/' },
+            ],
           },
           {
             text: '开发',
@@ -130,7 +133,10 @@ export default defineConfig({
           },
           {
             text: 'Reference',
-            items: [{ text: 'Public API', link: '/en/api/' }],
+            items: [
+              { text: 'Support Surface', link: '/en/guide/support' },
+              { text: 'Public API', link: '/en/api/' },
+            ],
           },
           {
             text: 'Development',
