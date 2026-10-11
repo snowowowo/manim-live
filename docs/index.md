@@ -10,11 +10,11 @@ hero:
   tagline: 把标准 Manim（Python）代码变成网页里的实时动画。AI 讲解时直接生成、网站里随处渲染——无需服务器，无需本地环境。
   actions:
     - theme: brand
-      text: 看渲染成品
-      link: /examples/
-    - theme: alt
       text: 快速开始
       link: /guide/quick-start
+    - theme: alt
+      text: 看渲染成品
+      link: /examples/
     - theme: alt
       text: GitHub
       link: https://github.com/snowowowo/manim-live

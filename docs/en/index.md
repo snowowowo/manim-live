@@ -7,11 +7,11 @@ hero:
   tagline: "Turn standard Manim (Python) code into real-time animations in the web page. Generated on the fly while an AI explains, rendered anywhere in your site — no server, no local environment."
   actions:
     - theme: brand
-      text: Rendered Gallery
-      link: /en/examples/
-    - theme: alt
       text: Quick Start
       link: /en/guide/quick-start
+    - theme: alt
+      text: Rendered Gallery
+      link: /en/examples/
     - theme: alt
       text: GitHub
       link: https://github.com/snowowowo/manim-live
