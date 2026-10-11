@@ -4,22 +4,22 @@ layout: home
 hero:
   name: manim-live
   text: A Manim renderer in the browser
-  tagline: "An npm package: execute Manim (the Python math-animation library) code in the browser and render it as a WebGL animation. Ships a real CPython interpreter via Pyodide — no server, no local Python, works with React / Vue / vanilla JS."
+  tagline: "An npm package: paste standard Manim (Python) code into a web page and it renders as a WebGL animation. Real CPython (Pyodide) execution + manim-web rendering — AI-generated code runs as-is; no server, no local Python, any frontend framework."
   actions:
     - theme: brand
+      text: What It Is
+      link: /en/guide/overview
+    - theme: alt
       text: Quick Start
       link: /en/guide/quick-start
-    - theme: alt
-      text: Rendered Gallery
-      link: /en/examples/
     - theme: alt
       text: GitHub
       link: https://github.com/snowowowo/manim-live
 
 features:
   - icon: 🐍
-    title: Real Python execution
-    details: Pyodide provides CPython with numpy; comprehensions, closures, dataclasses and other language features work as-is. Manim CE code is translated to manim-web calls by an adapter layer.
+    title: Standard Manim code runs as-is
+    details: What you write is standard Manim CE Python — AI-generated code runs unchanged (the strength of native Manim); a real CPython via Pyodide executes it with full language features, and an adapter layer translates the constructs into manim-web calls.
   - icon: 🧩
     title: Two DOM primitives
     details: Pass in a container element, get run() and dispose(); the only difference between React, Vue, and vanilla JS is when you mount and unmount.
@@ -43,7 +43,7 @@ features:
 pnpm add manim-live
 ```
 
-The minimal flow is three steps: `createManimRenderer()` creates a renderer → `createSurface(container)` creates a canvas → `surface.run(python)` executes a piece of Manim code. For the full example (with precheck and disposal) see [Quick Start](/en/guide/quick-start); for mounting in each framework see [Using in Frameworks](/en/guide/frameworks).
+The minimal flow is three steps: `createManimRenderer()` creates a renderer → `createSurface(container)` creates a canvas → `surface.run(python)` executes a piece of Manim code. How it trades off against native Manim and manim-web is in [What It Is](/en/guide/overview); the full example is in [Quick Start](/en/guide/quick-start).
 
 ## What it renders
 
@@ -72,7 +72,7 @@ A screenshot captures the frame after an animation finishes playing. The **anima
 
 | Section | Content |
 | --- | --- |
-| [What It Is](/en/guide/overview) | The problem it solves, the approach, applicable scenarios |
+| [What It Is](/en/guide/overview) | The comparison against native Manim and manim-web, the approach, applicable scenarios |
 | [Installation](/en/guide/installation) | Install command, the two external assets (Pyodide / KaTeX), browser requirements |
 | [Quick Start](/en/guide/quick-start) | Render your first frame in ~20 lines, what each step does if skipped |
 | [Using in Frameworks](/en/guide/frameworks) | Vanilla JS / React / Vue, plus two canvas-lifecycle points |

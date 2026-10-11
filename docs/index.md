@@ -7,7 +7,7 @@ layout: home
 hero:
   name: manim-live
   text: 浏览器里的 Manim 渲染器
-  tagline: "一个 npm 包：在浏览器里执行 Manim（Python 数学动画库）代码，渲染为 WebGL 动画。内置 Pyodide 真 CPython 解释器——无需服务器、无需本地 Python，React / Vue / 原生 JS 均可接入。"
+  tagline: "一个 npm 包：标准 Manim（Python）代码贴进网页就能渲染成 WebGL 动画。真 CPython（Pyodide）执行 + manim-web 渲染——AI 生成的代码原样可跑，无需服务器、无需本地 Python，任何前端框架可用。"
   actions:
     - theme: brand
       text: 快速开始
@@ -21,8 +21,8 @@ hero:
 
 features:
   - icon: 🐍
-    title: 真 Python 执行
-    details: Pyodide 提供 CPython 与 numpy，推导式、闭包、dataclass 等语言特性原样可用；Manim CE 写法由适配层翻译为 manim-web 调用。
+    title: 标准 Manim 代码直接跑
+    details: 写的就是标准 Manim CE Python——AI 生成的代码原样可跑（原生 Manim 的优点）；Pyodide 真 CPython 执行，语言特性完整可用，适配层把写法翻译为 manim-web 调用。
   - icon: 🧩
     title: 两个 DOM 原语接入
     details: 传入一个容器元素，得到 run() 与 dispose()；React、Vue、原生 JS 的差别只在挂载与卸载时机。
@@ -46,7 +46,7 @@ features:
 pnpm add manim-live
 ```
 
-最小流程三步：`createManimRenderer()` 建渲染器 → `createSurface(容器)` 建画布 → `surface.run(python)` 执行一段 Manim 代码。完整示例（含预检与释放）见[快速开始](/guide/quick-start)，各框架的挂载写法见[在各框架里用](/guide/frameworks)。
+最小流程三步：`createManimRenderer()` 建渲染器 → `createSurface(容器)` 建画布 → `surface.run(python)` 执行一段 Manim 代码。它与原生 Manim、manim-web 的取舍见[它是什么](/guide/overview)；完整示例见[快速开始](/guide/quick-start)。
 
 ## 渲染效果
 

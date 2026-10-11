@@ -1,35 +1,26 @@
 # 它是什么
 
-本页说明 manim-live 解决的问题、给出的方案、与直接用 manim-web 的区别、适用与不适用场景。只想装上就跑，直接看[安装](/guide/installation)与[快速开始](/guide/quick-start)。
+manim-live 把 Manim 动画带进浏览器：写**标准 Manim CE 的 Python 代码**，页面内当场渲染成 WebGL 动画——无需服务器、无需本机 Python。
 
-## 解决的问题
+## 为什么需要它：与两种既有方案对比
 
-Manim 是 Python 生态里最常用的数学动画库，但它的标准用法依赖本机 Python 环境与渲染管线（manim CLI + LaTeX + ffmpeg）。想在**网页里**按需渲染一段 Manim 动画——典型场景是 AI 对话产品里，模型生成一段 Manim 代码、页面当场画出来给用户看——通常要在服务器跑 Python，或要求用户本机装环境：两者对「一个前端页面」都太重。
+| | 原生 Manim（CLI） | manim-web | manim-live |
+| --- | --- | --- | --- |
+| 写的代码 | 标准 Manim Python | 自有 API，不是 Manim 写法 | **标准 Manim Python** |
+| 执行位置 | 本机 Python（装 manim + LaTeX + ffmpeg） | 浏览器 | **浏览器（Pyodide 真 CPython）** |
+| 输出 | mp4 视频文件 | WebGL 实时画面 | **WebGL 实时画面** |
+| 网页里按需渲染 | 做不到（环境重，离不开本机或服务器） | 可以，但代码要按它的 API 重写 | **可以，标准代码原样跑** |
 
-## 方案
+两条路各有一个硬伤。原生 Manim 能执行真 Python，但环境太重——想在一个网页里按需渲染一段动画，不可能要求每个用户装 Python 环境，架服务器又贵又慢。manim-web 进了浏览器，但 API 是它自己的一套，标准 Manim 代码跑不了——而 **AI 生成的恰恰是标准 Manim 写法**：训练语料里全是它，让 AI 按 manim-web 的私有 API 写代码既不稳定也不现实。
 
-把整条执行链搬进浏览器：
+manim-live 把两者的优点拼在一起：**Pyodide 在浏览器里跑真 CPython**（代码是真的 Python，语言特性原样可用），**适配层把标准 Manim CE 写法翻译成 manim-web 调用**（渲染是浏览器原生的 WebGL）。于是一段 AI 生成的标准 Manim 代码，贴进页面就能动。
 
-- **Pyodide** 提供真 CPython 解释器（带 numpy / sympy），代码在页面里执行，不碰服务器；
-- **manim-web** 提供 WebGL 渲染，画面直接画在画布上，不落视频文件；
-- **适配层**（本包的核心工作量）把 Manim Community Edition 的写法翻译成 manim-web 的调用——用户写的是熟悉的 `Scene` / `self.play(Create(...))`，不需要学新 API。
+## 它在外形上是什么
 
-对外只暴露一个工厂 `createManimRenderer()` 和两个 DOM 原语（给容器元素、拿 run / dispose），因此对框架零依赖。
-
-## 与直接用 manim-web 的区别
-
-manim-web 是底层渲染库，API 与 Manim CE 并不相同。本包在其上做了三件事：写法兼容（Manim CE 语法 → manim-web 调用）、执行队列与画布生命周期管理、`check()` 干跑预检。直接用 manim-web 意味着自己实现这三件事。
+一个 npm 包，对外只暴露一个工厂 `createManimRenderer()`：传入一个容器元素，拿到 `run(code)` 与 `dispose()`。对框架零依赖——React、Vue、原生 JS 只是挂载时机不同。第三方库（pandas / matplotlib 等）按 `pyodide-lock.json` 的 sha256 按需获取，取数地址可换成自托管，完全离线也能跑（见[第三方包从哪来](/guide/packages)）。
 
 ## 适用与不适用
 
-**适用**：
+**适用**：AI 对话 UI 里渲染模型生成的动画（这正是它的出身）；教学页面、交互式笔记按需画数学动画；`check()` 干跑预检把坏代码拦在渲染之前。
 
-- 在自己的产品里按需渲染 Manim 动画（AI 对话 UI、教学页面、交互式笔记）；
-- 需要「代码先验后演」的链路——`check()` 能在渲染前拦下坏代码；
-- 要求部署简单：一个 npm 包、可选自托管静态资源，无服务器。
-
-**不适用**：
-
-- 服务器端批量渲染视频——用 manim CLI 的原生管线；
-- 需要 Manim 全部能力（如复杂 LaTeX 排版）——本包覆盖的是 Manim CE 的常用子集，支持面见[公开接口](/api/)与示例；
-- 非 Python 的动画需求——本包只做 Manim。
+**不适用**：服务器端批量渲染视频（用 manim CLI 原生管线）；Manim 全量能力（本包覆盖 Manim CE 常用子集，见[公开接口](/api/)）；非 Python 的动画需求。
