@@ -56,8 +56,9 @@
     "check:playground": "node scripts/check-playground.mjs",
     "setup:assets": "node scripts/setup-assets.mjs",
     "check:pkg": "publint && attw --pack . --profile esm-only --ignore-rules no-resolution",
-    "docs:dev": "pnpm -C docs dev",
-    "docs:build": "pnpm -C docs build",
+    "docs": "pnpm --dir docs install --frozen-lockfile && pnpm --dir docs dev",
+    "docs:build": "pnpm --dir docs install --frozen-lockfile && pnpm --dir docs build",
+    "docs:preview": "pnpm --dir docs install --frozen-lockfile && pnpm --dir docs preview",
     "prepublishOnly": "pnpm build && pnpm check:pkg"
   },
   "dependencies": {
