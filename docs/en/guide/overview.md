@@ -2,22 +2,24 @@
 
 manim-live does one thing: turn **standard Manim (Python) code** into **real-time animations** in a web page. Two typical scenarios — an AI generates animations while explaining, written and played on the fly; and embedding rendering anywhere in your own site. No server, no local Python.
 
-## Why it exists: compared with the two existing options
+## Compared with native Manim
 
-| | Native Manim (CLI) | manim-web | manim-live |
-| --- | --- | --- | --- |
-| The code you write | Standard Manim Python | Its own API, not Manim syntax | **Standard Manim Python** |
-| Where it runs | Local Python (manim + LaTeX + ffmpeg installed) | Browser | **Browser (real CPython via Pyodide)** |
-| Output | mp4 video files | Live WebGL frames | **Live WebGL frames** |
-| On-demand rendering in a page | Not viable (heavy environment, needs a local machine or server) | Yes, but code must be rewritten to its API | **Yes — standard code runs as-is** |
+The code is the same standard Manim Python; the difference is entirely **where it runs and how you get the picture**:
 
-Each path has one hard flaw. Native Manim executes real Python but the environment is heavy — rendering an animation on demand inside a web page cannot require every user to install a Python stack, and standing up a server is slow and costly. manim-web gets into the browser, but its API is its own; standard Manim code won't run on it — and **what AI generates is precisely standard Manim**: that is what fills its training corpus, so having the AI write against manim-web's private API is neither stable nor realistic.
+| | Native Manim (CLI) | manim-live |
+| --- | --- | --- |
+| The code you write | Standard Manim Python | The same code, **runs as-is** |
+| Environment | Local install of Python + manim + ffmpeg (plus LaTeX for formulas) | **Just a browser, zero install** |
+| How you get the picture | Offline CLI render to an mp4, then figure out how to show it | **Real-time rendering in the page — paste the code and the animation plays** |
+| Embedding in pages / products | Not possible; a video file can only be embedded after the fact | **Embed anywhere; all it takes is a container element** |
+| AI drawing while explaining | One render waits on the whole pipeline — too slow for conversation | **Write it, watch it; check() stops bad code first** |
+| Deployment cost | Install the stack on every machine, or run a render server | **One npm package; assets can be self-hosted and it runs fully offline** |
 
-manim-live combines the strengths of both: **Pyodide runs a real CPython in the browser** (the code is genuinely Python, language features work as-is), and **the adapter layer translates standard Manim CE constructs into manim-web calls** (rendering is native WebGL). A piece of AI-generated standard Manim code, pasted into a page, just moves.
+The single trade-off: this package covers a commonly used subset of Manim CE rather than everything, in exchange for real-time rendering in the browser with zero environment.
 
 ## What it looks like from the outside
 
-An npm package exposing a single factory `createManimRenderer()`: give it a container element, get `run(code)` and `dispose()`. Zero framework dependencies — React, Vue, and vanilla JS differ only in mount timing. Third-party libraries (pandas / matplotlib, etc.) are fetched on demand with sha256 verification from `pyodide-lock.json`, and the fetch URL can point at self-hosted assets for fully offline operation (see [Where Third-Party Packages Come From](/en/guide/packages)).
+An npm package exposing a single factory `createManimRenderer()`: give it a container element, get `run(code)` and `dispose()`. Zero framework dependencies — React, Vue, and vanilla JS differ only in mount timing. Third-party Python libraries (pandas / matplotlib, etc.) are fetched automatically on demand, and the fetch URL can point at self-hosted assets for fully offline operation (see [Where Third-Party Packages Come From](/en/guide/packages)).
 
 ## When to use it — and when not
 

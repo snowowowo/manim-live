@@ -38,7 +38,7 @@ features:
 pnpm add manim-live
 ```
 
-The minimal flow is three steps: `createManimRenderer()` creates a renderer → `createSurface(container)` creates a canvas → `surface.run(python)` executes a piece of Manim code. How it trades off against native Manim and manim-web is in [What It Is](/en/guide/overview); the full example is in [Quick Start](/en/guide/quick-start).
+The minimal flow is three steps: `createManimRenderer()` creates a renderer → `createSurface(container)` creates a canvas → `surface.run(python)` executes a piece of Manim code. The side-by-side comparison with native Manim is in [What It Is](/en/guide/overview); the full example is in [Quick Start](/en/guide/quick-start).
 
 ## What it renders
 
@@ -67,8 +67,8 @@ A screenshot captures the frame after an animation finishes playing. The **anima
 
 | Section | Content |
 | --- | --- |
-| [What It Is](/en/guide/overview) | The comparison against native Manim and manim-web, the approach, applicable scenarios |
-| [Installation](/en/guide/installation) | Install command, the two external assets (Pyodide / KaTeX), browser requirements |
+| [What It Is](/en/guide/overview) | The side-by-side comparison with native Manim, the approach, applicable scenarios |
+| [Installation](/en/guide/installation) | Install command, the two external assets, browser requirements |
 | [Quick Start](/en/guide/quick-start) | Render your first frame in ~20 lines, what each step does if skipped |
 | [Using in Frameworks](/en/guide/frameworks) | Vanilla JS / React / Vue, plus two canvas-lifecycle points |
 | [Three Contracts You Must Know](/en/guide/contracts) | Page-level singleton, real dispose(), single-shot execution; known issues with reusing a canvas |

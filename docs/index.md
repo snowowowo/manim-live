@@ -40,7 +40,7 @@ features:
 pnpm add manim-live
 ```
 
-最小流程三步：`createManimRenderer()` 建渲染器 → `createSurface(容器)` 建画布 → `surface.run(python)` 执行一段 Manim 代码。它与原生 Manim、manim-web 的取舍见[它是什么](/guide/overview)；完整示例见[快速开始](/guide/quick-start)。
+最小流程三步：`createManimRenderer()` 建渲染器 → `createSurface(容器)` 建画布 → `surface.run(python)` 执行一段 Manim 代码。它与原生 Manim 的逐项对比见[它是什么](/guide/overview)；完整示例见[快速开始](/guide/quick-start)。
 
 ## 渲染效果
 
@@ -70,7 +70,7 @@ pnpm add manim-live
 | 章节 | 内容 |
 | --- | --- |
 | [它是什么](/guide/overview) | 解决的问题、方案与适用场景 |
-| [安装](/guide/installation) | 安装命令、两项外部资源（Pyodide / KaTeX）、浏览器要求 |
+| [安装](/guide/installation) | 安装命令、两项外部资源、浏览器要求 |
 | [快速开始](/guide/quick-start) | 约二十行代码渲染出第一幅画面，逐步说明每一步不调用的后果 |
 | [在各框架里用](/guide/frameworks) | 原生 JS / React / Vue，以及画布生命周期的两个要点 |
 | [必须知道的三条契约](/guide/contracts) | 多实例单例、`dispose()` 真实释放、单段独立执行；以及「复用画布的已知问题」 |

@@ -2,22 +2,24 @@
 
 manim-live 做一件事：把**标准 Manim（Python）代码**变成网页里的**实时动画**。两个典型场景——AI 讲解时直接生成动画，即写即演；在自己的网站任意位置嵌入渲染。无需服务器，无需本机 Python。
 
-## 为什么需要它：与两种既有方案对比
+## 与原生 Manim 对比
 
-| | 原生 Manim（CLI） | manim-web | manim-live |
-| --- | --- | --- | --- |
-| 写的代码 | 标准 Manim Python | 自有 API，不是 Manim 写法 | **标准 Manim Python** |
-| 执行位置 | 本机 Python（装 manim + LaTeX + ffmpeg） | 浏览器 | **浏览器（Pyodide 真 CPython）** |
-| 输出 | mp4 视频文件 | WebGL 实时画面 | **WebGL 实时画面** |
-| 网页里按需渲染 | 做不到（环境重，离不开本机或服务器） | 可以，但代码要按它的 API 重写 | **可以，标准代码原样跑** |
+代码是同一份标准 Manim Python，差别全在**在哪里跑、怎么出画面**：
 
-两条路各有一个硬伤。原生 Manim 能执行真 Python，但环境太重——想在一个网页里按需渲染一段动画，不可能要求每个用户装 Python 环境，架服务器又贵又慢。manim-web 进了浏览器，但 API 是它自己的一套，标准 Manim 代码跑不了——而 **AI 生成的恰恰是标准 Manim 写法**：训练语料里全是它，让 AI 按 manim-web 的私有 API 写代码既不稳定也不现实。
+| | 原生 Manim（CLI） | manim-live |
+| --- | --- | --- |
+| 写的代码 | 标准 Manim Python | 同一份代码，**原样可跑** |
+| 运行环境 | 本机装 Python + manim + ffmpeg（公式还要 LaTeX） | **浏览器即可，零安装** |
+| 出画面方式 | 命令行离线渲染成 mp4，再想办法给人看 | **网页内实时渲染，代码一贴动画就出来** |
+| 嵌入网页 / 产品 | 做不到，只能事后嵌视频文件 | **任意位置嵌入，一个容器元素即可** |
+| AI 边讲边画 | 渲染一轮要等整条管线跑完，跟不上对话 | **即写即演；check() 先拦下坏代码** |
+| 部署成本 | 每台机器装一遍环境，或架渲染服务器 | **一个 npm 包；资源可自托管，完全离线也能跑** |
 
-manim-live 把两者的优点拼在一起：**Pyodide 在浏览器里跑真 CPython**（代码是真的 Python，语言特性原样可用），**适配层把标准 Manim CE 写法翻译成 manim-web 调用**（渲染是浏览器原生的 WebGL）。于是一段 AI 生成的标准 Manim 代码，贴进页面就能动。
+唯一的取舍：本包覆盖 Manim CE 的常用子集而非全量，换来的是浏览器里的实时渲染与零环境。
 
 ## 它在外形上是什么
 
-一个 npm 包，对外只暴露一个工厂 `createManimRenderer()`：传入一个容器元素，拿到 `run(code)` 与 `dispose()`。对框架零依赖——React、Vue、原生 JS 只是挂载时机不同。第三方库（pandas / matplotlib 等）按 `pyodide-lock.json` 的 sha256 按需获取，取数地址可换成自托管，完全离线也能跑（见[第三方包从哪来](/guide/packages)）。
+一个 npm 包，对外只暴露一个工厂 `createManimRenderer()`：传入一个容器元素，拿到 `run(code)` 与 `dispose()`。对框架零依赖——React、Vue、原生 JS 只是挂载时机不同。第三方 Python 库（pandas / matplotlib 等）按需自动获取，取数地址可换成自托管，完全离线也能跑（见[第三方包从哪来](/guide/packages)）。
 
 ## 适用与不适用
 
