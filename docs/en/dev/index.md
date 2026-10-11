@@ -33,11 +33,25 @@ page for **consumers**; on the development side there is just one thing to know:
 is `setPackageDiagnoser`, and the browser-side tiering logic lives in
 `src/engine/pyodide.ts`.
 
+## Publication self-checks (run before publishing to npm)
+
+```bash
+pnpm build && pnpm check:pkg
+```
+
+`check:pkg` = publint + arethetypeswrong. Current results (verified 2026-10-11, all green):
+
+- Every `exports` entry carries a `types` condition (including `style.css.d.ts` for `./style.css` — TypeScript 7 checks side-effect imports by default and consumers fail to compile without it; caught and fixed during verification); the `.d.ts` files are validated by real TS consumers — strict-mode `tsc` (TS 7) in `examples/react` and `vue-tsc` in `examples/vue` both pass.
+- **ESM-only** (Node >= 20): CommonJS consumers need a dynamic `import()` — attw's note about this is expected behavior, not a defect.
+- `sideEffects` covers only `*.css`; the `files` whitelist is `dist` / `style.css` / `README.md` / `LICENSE`.
+- `engines` / `repository` / `homepage` / `bugs` / `license` / `keywords` are all present.
+
 ## Repository Layout
 
 ```
 src/          source code (tests *.test.ts live next to the files under test)
 playground/   local playground (vite, not part of the npm output)
+examples/     Minimal framework-integration verification projects: vanilla / react / vue / next (not in the npm package)
 assets/       assets distributed with the package (Pyodide distribution, etc.)
 scripts/      maintenance scripts (setup-assets / check-playground, etc.)
 _dev/         development-time materials (corpus screenshots, pyodide cache), not published

@@ -26,11 +26,25 @@ jsdelivr 取回、落在 `_dev/pyodide-cache/`（gitignored）。取一遍就够
 开发侧要知道的只有一句：接缝是 `setPackageDiagnoser`，浏览器侧分档逻辑在
 `src/engine/pyodide.ts`。
 
+## 发布自检（发 npm 前必跑）
+
+```bash
+pnpm build && pnpm check:pkg
+```
+
+`check:pkg` = publint + arethetypeswrong。当前结论（2026-10-11 实测，全绿）：
+
+- `exports` 全部入口都带 `types` 条件（含 `./style.css` 的 `style.css.d.ts`——TypeScript 7 默认检查副作用导入，没有它消费者会编译失败，验证时抓到并补上）；`.d.ts` 已被真实 TS 消费者验证——`examples/react` 严格模式 `tsc`（TS 7）与 `examples/vue` 的 `vue-tsc` 均通过。
+- **ESM-only**（Node ≥ 20）：CommonJS 消费者需要动态 `import()`——attw 对此的提示属预期行为，不是缺陷。
+- `sideEffects` 仅 `*.css`；`files` 白名单 `dist` / `style.css` / `README.md` / `LICENSE`。
+- `engines` / `repository` / `homepage` / `bugs` / `license` / `keywords` 齐备。
+
 ## 仓库布局
 
 ```
 src/          源码（测试 *.test.ts 与被测文件同目录）
 playground/   本地演示台（vite，不进 npm 产物）
+examples/     框架集成最小验证项目：vanilla / react / vue / next（不进 npm 产物）
 assets/       随包发的资源（Pyodide 发行版等）
 scripts/      setup-assets / check-playground 等维护脚本
 _dev/         开发期素材（语料截图、pyodide 缓存），不进发布集

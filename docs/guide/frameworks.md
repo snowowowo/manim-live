@@ -11,6 +11,11 @@
 | 原生 JS | 直接调用 | 自行调用 |
 | React | `useEffect`（StrictMode 下会执行两遍，见下） | effect 的 cleanup |
 | Vue | `onMounted` | `onUnmounted` |
+| Next.js（App Router） | `'use client'` 组件的 `useEffect` | effect 的 cleanup |
+
+::: info 每种写法都有真机验证
+本仓 `examples/` 下有四个最小集成项目——`vanilla` / `react` / `vue` / `next`（各自 `pnpm install && pnpm dev` 即起）——用**当前最新版本**（React 19 + TypeScript 7、Vue 3.5、Vite 8、Next.js 16）逐一真机验证通过（2026-10-11）：三种画布接法的渲染全部正常，React / Vue 项目还通过了严格模式 TypeScript / vue-tsc 类型检查（本包的 `.d.ts` 对真实消费者可解析）。Next.js 与服务端渲染的结论见下文专门一节。
+:::
 
 ::: info 这些写法的出处
 API 只有**一个对外入口**（`createManimRenderer`），已被两个相互独立的 React 消费者验证：
@@ -107,6 +112,52 @@ onUnmounted(() => {
   <div ref="host" />
 </template>
 ```
+
+## Next.js（App Router）与服务端渲染
+
+实测结论（`examples/next`，Next.js 16）：
+
+- **顶层 `import` 在服务端是安全的**——本包模块顶层不碰任何浏览器全局。示例的服务器组件页在顶层 `import { DEFAULT_PYODIDE_INDEX_URL } from 'manim-live'` 并读取该常量，`next build` 的静态预渲染与 dev SSR 均通过。
+- **画布创建必须在客户端**：`createSurface()` 需要真实 DOM。给画布组件标 `'use client'`，在 `useEffect` 里建表面——SSR 阶段只渲染占位 `<div>`，`useEffect` 不在服务端执行，因此也不需要 `dynamic(..., { ssr: false })`。
+- 无需改动 `next.config`。
+
+```tsx
+// app/ClientCanvas.tsx
+'use client'
+import { useEffect, useRef } from 'react'
+import { createManimRenderer } from 'manim-live'
+
+export function ClientCanvas({ python }: { python: string }) {
+  const host = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const renderer = createManimRenderer()
+    void renderer.createSurface(host.current!).then(async (s) => {
+      await s.run(python)
+    })
+    return () => {
+      renderer.dispose() // 会销毁它创建过的所有画布
+    }
+  }, [python])
+
+  return <div ref={host} />
+}
+```
+
+## 更多框架
+
+本包对框架零依赖——**任何能把一个 `<div>` 挂进页面、并在卸载时执行清理的框架都适用**。要找的只有两件事：挂载钩子（在那里 `createSurface`）与卸载钩子（在那里 `dispose`）。接入方式与上面完全相同，未逐一建例：
+
+| 框架 | 创建 | 卸载 |
+| --- | --- | --- |
+| Svelte | `onMount` | `onMount` 返回的清理函数 |
+| Solid | `createEffect` | `onCleanup` |
+| Angular | `ngAfterViewInit` | `ngOnDestroy` |
+| Preact | `useEffect`（与 React 相同） | effect cleanup |
+| Astro | 任选 UI 框架做客户端 island，或直接用原生 JS 写法 | 同所选框架 |
+| Web Components | `connectedCallback` | `disconnectedCallback` |
+
+带服务端渲染的框架（Nuxt / SvelteKit / Remix 等）：原则与上面 Next.js 一节相同——顶层 `import` 在服务端安全，画布创建留在客户端生命周期钩子里。
 
 ## 画布生命周期的两个要点
 

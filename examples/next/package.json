@@ -1,0 +1,14 @@
+{
+  "name": "verify-next",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 5304",
+    "build": "next build"
+  },
+  "dependencies": {
+    "manim-live": "link:../..",
+    "next": "^16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
+}

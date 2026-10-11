@@ -31,13 +31,17 @@
       "types": "./dist/node.d.ts",
       "import": "./dist/node.js"
     },
-    "./style.css": "./style.css"
+    "./style.css": {
+      "types": "./style.css.d.ts",
+      "default": "./style.css"
+    }
   },
   "files": [
     "dist",
     "style.css",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "style.css.d.ts"
   ],
   "sideEffects": [
     "*.css"

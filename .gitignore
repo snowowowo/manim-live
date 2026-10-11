@@ -21,3 +21,4 @@ _dev/shots/index.json
 # 开发期回源取回的 Pyodide 按需包（net / combo 两组语料要用，见 playground/pyodide-mirror.ts）。
 # 四十多 MB、按 lock 的 sha256 校验过、随时可重取——进库没有意义。
 _dev/pyodide-cache/
+.next/

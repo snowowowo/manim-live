@@ -12,6 +12,11 @@ and **calling dispose on unmount**.
 | Vanilla JS | Direct call | Call it yourself |
 | React | `useEffect` (runs twice under StrictMode, see below) | The effect's cleanup |
 | Vue | `onMounted` | `onUnmounted` |
+| Next.js (App Router) | `useEffect` in a `'use client'` component | the effect cleanup |
+
+::: info Every snippet is verified on a real machine
+The repo's `examples/` directory holds four minimal integration projects — `vanilla` / `react` / `vue` / `next` (each runs with `pnpm install && pnpm dev`) — verified end to end on **current latest versions** (React 19 + TypeScript 7, Vue 3.5, Vite 8, Next.js 16; 2026-10-11): every integration renders correctly, and the React / Vue projects pass strict-mode TypeScript / vue-tsc type checks (the package's `.d.ts` resolves for real consumers). Next.js and server-side rendering are covered in their own section below.
+:::
 
 ::: info Where these snippets come from
 The API has exactly **one public entry** (`createManimRenderer`), validated by two mutually
@@ -111,6 +116,52 @@ onUnmounted(() => {
   <div ref="host" />
 </template>
 ```
+
+## Next.js (App Router) and server-side rendering
+
+Findings from `examples/next` (Next.js 16), verified on a real machine:
+
+- **Top-level `import` is safe on the server** — the package's module top level touches no browser globals. The example's server component does `import { DEFAULT_PYODIDE_INDEX_URL } from 'manim-live'` and reads the constant; both the `next build` static prerender and dev SSR pass.
+- **Canvas creation must happen on the client**: `createSurface()` needs a real DOM. Mark the canvas component `'use client'` and create the surface in `useEffect` — during SSR only the placeholder `<div>` renders, `useEffect` never runs on the server, so `dynamic(..., { ssr: false })` is unnecessary too.
+- No `next.config` changes are needed.
+
+```tsx
+// app/ClientCanvas.tsx
+'use client'
+import { useEffect, useRef } from 'react'
+import { createManimRenderer } from 'manim-live'
+
+export function ClientCanvas({ python }: { python: string }) {
+  const host = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const renderer = createManimRenderer()
+    void renderer.createSurface(host.current!).then(async (s) => {
+      await s.run(python)
+    })
+    return () => {
+      renderer.dispose() // disposes every surface it created
+    }
+  }, [python])
+
+  return <div ref={host} />
+}
+```
+
+## More frameworks
+
+The package has zero framework dependencies — **any framework that can put a `<div>` into the page and run cleanup on unmount works**. You only need two things: the mount hook (call `createSurface` there) and the unmount hook (call `dispose` there). The integration is identical to the examples above; these are not individually verified:
+
+| Framework | Create | Unmount |
+| --- | --- | --- |
+| Svelte | `onMount` | the cleanup function returned by `onMount` |
+| Solid | `createEffect` | `onCleanup` |
+| Angular | `ngAfterViewInit` | `ngOnDestroy` |
+| Preact | `useEffect` (same as React) | effect cleanup |
+| Astro | any UI framework as a client island, or the vanilla JS approach | whichever you chose |
+| Web Components | `connectedCallback` | `disconnectedCallback` |
+
+For SSR frameworks (Nuxt / SvelteKit / Remix, etc.): the same principle as the Next.js section above — top-level `import` is server-safe; keep canvas creation inside client-side lifecycle hooks.
 
 ## Two Points About Canvas Lifecycle
 

@@ -1,0 +1,11 @@
+{
+  "name": "verify-vanilla",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "manim-live": "link:../.."
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  }
+}
