@@ -15,7 +15,7 @@ The code is the same standard Manim Python; the difference is entirely **where i
 | AI drawing while explaining | One render waits on the whole pipeline — too slow for conversation | **Write it, watch it; check() stops bad code first** |
 | Deployment cost | Install the stack on every machine, or run a render server | **One npm package; assets can be self-hosted and it runs fully offline** |
 
-The single trade-off: a commonly used subset of Manim CE rather than everything — 385 of the 437 public API entries verified usable, with the item-by-item list in [Support Surface](/en/guide/support) — in exchange for real-time rendering in the browser with zero environment.
+The single trade-off: about 88% of the 437 public API entries verified usable — the main scenarios (basic shapes, coordinate systems, text and formulas, animations, updaters, 3D) are fully covered; most of the 52 missing items are niche and every one has an alternative, listed item by item in [Support Surface](/en/guide/support). In exchange: real-time rendering in the browser with zero environment.
 
 ## What it looks like from the outside
 

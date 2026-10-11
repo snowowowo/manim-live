@@ -75,6 +75,6 @@ A screenshot captures the frame after an animation finishes playing. The **anima
 | [Where Third-Party Packages Come From](/en/guide/packages) | Why `import pandas` can fail; fetching and caching in two deployment setups |
 | [Dry-Run Precheck in Node](/en/guide/node) | DOM-free precheck in CI |
 | [Rendered Gallery](/en/examples/) | 10 real rendered results with their corpus sources |
-| [Support Surface](/en/guide/support) | All 437 public API entries probed: what is supported, what is not (all 52 listed with alternatives) |
+| [Support Surface](/en/guide/support) | All 437 public API entries probed: ~88% usable, main scenarios fully covered; all 52 unsupported items listed with alternatives |
 | [Public API](/en/api/) | createManimRenderer / Surface / exporters / low-level entries |
 | [Development & Debugging](/en/dev/) | For contributors of this repository: build, tests, playground, packaging checks |

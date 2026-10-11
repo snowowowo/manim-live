@@ -10,7 +10,12 @@ This page lists which Manim constructs are supported and which are not — the c
 | Aliased | 13 | Write the CE name; the execution layer translates it (`set_stroke`, `move_camera`, `m[i]`, etc.) |
 | Not supported | 52 | Fails immediately, most with an alternative (below) |
 
-**Proof of support**: all 239 corpus entries in 19 groups run; rendered results are in the [gallery](/en/examples/).
+In total **385 / 437 usable, about 88%**. What matters more is **where** the 52 missing items sit:
+
+- **About two thirds are irrelevant to everyday code**: the OpenGL-renderer family (3), the video-output trio (`SceneFileWriter` / `Section` / `DefaultSectionType` — a browser produces no files anyway), abstract base and axis-scale classes (`CoordinateSystem` / `LinearBase` / `LogBase`), 13 logo / grey palette constants, plus niche alternatives like Typst formulas and `TrueDot`.
+- **What you may actually hit**: the `always_redraw` family (9 functions), 8 methods, 1 animation, 1 rate function — **every one has an equivalent** (mostly composing `add_updater()`), given right in the error message.
+
+**Bottom line: the main scenarios — basic shapes, coordinate systems and plots, text and formulas, animations, updaters, 3D — are fully covered.** All 239 corpus entries in 19 groups run; rendered results are in the [gallery](/en/examples/).
 
 ## What is supported
 

@@ -77,6 +77,6 @@ pnpm add manim-live
 | [第三方包从哪来、缓存在哪](/guide/packages) | `import pandas` 取不到包时的原因，两种部署环境的获取方式与缓存 |
 | [在 Node 里干跑预检](/guide/node) | 不碰 DOM 的 CI 预检 |
 | [渲染成品画廊](/examples/) | 10 张真机渲染的成品与对应语料源码 |
-| [支持面](/guide/support) | 437 项公开 API 逐项实测：支持什么、不支持什么（52 项全列，附替代写法） |
+| [支持面](/guide/support) | 437 项公开 API 逐项实测：约 88% 可用、主力场景全覆盖；52 项不支持的全列，附替代写法 |
 | [公开接口](/api/) | `createManimRenderer` / `Surface` / 导出接入者 / 低层入口 |
 | [开发与调试](/dev/) | 面向本仓库开发者：构建、测试、演示台、产物自检 |
