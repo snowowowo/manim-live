@@ -1,6 +1,6 @@
 # What It Is
 
-manim-live brings Manim animations into the browser: write **standard Manim CE Python**, and the page renders it into a WebGL animation on the spot — no server, no local Python.
+manim-live does one thing: turn **standard Manim (Python) code** into **real-time animations** in a web page. Two typical scenarios — an AI generates animations while explaining, written and played on the fly; and embedding rendering anywhere in your own site. No server, no local Python.
 
 ## Why it exists: compared with the two existing options
 

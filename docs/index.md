@@ -6,38 +6,32 @@ layout: home
 
 hero:
   name: manim-live
-  text: 浏览器里的 Manim 渲染器
-  tagline: "一个 npm 包：标准 Manim（Python）代码贴进网页就能渲染成 WebGL 动画。真 CPython（Pyodide）执行 + manim-web 渲染——AI 生成的代码原样可跑，无需服务器、无需本地 Python，任何前端框架可用。"
+  text: Manim 代码，实时渲染
+  tagline: 把标准 Manim（Python）代码变成网页里的实时动画。AI 讲解时直接生成、网站里随处渲染——无需服务器，无需本地环境。
   actions:
     - theme: brand
-      text: 快速开始
-      link: /guide/quick-start
-    - theme: alt
       text: 看渲染成品
       link: /examples/
+    - theme: alt
+      text: 快速开始
+      link: /guide/quick-start
     - theme: alt
       text: GitHub
       link: https://github.com/snowowowo/manim-live
 
 features:
   - icon: 🐍
-    title: 标准 Manim 代码直接跑
-    details: 写的就是标准 Manim CE Python——AI 生成的代码原样可跑（原生 Manim 的优点）；Pyodide 真 CPython 执行，语言特性完整可用，适配层把写法翻译为 manim-web 调用。
+    title: 标准 Manim，原样可跑
+    details: 写的就是标准 Manim CE Python——不用学新 API，不用改写代码；贴进页面，动画当场渲染出来。
+  - icon: 🤖
+    title: 为 AI 生成而生
+    details: AI 写的正是标准 Manim；check() 先干跑预检，坏代码拦在渲染之前。边讲解边生成动画，即写即演。
   - icon: 🧩
-    title: 两个 DOM 原语接入
-    details: 传入一个容器元素，得到 run() 与 dispose()；React、Vue、原生 JS 的差别只在挂载与卸载时机。
-  - icon: 🩺
-    title: check() 干跑预检
-    details: 执行前干跑一遍，语法错误、未定义名称、缺失的第三方包立即返回错误，不会渲染出半截画面。
-  - icon: 🎬
-    title: 导出器可插拔
-    details: 内置浏览器录屏导出（.webm），可接入本机 manim CLI 导出 mp4。
-  - icon: 🖥
-    title: Node 入口
-    details: manim-live/node 不碰 DOM，可在 CI 中对生成的代码做预检。
+    title: 网站里随处渲染
+    details: 一个容器元素 + run / dispose 两个原语；React、Vue、原生 JS 只是挂载时机不同。
   - icon: 📦
-    title: 取数地址自选
-    details: Pyodide 与 KaTeX 的取数地址均可配置，支持官方 CDN 或完全离线的自托管。
+    title: 零环境依赖
+    details: 无需服务器，无需本地 Python 与 manim；运行资源可自托管，完全离线也能跑。
 ---
 
 ## 快速开始

@@ -3,12 +3,12 @@ layout: home
 
 hero:
   name: manim-live
-  text: A Manim renderer in the browser
-  tagline: "An npm package: paste standard Manim (Python) code into a web page and it renders as a WebGL animation. Real CPython (Pyodide) execution + manim-web rendering — AI-generated code runs as-is; no server, no local Python, any frontend framework."
+  text: Manim code, rendered live
+  tagline: "Turn standard Manim (Python) code into real-time animations in the web page. Generated on the fly while an AI explains, rendered anywhere in your site — no server, no local environment."
   actions:
     - theme: brand
-      text: What It Is
-      link: /en/guide/overview
+      text: Rendered Gallery
+      link: /en/examples/
     - theme: alt
       text: Quick Start
       link: /en/guide/quick-start
@@ -18,23 +18,18 @@ hero:
 
 features:
   - icon: 🐍
-    title: Standard Manim code runs as-is
-    details: What you write is standard Manim CE Python — AI-generated code runs unchanged (the strength of native Manim); a real CPython via Pyodide executes it with full language features, and an adapter layer translates the constructs into manim-web calls.
+    title: Standard Manim, runs as-is
+    details: What you write is standard Manim CE Python — no new API to learn, no rewriting; paste it into a page and the animation renders on the spot.
+  - icon: 🤖
+    title: Built for AI generation
+    details: AI writes exactly standard Manim; check() dry-runs first and stops bad code before rendering. Animate while explaining — write it, watch it.
   - icon: 🧩
-    title: Two DOM primitives
-    details: Pass in a container element, get run() and dispose(); the only difference between React, Vue, and vanilla JS is when you mount and unmount.
-  - icon: 🩺
-    title: check() dry-run precheck
-    details: A dry run before execution returns errors immediately for syntax mistakes, undefined names, and missing third-party packages — no half-rendered frames.
-  - icon: 🎬
-    title: Pluggable exporters
-    details: Built-in browser screen recording (.webm); a local manim CLI can be plugged in to export mp4.
-  - icon: 🖥
-    title: Node entry
-    details: manim-live/node touches no DOM — precheck generated code in CI.
+    title: Render anywhere in your site
+    details: One container element plus the run / dispose primitives; React, Vue, and vanilla JS differ only in mount timing.
   - icon: 📦
-    title: Configurable asset sources
-    details: The fetch URLs for Pyodide and KaTeX are both configurable — official CDN or fully offline self-hosting.
+    title: Zero environment
+    details: No server, no local Python or manim; runtime assets can be self-hosted and it runs fully offline.
+
 ---
 
 ## Quick Start
