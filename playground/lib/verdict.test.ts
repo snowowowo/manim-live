@@ -12,7 +12,7 @@ import { isPassed, stateOf, tally } from './verdict.ts'
 const example = (over: Partial<ManimExample> = {}): ManimExample => ({
   id: 'basic-circle',
   group: 'basic',
-  file: '_dev/examples/basic/01-circle.py',
+  file: 'corpus/examples/basic/01-circle.py',
   title: '画一个圆',
   expect: 'ok',
   python: '"""画一个圆\n"""\n',
@@ -23,7 +23,7 @@ const rejected = example({
   id: 'reject-bad-name',
   group: 'reject',
   expect: 'reject',
-  file: '_dev/examples/reject/01-bad-name.py',
+  file: 'corpus/examples/reject/01-bad-name.py',
 })
 
 describe('isPassed', () => {

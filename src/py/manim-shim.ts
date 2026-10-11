@@ -685,7 +685,7 @@ def _scene_kind(cls):
     只认**适配层自己生成的**那些类（__module__ 是本模块）：只看名字会撞车——用户写
     class VectorScene(Scene) 时，那个类恰好叫 VectorScene，继承的却是普通 Scene；
     按名字认亲会把它当成 manim-web 的真 VectorScene（那个类**自带一块坐标平面**），
-    于是用户没要的东西凭空出现（2026-10-11 全量重截图时抓到，_dev/examples/ctor/05-vector.py）。
+    于是用户没要的东西凭空出现（2026-10-11 全量重截图时抓到，corpus/examples/ctor/05-vector.py）。
     用户类的 __module__ 是 "__main__"，所以这一层过滤正好把它们挡在外面。
     """
     for base in getattr(cls, "__mro__", (cls,)):

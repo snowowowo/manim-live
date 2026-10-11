@@ -78,7 +78,7 @@ await runPython(python, createDryRunBridge()) // 干跑预检，不碰 DOM
 
 ### 第三方包从哪来、缓存在哪
 
-语料里有几条要 `import pandas` / `matplotlib` / `scipy` / `sklearn` 的（`_dev/examples/net`、`combo`）。
+语料里有几条要 `import pandas` / `matplotlib` / `scipy` / `sklearn` 的（`corpus/examples/net`、`combo`）。
 
 先记一条硬事实（读 `pyodide.asm.js` 得来，不是猜）：浏览器侧取一个按需包就是
 
@@ -94,7 +94,7 @@ fetch(new URL(file_name, indexURL), { integrity: 'sha256-' + base16ToBase64(pkg.
 | --- | --- | --- |
 | 官方 CDN（默认值） | 不用管，CDN 本身就是全的 | 浏览器 HTTP 缓存 |
 | DSH 插件自托管 | Host 路由代取：随包目录 → `~/.dsh/cache/manim-live/pyodide` → jsdelivr | 两层（宿主目录 + 浏览器） |
-| playground 开发期 | vite 中间件代取：`assets/pyodide` → `_dev/pyodide-cache` → jsdelivr | 两层（同上，目录在仓内且已 gitignore） |
+| playground 开发期 | vite 中间件代取：`assets/pyodide` → `corpus/pyodide-cache` → jsdelivr | 两层（同上，目录在仓内且已 gitignore） |
 
 三处是**同一条口径**：按 `pyodide-lock.json` 的 sha256 校验后才落盘；名字不在登记表里的明确 404，
 不静默降级。net + combo 整条闭包 20 个 wheel / 41.3 MB，取一遍就够，之后离线也能跑。
@@ -122,7 +122,7 @@ pnpm docs:dev       # 文档站本地预览（docs/，**独立依赖图**：那�
 pnpm docs:build     # 文档站构建 → docs/.vitepress/dist/（GitHub Pages 用）
 ```
 
-语料（`_dev/examples/`）既是回归网，也是**唯一的真机测试台输入**；
+语料（`corpus/examples/`）既是回归网，也是**唯一的真机测试台输入**；
 `scripts/shot-corpus.mjs` 用真 Chromium 逐条渲染落图。
 
 ### playground 是什么

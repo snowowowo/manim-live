@@ -11,7 +11,7 @@ import { T } from './i18n.ts'
 const example = (over: Partial<ManimExample> = {}): ManimExample => ({
   id: 'basic-circle',
   group: 'basic',
-  file: '_dev/examples/basic/01-circle.py',
+  file: 'corpus/examples/basic/01-circle.py',
   title: '画一个圆',
   expect: 'ok',
   python: '"""画一个圆\n"""\nfrom manim import *\n',
@@ -21,13 +21,13 @@ const example = (over: Partial<ManimExample> = {}): ManimExample => ({
 const bad = example({
   id: 'reject-bad-name',
   group: 'reject',
-  file: '_dev/examples/reject/01-bad-name.py',
+  file: 'corpus/examples/reject/01-bad-name.py',
   title: '名字写错该被拒',
   expect: 'reject',
   python: '"""名字写错该被拒\n@reject NameError\n"""\n',
 })
 
-const never = example({ id: 'ctor-vector', group: 'ctor', file: '_dev/examples/ctor/05-vector.py', title: 'Vector 位置参数' })
+const never = example({ id: 'ctor-vector', group: 'ctor', file: 'corpus/examples/ctor/05-vector.py', title: 'Vector 位置参数' })
 
 const corpus: Corpus = {
   groups: [
@@ -68,16 +68,16 @@ describe('buildReport', () => {
 
   it('每条都带文件路径，失败的还带报错原文', () => {
     const text = buildReport({ corpus, now: AT, results: { 'basic-circle': { ok: false, text: 'TypeError: boom' } } })
-    expect(text).toContain('_dev/examples/basic/01-circle.py')
+    expect(text).toContain('corpus/examples/basic/01-circle.py')
     expect(text).toContain(T.reportError('TypeError: boom'))
     // 没跑的那条也要出现（在「未跑」节里），否则报告看着像只有两条语料
-    expect(text).toContain('[ctor-vector] Vector 位置参数 — _dev/examples/ctor/05-vector.py')
+    expect(text).toContain('[ctor-vector] Vector 位置参数 — corpus/examples/ctor/05-vector.py')
   })
 
   it('失败的附上完整源码，且用 python 代码块', () => {
     const text = buildReport({ corpus, now: AT, results: { 'basic-circle': { ok: false, text: 'boom' } } })
     expect(text).toContain(T.reportSource)
-    expect(text).toContain('# _dev/examples/basic/01-circle.py')
+    expect(text).toContain('# corpus/examples/basic/01-circle.py')
     expect(text).toContain('```python')
     expect(text).toContain('from manim import *')
   })

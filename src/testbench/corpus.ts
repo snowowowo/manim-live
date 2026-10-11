@@ -1,11 +1,11 @@
 // 语料的**唯一**位置与读取入口（Node 侧：核心包的测试、playground、以及插件端的实验场路由共用）。
 //
-// 为什么语料在仓根的 `_dev/` 而不进发布集：这批文件是**开发期的回归网**（外加讲解模板的出处），
+// 为什么语料在仓根的 `corpus/` 而不进发布集：这批文件是**开发期的回归网**（外加讲解模板的出处），
 // 不是产品功能——跟着发布等于把上百条源码打进产物，还给每个使用者一个只有开发者才用的实验场。
-// 所以它留在包外（`package.json` 的 `files` 不含 `_dev`）：只在**仓库检出**里读得到，
+// 所以它留在包外（`package.json` 的 `files` 不含 `corpus`）：只在**仓库检出**里读得到，
 // 正式安装里这条路径不存在，调用方据此走降级（空表），不报错。
 //
-// 解析顺序：环境变量 MANIM_CORPUS（绝对路径）优先，否则 = <本包根>/_dev/examples。
+// 解析顺序：环境变量 MANIM_CORPUS（绝对路径）优先，否则 = <本包根>/corpus/examples。
 // 消费者共用本文件，**不许再有第二处**（各写各的路径必然漂移）：
 //   ① src/py/examples.test.ts（Node 回归）
 //   ② 插件端 src/host/index.js 的语料路由（浏览器侧实验场）—— 经 `manim-live/node` 导入本模块
@@ -14,7 +14,7 @@
 //   ⑤ 浏览器侧：包内的 playground —— 它拿不到 `node:fs`，走 vite 的 `import.meta.glob` 读源码，
 //      再用**同一个** `buildCorpus()` 收成 Corpus（格式那一半在 `src/py/corpus-format.ts`）。
 //
-// 截图（`_dev/shots/<组>/<同名>.png`）也在这里定路径，理由同上：
+// 截图（`corpus/shots/<组>/<同名>.png`）也在这里定路径，理由同上：
 //   它是「这条语料**真渲染出来长什么样**」的唯一记录——回归只证明没炸，画面对不对只能看图。
 //   存成与 .py 同名同目录，`collectCorpus()` 顺手就能给出每条对应的图，页面直接显示，
 //   不必每次现截。同样在包外，正式安装里没有。路径只有 shotPath() 一处定义。
@@ -55,7 +55,7 @@ export const PACKAGE_ROOT = findPackageRoot(dirname(fileURLToPath(import.meta.ur
 /** 语料根目录（绝对路径）。目录不存在时返回路径本身，由调用方按「这台机器没有语料」处理。 */
 export function corpusRoot(): string {
   const configured = process.env.MANIM_CORPUS?.trim()
-  return configured ? resolve(configured) : join(PACKAGE_ROOT, '_dev', 'examples')
+  return configured ? resolve(configured) : join(PACKAGE_ROOT, 'corpus', 'examples')
 }
 
 /**
@@ -65,7 +65,7 @@ export function corpusRoot(): string {
  */
 export function shotsRoot(): string {
   const configured = process.env.MANIM_SHOTS?.trim()
-  return configured ? resolve(configured) : join(PACKAGE_ROOT, '_dev', 'shots')
+  return configured ? resolve(configured) : join(PACKAGE_ROOT, 'corpus', 'shots')
 }
 
 /** 语料是否就位（开发机有、正式安装没有）。 */

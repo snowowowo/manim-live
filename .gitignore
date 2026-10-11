@@ -16,9 +16,9 @@ _tmp/
 
 # 语料截图的上一次运行清单：图本身要进库（实验场页面靠它显示「上次截图」），
 # 但这份清单每跑一次全量就整体重写，进库只会天天刷屏。
-_dev/shots/index.json
+corpus/shots/index.json
 
 # 开发期回源取回的 Pyodide 按需包（net / combo 两组语料要用，见 playground/pyodide-mirror.ts）。
 # 四十多 MB、按 lock 的 sha256 校验过、随时可重取——进库没有意义。
-_dev/pyodide-cache/
+corpus/pyodide-cache/
 .next/

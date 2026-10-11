@@ -26,7 +26,7 @@ const pkgRoot = resolve(here, '..')
  * Pyodide 按需包的回源落盘处。
  * **不能放进 `assets/`**：那一份是软链到插件仓的目录，把四十多 MB 缓存写进别人的仓库是越界。
  */
-const PYODIDE_CACHE_DIR = join(pkgRoot, '_dev', 'pyodide-cache')
+const PYODIDE_CACHE_DIR = join(pkgRoot, 'corpus', 'pyodide-cache')
 
 const MIME: Record<string, string> = {
   '.js': 'text/javascript; charset=utf-8',
@@ -46,7 +46,7 @@ const MIME: Record<string, string> = {
  * 把开发期的静态资源挂成路由：
  *   /pyodide/*  → <包根>/assets/pyodide/*   （Pyodide 本体与随包 wheel），**缺的按需回源**
  *   /katex/*    → <包根>/assets/katex/*
- *   /shots/*    → <包根>/_dev/shots/*       （语料截图，scripts/shot-corpus.mjs 落盘的）
+ *   /shots/*    → <包根>/corpus/shots/*       （语料截图，scripts/shot-corpus.mjs 落盘的）
  *
  * 这些资源不在核心包里（随插件发，见顶层设计 §2.4），所以用软链接过来（scripts/setup-assets.mjs）——
  * 这么挂在页面上正好演示「自托管 Pyodide」那条路（`pyodideIndexURL: '/pyodide/'`）。
@@ -55,7 +55,7 @@ const MIME: Record<string, string> = {
  * 而语料里 `net` / `combo` 两组还要 pandas / matplotlib / scipy / sklearn / statsmodels 这一串。
  * 浏览器侧 Pyodide 只认 `indexURL` 一个地址、**不回落 CDN**，缺的文件只会变成一句
  * `Failed to fetch`（成因与实测见 playground/pyodide-mirror.ts 的文件头）。所以缺的按 lock 的
- * sha256 回源取回、校验、落进 `_dev/pyodide-cache/`——口径与插件仓宿主那条路由**完全一致**。
+ * sha256 回源取回、校验、落进 `corpus/pyodide-cache/`——口径与插件仓宿主那条路由**完全一致**。
  *
  * 顺带把「浏览器 HTTP 缓存」这一层也接上了，按**文件名钉没钉版本**分两档：
  *   · lock 登记的产物（wheel / openblas.zip）→ `immutable`：名字带版本、字节由 sha256 钉死，
@@ -73,7 +73,7 @@ const MIME: Record<string, string> = {
 function assetRoutes(): Plugin {
   const table: Array<[string, string]> = [
     ['/katex/', join(pkgRoot, 'assets', 'katex')],
-    ['/shots/', join(pkgRoot, '_dev', 'shots')],
+    ['/shots/', join(pkgRoot, 'corpus', 'shots')],
   ]
   const pyodideDir = join(pkgRoot, 'assets', 'pyodide')
   const lockPath = join(pyodideDir, 'pyodide-lock.json')
@@ -222,7 +222,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), assetRoutes()],
   server: {
     port: 5173,
-    // 允许读到包根（核心包源码 + _dev 的语料与截图）
+    // 允许读到包根（核心包源码 + corpus 的语料与截图）
     fs: { allow: [pkgRoot] },
   },
   resolve: {

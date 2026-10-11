@@ -1,6 +1,6 @@
 # Rendered Gallery
 
-Every screenshot below comes from this repository's corpus (`_dev/examples/`, 239 entries / 19 groups), rendered entry by entry in **a real Chromium** by `scripts/shot-corpus.mjs` — not mockups; behind each image is a piece of Python that runs. Sections follow domains and APIs, from basic shapes through linear algebra, analysis, probability, discrete math, and group theory, to third-party library combos. To watch the animations, start the local playground with `pnpm playground`.
+Every screenshot below comes from this repository's corpus (`corpus/examples/`, 239 entries / 19 groups), rendered entry by entry in **a real Chromium** by `scripts/shot-corpus.mjs` — not mockups; behind each image is a piece of Python that runs. Sections follow domains and APIs, from basic shapes through linear algebra, analysis, probability, discrete math, and group theory, to third-party library combos. To watch the animations, start the local playground with `pnpm playground`.
 
 ::: info Why these are end-state screenshots
 A screenshot captures the frame after the animation finishes. The **process** (how objects move and morph) cannot be shown statically, and a few animation-heavy entries end in a plain frame (e.g. "the object flew away"). Play those in the playground instead.
@@ -183,7 +183,7 @@ A screenshot captures the frame after the animation finishes. The **process** (h
   <figcaption>All 76 color constants rendered one by one (each distinct, not a black field) —— <code>api/01-colors.py</code></figcaption>
 </figure>
 
-This is a glimpse. The full list and screenshots of all **239 corpus entries in 19 groups** live in `_dev/shots/` (each image has a "what you should see" assertion in `index.json`); the item-by-item list of supported and unsupported APIs is in [Support Surface](/en/guide/support).
+This is a glimpse. The full list and screenshots of all **239 corpus entries in 19 groups** live in `corpus/shots/` (each image has a "what you should see" assertion in `index.json`); the item-by-item list of supported and unsupported APIs is in [Support Surface](/en/guide/support).
 
 <style>
 img { width: 100%; max-width: 720px; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--vp-c-divider); }

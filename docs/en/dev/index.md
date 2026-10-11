@@ -22,7 +22,7 @@ pnpm setup:assets  # prepare assets/ (Pyodide distribution, etc.)
 `pnpm playground` starts a vite dev server (`playground/vite.config.ts`) — this
 repository's local playground. It ships a **fetching middleware**: if the wheel is present
 in the package directory it serves it directly; otherwise it fetches it from jsdelivr after
-verifying the lock's sha256 and caches it in `_dev/pyodide-cache/` (gitignored). One fetch
+verifying the lock's sha256 and caches it in `corpus/pyodide-cache/` (gitignored). One fetch
 is enough; after that it works offline. `pnpm check:playground`
 (`scripts/check-playground.mjs`) verifies that this directory's conventions haven't been
 broken.
@@ -54,7 +54,7 @@ playground/   local playground (vite, not part of the npm output)
 examples/     Minimal framework-integration verification projects: vanilla / react / vue / next (not in the npm package)
 assets/       assets distributed with the package (Pyodide distribution, etc.)
 scripts/      maintenance scripts (setup-assets / check-playground, etc.)
-_dev/         development-time materials (corpus screenshots, pyodide cache), not published
+corpus/       corpus and its screenshots (git-tracked, not in the npm package) + the local pyodide cache (ignored)
 docs/         this documentation site (independent dependencies, vitepress only)
 ```
 

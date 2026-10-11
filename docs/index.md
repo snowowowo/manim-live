@@ -54,7 +54,7 @@ class AxesPlotScene(Scene):
 
 <figure>
   <img src="./images/axes-plot.png" alt="上段代码实时渲染的结果" loading="lazy" />
-  <figcaption>上段代码的实时渲染结果（终态）—— <code>_dev/examples/basic/09-axes-plot.py</code></figcaption>
+  <figcaption>上段代码的实时渲染结果（终态）—— <code>corpus/examples/basic/09-axes-plot.py</code></figcaption>
 </figure>
 
 </div>

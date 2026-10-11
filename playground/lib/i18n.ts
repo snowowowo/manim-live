@@ -45,7 +45,7 @@ export const T = {
   warmupDone: 'Pyodide 已就绪',
   warmupFailed: '预热失败',
   corpusEmpty: '没找到语料',
-  corpusEmptyHint: '先在包根跑一次 pnpm install——语料在 _dev/examples/ 下，随仓库检出带着。',
+  corpusEmptyHint: '先在包根跑一次 pnpm install——语料在 corpus/examples/ 下，随仓库检出带着。',
   corpusBroken: '语料读不了',
 
   // ---- 工具条 ----
@@ -114,13 +114,13 @@ export const T = {
   // ---- 上次截图 / 上一轮真机结果 ----
   shotLabel: '上次截图',
   shotHint:
-    '这条语料上一次真渲染出来的画面，由 scripts/shot-corpus.mjs 落盘、与语料同名存放在 _dev/shots/ 下。' +
+    '这条语料上一次真渲染出来的画面，由 scripts/shot-corpus.mjs 落盘、与语料同名存放在 corpus/shots/ 下。' +
     '自动结果只说「没炸」、预期只说「应该长什么样」，中间那一步——画面到底对不对——看这张图；' +
     '重跑截图脚本会覆盖同名文件，所以这里永远是当前这版。点开可看原尺寸（1280×720）。',
   shotMissing: '还没截过图',
   lastRunLabel: '上一轮真机结果',
   lastRunHint:
-    '上一次全量截图时这条的真实结果（来自 _dev/shots/index.json，同一次真机跑出来的）。' +
+    '上一次全量截图时这条的真实结果（来自 corpus/shots/index.json，同一次真机跑出来的）。' +
     '它读的是盘上的记录，不是刚刚这次——两边对不上，往往正是「改了代码但没重截」。',
   lastRunOk: '通过',
   lastRunFail: '未通过',

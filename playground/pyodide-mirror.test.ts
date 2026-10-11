@@ -47,7 +47,7 @@ function fakeUpstream(files: Record<string, Buffer>): { fetchImpl: PackageFetch;
 function setup() {
   const root = makeRoot()
   const localDir = join(root, 'assets', 'pyodide')
-  const cacheDir = join(root, '_dev', 'pyodide-cache')
+  const cacheDir = join(root, 'corpus', 'pyodide-cache')
   mkdirSync(localDir, { recursive: true })
   const digests = new Map([
     [HELLO_NAME, sha256Hex(HELLO)],

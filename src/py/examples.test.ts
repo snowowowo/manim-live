@@ -5,7 +5,7 @@
  *                      与 manim-bridge.test.ts 同口径——真 Scene 要 DOM/WebGL，属 Client 半边）。
  *  - expect='reject' ：预检桥必须**当场**拒（不是拖到真桥才炸），且报错里带关键词。
  *
- * 语料本体在插件仓 `_dev/examples/`（**不进发布集**，见 src/host/corpus.js）。
+ * 语料本体在插件仓 `corpus/examples/`（**不进发布集**，见 src/host/corpus.js）。
  * 所以这份测试只在仓库检出里跑得动；语料缺失（如从 tarball 里跑）整份跳过并说明。
  *
  * 「第三方包」那组要**真联网取包**（首次几十 MB、几分钟），默认不进套件——
@@ -34,7 +34,7 @@ const NET = process.env.MANIM_NET === '1'
 const corpus = collectCorpus()
 if (corpus.examples.length === 0) {
   console.warn(
-    '[examples] 没找到语料——它现在在插件仓 _dev/examples/（包外），' +
+    '[examples] 没找到语料——它现在在插件仓 corpus/examples/（包外），' +
       '只在仓库检出里跑得动。整份跳过。',
   )
 }

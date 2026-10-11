@@ -565,7 +565,7 @@ class Demo(ThreeDScene):
   it('用户类只是**名叫** VectorScene 时不当成场景族（认亲按基类，不按名字）', async () => {
     // 名字撞车：用户写 class VectorScene(Scene)，类名恰好等于场景族里的一个。按名字认亲会把它
     // 升级成 manim-web 的真 VectorScene——那个类**自带一块坐标平面**，于是用户没要的网格与
-    // 坐标轴凭空出现。2026-10-11 全量重截图时在 `_dev/examples/ctor/05-vector.py` 上抓到：
+    // 坐标轴凭空出现。2026-10-11 全量重截图时在 `corpus/examples/ctor/05-vector.py` 上抓到：
     // 语料只画了一支箭头，图里却多出 NumberPlane。
     const scene = sceneOf('Scene')
     const asked: string[] = []
@@ -770,7 +770,7 @@ class Demo(Scene):
     // 滚转是**看不出来的错**：getOrbitAngles() 分毫不差、任何几何断言都抓不到，只有看图才见。
     // 这里不依赖「正确的 up 长什么样」也能钉住那个被破坏的性质：**同一组角度 ⇒ 同一个 up**；
     // 另外再把正确值本身钉死（公式见 Camer3D.orbit，gamma=0 代入即得）。
-    // （修法与出处见 src/engine/manim-patch.ts；画面判据见 _dev/examples/scene/07-three-d-upright.py。）
+    // （修法与出处见 src/engine/manim-patch.ts；画面判据见 corpus/examples/scene/07-three-d-upright.py。）
     const orient = (first: string, second: string, scene: ManimScene): Promise<string> =>
       runOn(
         scene,

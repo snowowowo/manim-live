@@ -51,7 +51,7 @@ class AxesPlotScene(Scene):
 
 <figure>
   <img src="../images/axes-plot.png" alt="Live-rendered result of the code above" loading="lazy" />
-  <figcaption>The live-rendered result of the code above (end state) —— <code>_dev/examples/basic/09-axes-plot.py</code></figcaption>
+  <figcaption>The live-rendered result of the code above (end state) —— <code>corpus/examples/basic/09-axes-plot.py</code></figcaption>
 </figure>
 
 </div>

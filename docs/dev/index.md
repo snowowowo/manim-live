@@ -19,7 +19,7 @@ pnpm setup:assets  # 准备 assets/（Pyodide 发行版等）
 
 `pnpm playground` 起一个 vite 开发服务器（`playground/vite.config.ts`），是本仓的本地演示台。
 它带一个**代取中间件**：随包目录里有 wheel 就直接给，没有就按 lock 的 sha256 校验后从
-jsdelivr 取回、落在 `_dev/pyodide-cache/`（gitignored）。取一遍就够，之后离线也能跑。
+jsdelivr 取回、落在 `corpus/pyodide-cache/`（gitignored）。取一遍就够，之后离线也能跑。
 `pnpm check:playground`（`scripts/check-playground.mjs`）核对这个目录的约定没被改坏。
 
 取包失败时的分档诊断见[第三方包从哪来](/guide/packages)——那是给**使用者**的排障页；
@@ -47,7 +47,7 @@ playground/   本地演示台（vite，不进 npm 产物）
 examples/     框架集成最小验证项目：vanilla / react / vue / next（不进 npm 产物）
 assets/       随包发的资源（Pyodide 发行版等）
 scripts/      setup-assets / check-playground 等维护脚本
-_dev/         开发期素材（语料截图、pyodide 缓存），不进发布集
+corpus/       语料与截图（git 跟踪、不进 npm 产物）+ 本地 pyodide 缓存（忽略）
 docs/         本文档站（独立依赖，只有 vitepress 一项）
 ```
 

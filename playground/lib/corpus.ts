@@ -1,5 +1,5 @@
 /**
- * playground 的语料装载：**在浏览器里**把 `_dev/` 下的语料收成 Corpus。
+ * playground 的语料装载：**在浏览器里**把 `corpus/` 下的语料收成 Corpus。
  *
  * 与 Node 侧（`src/testbench/corpus.ts` 的 `collectCorpus()`）是同一个口径，只是取字节的方式不同：
  * 那边读磁盘，这边靠 vite 的 `import.meta.glob`（bundler 已经把文件内容读成字符串了）。
@@ -8,20 +8,20 @@
  * 不这么做的话，两边对「这条语料是什么意思」各有一套说法，而各自都自洽，最难查。
  *
  * 三样东西：
- *   · 语料本体      `_dev/examples/**\/*.py`（eager 读原文，239 条、约 1 MB，一次性）
- *   · 截图**清单**  `_dev/shots/**\/*.png`（只要键、不要内容——188 张图不该各自变成一个模块请求）
+ *   · 语料本体      `corpus/examples/**\/*.py`（eager 读原文，239 条、约 1 MB，一次性）
+ *   · 截图**清单**  `corpus/shots/**\/*.png`（只要键、不要内容——188 张图不该各自变成一个模块请求）
  *   · 截图**内容**  走 vite 中间件挂的 `/shots/` 路由（地址稳定、可 target=_blank 看原尺寸）
- *   · 上一轮真机结果 `_dev/shots/index.json`（gitignored 的本地清单，见下）
+ *   · 上一轮真机结果 `corpus/shots/index.json`（gitignored 的本地清单，见下）
  *
  * 语料不在（正式安装 / 从 tarball 跑）时给空表 + 一句说明，**不抛**——这一页照样能用「自定义代码」。
  */
 import { buildCorpus, type Corpus, type CorpusSource } from 'manim-live'
 
-const EXAMPLES_PREFIX = '../../_dev/examples/'
-const SHOTS_PREFIX = '../../_dev/shots/'
+const EXAMPLES_PREFIX = '../../corpus/examples/'
+const SHOTS_PREFIX = '../../corpus/shots/'
 
 // 路径必须是**字面量**：vite 在编译期做静态替换，拼字符串它认不出来。
-const rawSources = import.meta.glob('../../_dev/examples/**/*.py', {
+const rawSources = import.meta.glob('../../corpus/examples/**/*.py', {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -29,9 +29,9 @@ const rawSources = import.meta.glob('../../_dev/examples/**/*.py', {
 
 // 只要键：`eager: false` 时值是 `() => Promise`，本模块一个都不调用；`Object.keys` 正是
 // vite 文档里「只要清单」的用法。
-const shotKeys = Object.keys(import.meta.glob('../../_dev/shots/**/*.png'))
+const shotKeys = Object.keys(import.meta.glob('../../corpus/shots/**/*.png'))
 
-const rawIndex = import.meta.glob('../../_dev/shots/index.json', {
+const rawIndex = import.meta.glob('../../corpus/shots/index.json', {
   import: 'default',
   eager: true,
 }) as Record<string, unknown>
@@ -43,7 +43,7 @@ export const SHOTS_URL = '/shots'
 export const shotUrl = (rel: string): string => `${SHOTS_URL}/${rel}`
 
 /**
- * 截图那一轮的真机结果（来自 `_dev/shots/index.json`，由 `scripts/shot-corpus.mjs` 落盘）。
+ * 截图那一轮的真机结果（来自 `corpus/shots/index.json`，由 `scripts/shot-corpus.mjs` 落盘）。
  *
  * 为什么值得读：截图只回答「画出来什么样」，回答不了「那一次到底过没过、控制台吵了什么」。
  * 这条记录与图**同一次**跑出来的，对得上才说明「图是当前这版代码的图」。
@@ -132,7 +132,7 @@ export function loadPlaygroundCorpus(): PlaygroundCorpus {
         name: cut < 0 ? rel : rel.slice(cut + 1),
         // 报错回执里的路径：与 Node 侧 `collectCorpus()` 一样给**包根相对路径**，
         // 两个世界点同一条语料时，报告里那一行字必须一样。
-        file: `_dev/examples/${rel}`,
+        file: `corpus/examples/${rel}`,
         python,
       }
     })

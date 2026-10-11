@@ -22,7 +22,7 @@
 //     → TypeError: Failed to fetch        ← 和「网络不通」长得一模一样（见 _tmp/probe-sri.mjs）
 //
 // 这个模块把那条断链接上。与插件仓 `src/host/pyodide.js` 那条宿主路由**同一套口径**
-// （随包 → 缓存 → 回源），只是它落在开发机的 `_dev/pyodide-cache/`，
+// （随包 → 缓存 → 回源），只是它落在开发机的 `corpus/pyodide-cache/`，
 // 而宿主那条落在 `~/.dsh/cache/manim-live/pyodide`。
 //
 // 两点刻意的克制：

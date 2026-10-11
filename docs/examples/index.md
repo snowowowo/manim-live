@@ -1,6 +1,6 @@
 # 渲染成品画廊
 
-下面所有截图都出自本仓语料（`_dev/examples/`，239 条 / 19 组），由 `scripts/shot-corpus.mjs`
+下面所有截图都出自本仓语料（`corpus/examples/`，239 条 / 19 组），由 `scripts/shot-corpus.mjs`
 用**真 Chromium 逐条渲染**落图——不是设计稿，每一张背后都有一段能跑的 Python。
 按领域与 API 分节，从基础图形到线性代数、数学分析、概率、离散数学、群论，再到第三方库联动。
 想看动画过程，`pnpm playground` 在本地起演示台，逐条实播。
@@ -187,7 +187,7 @@
   <figcaption>76 个颜色常量逐一上色（各不相同，不是一片黑）—— <code>api/01-colors.py</code></figcaption>
 </figure>
 
-这只是一瞥。**239 条语料、19 个组**的完整清单与截图在 `_dev/shots/`
+这只是一瞥。**239 条语料、19 个组**的完整清单与截图在 `corpus/shots/`
 （每张图在 `index.json` 里都有一条「应该看见什么」的断言），支持与不支持的逐项清单见[支持面](/guide/support)。
 
 <style>

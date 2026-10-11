@@ -16,7 +16,7 @@ import { collectCorpus, corpusRoot, shotsRoot } from '../testbench/corpus.ts'
 const source = (over: Partial<CorpusSource> = {}): CorpusSource => ({
   group: 'basic',
   name: '01-circle.py',
-  file: '_dev/examples/basic/01-circle.py',
+  file: 'corpus/examples/basic/01-circle.py',
   python: '"""画一个圆\n\n@expect 一个圆\n"""\n',
   ...over,
 })
@@ -128,7 +128,7 @@ describe('buildCorpus', () => {
     expect(corpus.groups.map((group) => group.id)).toEqual(['basic', 'ctor'])
     expect(corpus.examples.map((item) => item.id)).toEqual(['basic-circle', 'ctor-a', 'ctor-b'])
     const [circle, a, b] = corpus.examples
-    expect(circle).toMatchObject({ group: 'basic', title: '画一个圆', expect: 'ok', file: '_dev/examples/basic/01-circle.py' })
+    expect(circle).toMatchObject({ group: 'basic', title: '画一个圆', expect: 'ok', file: 'corpus/examples/basic/01-circle.py' })
     expect(circle!.shot).toBeUndefined()
     expect(a).toMatchObject({ title: 'A', expect: 'ok', expectation: '画的是 A', note: '有原因', shot: 'ctor/01-a.png' })
     expect(b).toMatchObject({ title: 'B', expect: 'reject', errorIncludes: 'Line' })
@@ -162,8 +162,8 @@ describe('盘上的真语料', () => {
     expect(ids.size).toBe(corpus.examples.length) // id 不许撞
     const root = corpusRoot()
     for (const item of corpus.examples) {
-      expect(item.file.startsWith('_dev/examples/')).toBe(true)
-      expect(existsSync(join(root, item.file.replace('_dev/examples/', '')))).toBe(true)
+      expect(item.file.startsWith('corpus/examples/')).toBe(true)
+      expect(existsSync(join(root, item.file.replace('corpus/examples/', '')))).toBe(true)
     }
   })
 
