@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="manim-live">
+  <!-- 取自语料里的「单位圆」那一幅：圆 + 半径 + 圆上的点。 -->
+  <rect width="64" height="64" rx="14" fill="#1C1C1C" />
+  <circle cx="30" cy="36" r="17" fill="none" stroke="#58C4DD" stroke-width="4" />
+  <path d="M30 36 L44 21" stroke="#FFFF00" stroke-width="3.5" stroke-linecap="round" />
+  <circle cx="44" cy="21" r="5" fill="#FFFF00" />
+</svg>
