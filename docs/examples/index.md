@@ -190,24 +190,6 @@
 这只是一瞥。**239 条语料、19 个组**的完整清单与截图在 `_dev/shots/`
 （每张图在 `index.json` 里都有一条「应该看见什么」的断言），支持与不支持的逐项清单见[支持面](/guide/support)。
 
-## 附：上面第一条的完整源码
-
-就是「快速开始」里跑的那段——`_dev/examples/basic/09-axes-plot.py` 原文：
-
-```python
-from manim import *
-
-
-class AxesPlotScene(Scene):
-    def construct(self):
-        ax = Axes(x_range=[-3, 3, 1], y_range=[-1, 3, 1])
-        graph = ax.plot(lambda x: x * x / 3, color=GREEN)
-        self.play(Create(ax), Create(graph))
-        self.wait(0.3)
-```
-
-Manim CE 的常规写法，没有本包特有的咒语；CE 语法与实测支持面的差异，`renderer.check()` 会在预检时点名。
-
 <style>
 img { width: 100%; max-width: 720px; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--vp-c-divider); }
 figure { margin: 8px 0 28px; }

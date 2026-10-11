@@ -185,24 +185,6 @@ A screenshot captures the frame after the animation finishes. The **process** (h
 
 This is a glimpse. The full list and screenshots of all **239 corpus entries in 19 groups** live in `_dev/shots/` (each image has a "what you should see" assertion in `index.json`); the item-by-item list of supported and unsupported APIs is in [Support Surface](/en/guide/support).
 
-## Appendix: full source of the first entry
-
-The same one from Quick Start — `_dev/examples/basic/09-axes-plot.py`, verbatim:
-
-```python
-from manim import *
-
-
-class AxesPlotScene(Scene):
-    def construct(self):
-        ax = Axes(x_range=[-3, 3, 1], y_range=[-1, 3, 1])
-        graph = ax.plot(lambda x: x * x / 3, color=GREEN)
-        self.play(Create(ax), Create(graph))
-        self.wait(0.3)
-```
-
-Regular Manim CE style — no package-specific incantations; any gap between CE syntax and the probed support surface is named by `renderer.check()` during precheck.
-
 <style>
 img { width: 100%; max-width: 720px; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--vp-c-divider); }
 figure { margin: 8px 0 28px; }
