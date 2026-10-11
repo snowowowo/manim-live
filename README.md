@@ -2,6 +2,9 @@
 
 在浏览器里用**真 Python** 跑 Manim 代码并渲出一幅画面。
 
+> 📖 文档（安装 / 各框架用法 / 示例画廊 / API）：`docs/` 目录，`pnpm docs:dev` 本地预览；
+> 线上地址 <https://snowowowo.github.io/manim-live/>（待 Pages 开通后生效）。
+
 纯逻辑：零 UI、零框架、零宿主、零本地 Manim。可以在 React / Vue / 原生 JS 里直接用；
 DSH 插件 `dsh-manim-live` 只是它的消费者之一。
 
@@ -115,6 +118,8 @@ pnpm test           # 语料回归 + headless 真场景 + 支持面门禁
 pnpm typecheck      # tsc --noEmit（含 playground/ 的 TS 与 TSX）
 pnpm playground     # 浏览 / 演示台（vite）——真浏览器验证台
 pnpm check:playground # 真机烟测：起 vite → 无头 Chromium → 断言画布非空 / 版式复用画布 / 点击响应
+pnpm docs:dev       # 文档站本地预览（docs/，**独立依赖图**：那目录里只装 vitepress）
+pnpm docs:build     # 文档站构建 → docs/.vitepress/dist/（GitHub Pages 用）
 ```
 
 语料（`_dev/examples/`）既是回归网，也是**唯一的真机测试台输入**；

@@ -16,11 +16,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/manim-live/manim-live.git"
+    "url": "git+https://github.com/snowowowo/manim-live.git"
   },
-  "homepage": "https://github.com/manim-live/manim-live#readme",
+  "homepage": "https://snowowowo.github.io/manim-live/",
   "bugs": {
-    "url": "https://github.com/manim-live/manim-live/issues"
+    "url": "https://github.com/snowowowo/manim-live/issues"
   },
   "exports": {
     ".": {
@@ -56,6 +56,8 @@
     "check:playground": "node scripts/check-playground.mjs",
     "setup:assets": "node scripts/setup-assets.mjs",
     "check:pkg": "publint && attw --pack . --profile esm-only --ignore-rules no-resolution",
+    "docs:dev": "pnpm -C docs dev",
+    "docs:build": "pnpm -C docs build",
     "prepublishOnly": "pnpm build && pnpm check:pkg"
   },
   "dependencies": {
