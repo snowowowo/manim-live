@@ -1,0 +1,199 @@
+/**
+ * 版式改两件事：
+ *
+ * ① **让「左侧整站目录」和「右侧本页目录」出现在同一个断点上。**
+ *    实测（逐页 × 逐宽度扫过，见 _tmp/probe-layout.mjs）：VitePress 默认主题给两栏
+ *    配了两套断点——
+ *      · 左栏 `.VPSidebar`：≥960px 固定显示；<960px 收成抽屉（要点头部「菜单」）
+ *      · 右栏 `.aside`   ：**只在 ≥1280px 才 display:block**（VPDoc.vue 的 scoped 样式里写死）
+ *    于是 960–1279px 这一整段是「左边有、右边没有」。而这一带恰恰是常见的窗口宽度
+ *    （1440 的屏幕缩放 125% 就落在 1152，缩到一半分屏更是常事），看着就像右侧目录丢了。
+ *    默认主题这么排是给正文让路；这里的判断是反过来的——**两栏都在**比正文宽 200px
+ *    更重要，所以把右栏提前到与左栏同一个断点，再在 1279 以下把三栏都收窄些。
+ *
+ * ② **首页（index.md）改成普通文档页**，hero 与特性卡片用下面 .home-* 那组类手写。
+ *    默认主题的 `layout: home` 是 landing 布局，**按设计就不渲染侧栏**（Layout 里
+ *    `hasSidebar` 要求 `!frontmatter.home`），于是首页是唯一「左右两栏都没有」的页面；
+ *    从它点进文档页时，视觉上就像「左边突然没了」。改成 doc 布局之后，
+ *    首页和其余页面一样：左边整站目录、右边本页目录。
+ *
+ * 覆盖默认主题必须带 !important：那些声明来自组件的 scoped 样式，编译后是
+ * `.VPDoc .aside[data-v-xxx]`（多一个属性选择器），权重高于这里的 `.VPDoc .aside`。
+ */
+
+@media (min-width: 960px) {
+  /* 布局由 block 切到 flex——默认主题把这一步放在 1280 */
+  .VPDoc .container {
+    display: flex !important;
+    justify-content: center;
+  }
+
+  /* 右栏由藏起来变成显示——默认主题把这一步也放在 1280 */
+  .VPDoc .aside {
+    display: block !important;
+  }
+
+  .VPDoc .content {
+    order: 1;
+    margin: 0;
+  }
+
+  .VPDoc.has-aside .content-container {
+    max-width: 688px;
+  }
+}
+
+/* 960–1279px：右边这两百多像素全是从正文身上挤出来的，这一档把左、右两栏都收窄一点。
+   左栏宽度走主题变量 --vp-sidebar-width（VPContent 的 padding-left 跟着它变）。 */
+@media (min-width: 960px) and (max-width: 1279px) {
+  :root {
+    --vp-sidebar-width: 248px;
+  }
+
+  .VPDoc .aside {
+    max-width: 200px;
+    padding-left: 20px;
+  }
+
+  .VPDoc .aside-container,
+  .VPDoc .aside-curtain {
+    width: 180px;
+  }
+
+  .VPDoc .content {
+    padding: 0 20px 128px;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   首页（index.md 从 layout:home 改成了普通文档页）要用到的几个类。
+   结构：.home-name / h1.home-text / .home-tagline / 一行 .home-action 按钮 /
+   .home-features 四张卡片 / .gallery 三张成品图。
+   之所以手写而不复用默认主题的 hero：那套样式只在 VPHome 布局里生效。
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.home-name {
+  margin: 24px 0 0;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--vp-c-text-3);
+}
+
+.vp-doc h1.home-text {
+  margin: 6px 0 0;
+  padding: 0;
+  border: 0;
+  text-align: center;
+  font-size: 42px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.home-tagline {
+  max-width: 660px;
+  margin: 18px auto 0;
+  text-align: center;
+  line-height: 1.75;
+  color: var(--vp-c-text-2);
+}
+
+/* 三个行动按钮：包在同一个 <p> 里（markdown 行内链接，靠 :has 认那一行） */
+.vp-doc p:has(> a.home-action) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 28px 0 8px;
+}
+
+.vp-doc a.home-action {
+  display: inline-block;
+  padding: 0 22px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 20px;
+  background-color: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 40px;
+  text-decoration: none;
+  transition: border-color 0.25s, background-color 0.25s, color 0.25s;
+}
+
+.vp-doc a.home-action:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.vp-doc a.home-action.brand {
+  border-color: var(--vp-c-brand-1);
+  background-color: var(--vp-c-brand-1);
+  color: #fff;
+}
+
+.vp-doc a.home-action.brand:hover {
+  border-color: var(--vp-c-brand-2);
+  background-color: var(--vp-c-brand-2);
+  color: #fff;
+}
+
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.home-feature {
+  padding: 20px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background-color: var(--vp-c-bg-soft);
+}
+
+.home-feature p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.home-feature-icon {
+  font-size: 24px;
+}
+
+.home-feature-title {
+  margin-top: 8px !important;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vp-c-text-1);
+}
+
+.home-feature-detail {
+  margin-top: 6px !important;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.gallery figure {
+  margin: 0;
+}
+
+.gallery img {
+  width: 100%;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+
+.gallery figcaption {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+}
