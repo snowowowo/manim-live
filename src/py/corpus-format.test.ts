@@ -46,6 +46,22 @@ describe('parseExampleHeader', () => {
     })
   })
 
+  it('@expect / @note 的续行并入上一行（docstring 里换行不代表句子结束）', () => {
+    const header = parseExampleHeader('a/b.py', [
+      '"""速率对照',
+      '',
+      '@expect 两个物体位移同样距离、run_time 相同，一个 rate_func=linear、',
+      '        一个 rate_func=smooth，急缓差异是真时序下的过程性差别。',
+      '@note 第一行原因',
+      '        续行原因',
+      '"""',
+    ].join('\n'))
+    expect(header.expectation).toBe(
+      '两个物体位移同样距离、run_time 相同，一个 rate_func=linear、一个 rate_func=smooth，急缓差异是真时序下的过程性差别。',
+    )
+    expect(header.notes).toEqual(['第一行原因续行原因'])
+  })
+
   it('只有标题时其余都是缺省', () => {
     expect(parseExampleHeader('a/b.py', '"""就一个圆\n"""\n')).toEqual({
       title: '就一个圆',

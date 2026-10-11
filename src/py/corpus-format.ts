@@ -87,6 +87,16 @@ export interface CorpusSource {
 }
 
 /**
+ * 续行拼接：docstring 里一句 `@expect` 常被折成几行写（行首缩进续写），
+ * 换行只是排版，不是句子结束。中文标点结尾或续行以汉字起头时直接相接，否则补一个空格。
+ */
+const WRAP_EDGE = /[、。，；：！？）》」』]$/
+function joinWrapped(current: string, next: string): string {
+  if (current === '') return next
+  return WRAP_EDGE.test(current) || /^[一-鿿]/.test(next) ? current + next : `${current} ${next}`
+}
+
+/**
  * 解析文件头的模块 docstring。第一行非空文本是标题，`@xxx` 是可选元数据。
  *
  * 缺 docstring / 缺标题一律**抛**：这是开发机上的语料写坏了，静默跳过等于把一条回归悄悄丢掉。
@@ -103,23 +113,39 @@ export function parseExampleHeader(label: string, text: string): ExampleHeader {
   let browser = false
   let template: string | undefined
   const notes: string[] = []
+  // 续行要并回它所属的标签：空行结束一段，`@` 行开启新标签，其余非空行是上一个标签的续写。
+  let lastTag: 'expect' | 'note' | 'template' | null = null
   for (const line of lines) {
-    if (line.startsWith('@note')) notes.push(line.slice('@note'.length).trim())
-    else if (line.startsWith('@expect')) {
+    if (line === '') {
+      lastTag = null
+    } else if (line.startsWith('@note')) {
+      lastTag = 'note'
+      notes.push(line.slice('@note'.length).trim())
+    } else if (line.startsWith('@expect')) {
+      lastTag = 'expect'
       const value = line.slice('@expect'.length).trim()
-      if (value !== '') expectation = value
+      expectation = value === '' ? undefined : value
     } else if (line.startsWith('@browser')) {
+      lastTag = null
       browser = true
     } else if (line.startsWith('@template')) {
+      lastTag = 'template'
       const value = line.slice('@template'.length).trim()
-      if (value !== '') template = value // 入选理由（「什么时候照它抄」），gen-skill 原样写进技能
+      template = value === '' ? undefined : value // 入选理由（「什么时候照它抄」），gen-skill 原样写进技能
     } else if (line.startsWith('@reject')) {
+      lastTag = null
       reject = true
       const keyword = line.slice('@reject'.length).trim()
       if (keyword !== '') errorIncludes = keyword
+    } else if (lastTag === 'note') {
+      notes[notes.length - 1] = joinWrapped(notes[notes.length - 1]!, line)
+    } else if (lastTag === 'expect') {
+      expectation = joinWrapped(expectation ?? '', line)
+    } else if (lastTag === 'template') {
+      template = joinWrapped(template ?? '', line)
     }
   }
-  return { title, notes, reject, errorIncludes, expectation, browser, template }
+  return { title: title!, notes, reject, errorIncludes, expectation, browser, template }
 }
 
 /** 排序前缀 `NN-` 只用于文件排序，不进 id。 */
