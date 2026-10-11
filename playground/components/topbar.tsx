@@ -17,7 +17,7 @@ import { Segmented } from '@/ui/segmented.tsx'
 import { Tip } from '@/ui/tip.tsx'
 
 export function Topbar({ pg }: { pg: Playground }) {
-  const warmText = pg.warm === 'ready' ? T.warmupDone : pg.warm === 'failed' ? T.warmupFailed : '正在预热 Pyodide…'
+  const warmText = pg.warm === 'ready' ? T.warmupDone : pg.warm === 'failed' ? T.warmupFailed : T.warmup
   return (
     <header className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border px-4 py-2.5">
       <div className="flex items-center gap-1.5">

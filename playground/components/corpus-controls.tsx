@@ -7,11 +7,10 @@
  */
 import { ClipboardCopy, Play, Search, Square, Trash2, Undo2, Zap, X } from 'lucide-react'
 import { useState } from 'react'
+import { buildReport, tally } from 'manim-live'
 import { copyText } from '@/lib/clipboard.ts'
 import { T } from '@/lib/i18n.ts'
-import { buildReport } from '@/lib/report.ts'
 import type { GroundFilter } from '@/lib/types.ts'
-import { tally } from '@/lib/verdict.ts'
 import type { Playground } from '@/lib/use-playground.ts'
 import { Button } from '@/ui/button.tsx'
 import { Segmented } from '@/ui/segmented.tsx'
@@ -25,7 +24,7 @@ export function CorpusToolbar({ pg }: { pg: Playground }) {
   const marksPassed = markIds.filter((id) => pg.marks[id] === 'pass').length
 
   const copy = (): void => {
-    void copyText(buildReport({ corpus: pg.corpus, results: pg.results })).then((ok) => {
+    void copyText(buildReport({ cases: pg.examples, results: pg.results })).then((ok) => {
       if (!ok) return
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1600)

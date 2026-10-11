@@ -57,7 +57,7 @@ export interface ManimWebBridgeOptions {
    */
   sceneFor?: (kind: string) => object
   /**
-   * 极速：不等时间，直接落到终态。实验场「全部渲染」要跑上百条语料，
+   * 极速：不等时间，直接落到终态。playground 的「全部渲染」要跑上百条语料，
    * 按 `run_time` / `wait` 真等一遍要几分钟（一条 `wait(4.4)` 就 4.4 秒）。
    */
   fast?: boolean

@@ -9,9 +9,9 @@
  */
 import { T } from '@/lib/i18n.ts'
 import { shotUrl } from '@/lib/corpus.ts'
-import type { ManimExample } from 'manim-live'
+import { isPassed, stateOf, type ManimExample } from 'manim-live'
 import type { Playground } from '@/lib/use-playground.ts'
-import { groupItems, isPassed, matchFilter, stateOf } from '@/lib/verdict.ts'
+import { groupItems, matchFilter } from '@/lib/filter.ts'
 import { Badge } from '@/ui/badge.tsx'
 import { cn } from '@/ui/cn.ts'
 import { CorpusToolbar, FilterBar } from './corpus-controls.tsx'

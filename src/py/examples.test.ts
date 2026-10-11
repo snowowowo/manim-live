@@ -1,16 +1,16 @@
 /**
- * 语料回归：语料根下每条都过一遍真管线（与实验场页面同一批文件）。
+ * 语料回归：语料根下每条都过一遍真管线（与 playground 页面同一批文件）。
  *
  *  - expect='ok'     ：真桥必须跑通（真 Pyodide + 真 manim-web；Scene 换假画布，
  *                      与 manim-bridge.test.ts 同口径——真 Scene 要 DOM/WebGL，属 Client 半边）。
  *  - expect='reject' ：预检桥必须**当场**拒（不是拖到真桥才炸），且报错里带关键词。
  *
- * 语料本体在插件仓 `corpus/examples/`（**不进发布集**，见 src/host/corpus.js）。
+ * 语料本体在本仓根的 `corpus/examples/`（**不进发布集**，见 src/testbench/corpus.ts）。
  * 所以这份测试只在仓库检出里跑得动；语料缺失（如从 tarball 里跑）整份跳过并说明。
  *
  * 「第三方包」那组要**真联网取包**（首次几十 MB、几分钟），默认不进套件——
  * 设 `MANIM_NET=1` 才跑。理由：默认套件必须离线、秒级、不 flaky；那组是手动验的补充，
- * 主要靠实验场页面点着看（页面上的用例与这里逐字同一份文件）。
+ * 主要靠 playground 页面点着看（页面上的用例与这里逐字同一份文件）。
  *
  * 这里跑全量，页面看单条。加一条语料 = 多一条永久回归，这是「补一次钉死一次」的落点。
  */
@@ -34,7 +34,7 @@ const NET = process.env.MANIM_NET === '1'
 const corpus = collectCorpus()
 if (corpus.examples.length === 0) {
   console.warn(
-    '[examples] 没找到语料——它现在在插件仓 corpus/examples/（包外），' +
+    '[examples] 没找到语料——它在本仓根的 corpus/examples/（包外），' +
       '只在仓库检出里跑得动。整份跳过。',
   )
 }
@@ -82,7 +82,7 @@ const remote = corpus.examples.filter((example) => example.network === true)
 
 /**
  * 只能在真浏览器跑的（SVGMobject 要 DOMParser）：Node 里没有 DOM，跑不了。
- * 不静默丢——打印出跳过的都是哪些，它们由实验场页面（真浏览器）核。
+ * 不静默丢——打印出跳过的都是哪些，它们由 playground（真浏览器）核。
  */
 const browserOnly = local.filter((example) => example.browser === true)
 if (browserOnly.length > 0) {

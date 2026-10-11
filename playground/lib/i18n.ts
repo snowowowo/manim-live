@@ -39,7 +39,7 @@ export const T = {
   filterFailed: '未通过',
   filterPassed: '已通过',
 
-  warmup: '正在预热 Pyodide…（首次约 20 MB）',
+  warmup: '正在预热 Pyodide…（首次要下载运行时）',
   ready: '就绪',
   readyHint: '——点「渲染」，或从左侧挑一条语料。',
   warmupDone: 'Pyodide 已就绪',
@@ -147,20 +147,6 @@ export const T = {
   exportDone: (name: string, mime: string): string => `已导出 ${name}（${mime}）`,
   exportNotBlob: '这个接入者返回的不是浏览器可下载的结果',
   exportNoSurface: '先渲染一条，有画面才谈得上录',
-
-  // ---- 报告 ----
-  reportTitle: '# manim-live playground 结果',
-  reportTime: (time: string): string => `时间：${time}`,
-  reportSummary: (total: number, tried: number, passed: number, failed: number): string =>
-    `总计 ${total} 条 · 已跑 ${tried} · 通过 ${passed} · 失败 ${failed}`,
-  reportFailed: (count: number): string => `## 未通过（${count}）`,
-  reportPassed: (count: number): string => `## 通过（${count}）`,
-  reportUntried: (count: number): string => `## 未跑（${count}）`,
-  reportCase: (id: string, title: string, file: string, expect: string): string =>
-    `[${id}] ${title} — ${file} · 期望 ${expect}`,
-  reportError: (text: string): string => `错误：${text}`,
-  reportSource: '源码：',
-  reportEmpty: '（还没有跑过任何语料）',
 
   // ---- 文档版式 ----
   docPath: '文件',

@@ -265,7 +265,7 @@ export async function runPython(code: string, bridge: ManimBridge, options: RunO
 /**
  * 预热：把解释器与适配层拉起来（Pyodide 本体 + numpy + manim shim）。
  *
- * 为什么要有它：Pyodide 是**约 20 MB** 的东西，不给预热，用户第一次点渲染会以为卡死了。
+ * 为什么要有它：Pyodide 核心约 13 MB、预热还会带上 numpy（约 3 MB），不给预热，用户第一次点渲染会以为卡死了。
  * 走同一条队列，所以预热期间提交的代码会排在它后面，不会两段同时初始化。
  * 不跑任何用户代码——只把运行时准备好。
  */

@@ -4,7 +4,7 @@
 //
 // ⚠️ 两条契约（必须让使用者知道，否则会在 SPA 里踩坑）：
 //   1. **多实例**：WASM 运行时与串行执行队列是**页面级单例**（py/runtime.ts 的 queue），
-//      不是每实例一份。同时挂两个组件不会启两份 20 MB 的 WASM，但它们的渲染是串行的。
+//      不是每实例一份。同时挂两个组件不会启两份 13 MB 的 Pyodide 核心，但它们的渲染是串行的。
 //   2. **销毁**：`dispose()` 要真的释放 WASM / WebGL。SPA 路由切换不销毁就是内存泄漏。
 import { createDryRunBridge } from './py/dry-run-bridge.ts'
 import { runPython, warmupRuntime } from './py/runtime.ts'
@@ -39,7 +39,7 @@ export interface ManimRendererOptions {
 }
 
 export interface ManimRenderer {
-  /** 提前把 Pyodide（约 20 MB）拉起来——不给预热，用户第一次点渲染会以为卡死。 */
+  /** 提前把 Pyodide（核心约 13 MB）拉起来——不给预热，用户第一次点渲染会以为卡死。 */
   warmup(): Promise<void>
   /** 干跑预检：语法错 / 未定义名 / 实测缺失的 manim-web 能力当场回 ok:false，调用方不必再自校验一份。 */
   check(python: string): Promise<CheckResult>
@@ -150,8 +150,8 @@ export { DEFAULT_PYODIDE_INDEX_URL } from './engine/pyodide.ts'
 
 // ---- 语料的**形状**：类型 + 边界校验（`parseCorpus`）----
 //
-// 为什么在浏览器侧而不只在 `/node`：语料本体由使用者（DSH 插件 / 自建后端）经 HTTP 发过来，
-// 浏览器拿到的是**不可信输入**，得有一份两端口径相同的边界校验。它不碰 node:，所以这儿也能出。
+// 两个入口都出它：使用者自己发一批语料时（自建后端 / 静态 JSON / 粘贴导入），浏览器与 Node
+// 要的是同一份边界校验，而它不碰 `node:`。为什么需要这道校验见 `src/py/examples.ts` 顶注。
 export {
   parseCorpus,
   type Corpus,
@@ -176,6 +176,15 @@ export {
   type CorpusSource,
   type ExampleHeader,
 } from './py/corpus-format.ts'
+
+// ---- 测试台：判定 / 统计 / 报告文本（无 UI 的那一半）----
+//
+// 为什么在浏览器入口：跑一批用例、判红绿、拼一份能贴走的回执，是**能力**；列表长什么样、
+// 「复制报告」按钮放哪才是**壳**（使用者自备）。两个消费者（本仓演示台、下游插件的内置样例集）
+// 共用这一份口径，就不会出现「同一条 reject 用例这边算通过、那边算失败」。
+// 它们不碰 `node:`，与语料**装载**（要读盘，只在 `/node` 入口）是两件事。
+export { isPassed, stateOf, tally, type CaseResult, type CaseState, type Tally, type VerdictCase } from './testbench/verdict.ts'
+export { buildReport, type ReportCase, type ReportInput } from './testbench/report.ts'
 
 // ---- 低层入口（给需要直接驱动运行时 / 自己接管画布的使用者）----
 //

@@ -10,9 +10,9 @@
  */
 import { ChevronDown, ChevronRight, Play } from 'lucide-react'
 import { T } from '@/lib/i18n.ts'
-import type { ManimExample } from 'manim-live'
+import { isPassed, stateOf, type ManimExample } from 'manim-live'
 import type { Playground } from '@/lib/use-playground.ts'
-import { groupItems, isPassed, matchFilter, stateOf } from '@/lib/verdict.ts'
+import { groupItems, matchFilter } from '@/lib/filter.ts'
 import { Badge } from '@/ui/badge.tsx'
 import { Button } from '@/ui/button.tsx'
 import { cn } from '@/ui/cn.ts'

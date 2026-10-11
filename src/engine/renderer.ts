@@ -57,7 +57,7 @@ export interface Surface {
 }
 
 export interface SurfaceOptions {
-  /** 极速：不等时间，直接落终态（实验场「全部渲染」用，见 manim-bridge 的 fast）。 */
+  /** 极速：不等时间，直接落终态（playground 的「全部渲染」用，见 manim-bridge 的 fast）。 */
   fast?: boolean
   /**
    * 按 import 取包时的进展回调（开始取时给包名，取完给空数组）。

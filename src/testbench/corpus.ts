@@ -1,17 +1,16 @@
-// 语料的**唯一**位置与读取入口（Node 侧：核心包的测试、playground、以及插件端的实验场路由共用）。
+// 语料的**唯一**位置与读取入口（Node 侧：核心包的回归测试、截图脚本、以及插件端的技能生成脚本共用）。
 //
 // 为什么语料在仓根的 `corpus/` 而不进发布集：这批文件是**开发期的回归网**（外加讲解模板的出处），
-// 不是产品功能——跟着发布等于把上百条源码打进产物，还给每个使用者一个只有开发者才用的实验场。
+// 不是产品功能——跟着发布等于把上百条源码打进产物。
 // 所以它留在包外（`package.json` 的 `files` 不含 `corpus`）：只在**仓库检出**里读得到，
 // 正式安装里这条路径不存在，调用方据此走降级（空表），不报错。
 //
 // 解析顺序：环境变量 MANIM_CORPUS（绝对路径）优先，否则 = <本包根>/corpus/examples。
 // 消费者共用本文件，**不许再有第二处**（各写各的路径必然漂移）：
 //   ① src/py/examples.test.ts（Node 回归）
-//   ② 插件端 src/host/index.js 的语料路由（浏览器侧实验场）—— 经 `manim-live/node` 导入本模块
-//   ③ 插件端 scripts/gen-skill.mjs（把 @template 语料内联进技能）
-//   ④ scripts/shot-corpus.mjs（真浏览器截图落盘）
-//   ⑤ 浏览器侧：包内的 playground —— 它拿不到 `node:fs`，走 vite 的 `import.meta.glob` 读源码，
+//   ② 插件端 scripts/gen-skill.mjs（把 @template 语料内联进技能）
+//   ③ scripts/shot-corpus.mjs（真浏览器截图落盘）
+//   ④ 浏览器侧：包内的 playground —— 它拿不到 `node:fs`，走 vite 的 `import.meta.glob` 读源码，
 //      再用**同一个** `buildCorpus()` 收成 Corpus（格式那一半在 `src/py/corpus-format.ts`）。
 //
 // 截图（`corpus/shots/<组>/<同名>.png`）也在这里定路径，理由同上：

@@ -238,7 +238,7 @@ export function usePlayground() {
   // 人工标注很小，直存即可。
   useEffect(() => saveMarks(marks), [marks])
 
-  // ---- 预热：先把 Pyodide 拉起来，别等点了渲染才发现要等 20 MB ----
+  // ---- 预热：先把 Pyodide 拉起来，别等点了渲染才发现要下十几 MB 的运行时 ----
   useEffect(() => {
     let alive = true
     getRenderer()
@@ -550,7 +550,7 @@ export function usePlayground() {
    *
    * 为什么要有这一步：两者都是**落盘**的，而语料是随源码变的——删掉一条、改个文件名，
    * 盘上那份记录就挂着一个再也点不到的 id。不清的话它会一直跟着每次 `saveGround` 存来存去，
-   * 报告里也会多出对不上的条目。DSH 实验场有同款清理（那里语料是运行时从 Host 取的，更容易对不上）。
+   * 报告里也会多出对不上的条目。
    */
   useEffect(() => {
     // 语料**没读到**的时候不许清：那样「认不出来的 id」是全部，落盘的结果会被一扫而空。
