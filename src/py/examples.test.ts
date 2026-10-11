@@ -39,13 +39,29 @@ if (corpus.examples.length === 0) {
   )
 }
 
-/** 假画布：只关心「收不收、炸不炸」，不看画出来的样子。名字要与真 Scene 对得上。 */
+/**
+ * 假画布：只关心「收不收、炸不炸」，不看画出来的样子。名字要与真 Scene 对得上。
+ *
+ * 3D 相机那一面也要摆出来：语料里有 `class X(ThreeDScene)` 的条目（`lesson-space-cube-camera` 等），
+ * 它们会调 `set_camera_orientation` / `begin_ambient_camera_rotation` / `add_fixed_in_frame_mobjects`。
+ * 假画布缺了这些方法，桥会按「manim-web 无对应方法」拒掉——那是**假画布不够真**，不是语料错。
+ * 真 3D 的行为（相机真的转没转、有没有光）由 `headless.test.ts` 的真 `ThreeDScene` 与
+ * 真浏览器截图核，这里只放行。
+ */
 const fakeScene = () => ({
   add: () => {},
   remove: () => {},
   clear: () => {},
   play: async () => {},
   wait: async () => {},
+  setCameraOrientation: () => {},
+  moveCamera: async () => {},
+  beginAmbientCameraRotation: () => {},
+  stopAmbientCameraRotation: () => {},
+  addFixedInFrameMobjects: () => {},
+  removeFixedInFrameMobjects: () => {},
+  addFixedOrientationMobjects: () => {},
+  removeFixedOrientationMobjects: () => {},
 })
 
 /** 跑一遍并取回报错文案（没抛就是空串）。 */

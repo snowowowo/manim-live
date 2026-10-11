@@ -56,8 +56,11 @@ def module_of(value: object) -> str:
     return getattr(value, "__module__", "") or ""
 
 
-# 适配层自己造的写法，不是 CE 的方法：indexing 是 m[i] 取段（见 manim-shim.ts）。
-SYNTHETIC_METHODS = {"indexing"}
+# 适配层自己造的写法，不是 CE 的方法：indexing 是 m[i] 取段（见 manim-shim.ts）；
+# get_parts 是适配层**手写**的 `MathTex.get_parts()`（manim-web 没有「一次取完所有段」的方法，
+# 它的 getParts 挂在单段 MathTexPart 上），CE 0.22 的公开类上也已经没有这个名字了——
+# 两个都得豁免 phantom 门禁，否则每次生成域清单都会告警「种子里有不存在的写法」。
+SYNTHETIC_METHODS = {"indexing", "get_parts"}
 
 
 def phantom_methods(seed_methods: dict[str, list[str]], names: list[str], values: dict) -> list[str]:
@@ -123,7 +126,7 @@ def main() -> int:
     payload = {
         "_comment": (
             "Manim CE 的公开域名清单，由 scripts/export-ce-api.py 生成（勿手改）。"
-            "probe-api.mjs 逐项实测 manim-web，产出 src/core/py/api-map.generated.ts。"
+            "probe-api.mjs 逐项实测 manim-web，产出 src/py/api-map.generated.ts。"
         ),
         "_source": {
             "package": "manim",

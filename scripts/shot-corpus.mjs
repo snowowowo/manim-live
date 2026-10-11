@@ -7,9 +7,10 @@
 // 与卡片同源（这是关键，不是「差不多」）：
 //   - Python 运行时 = 构建产物 dist/index.js（浏览器入口，与产品同一份），不另抄一个解释器；
 //   - manim-web 用 dist/manim-web.browser.js，即 package.json 的 ./browser 导出，与卡片同一个构建；
-//   - 画布 = new manim.Scene(容器, {width:1280,height:720,autoResize:false,backgroundOpacity:0})
-//     与 src/engine/canvas.ts 逐字一致（含 frameHeight=8 的坐标系归一）。
-//   唯一有意的差别：页面底色给 #1C1C1C（manim 默认底色），让白描边的默认形状看得见——
+//   - 画布 = 产品那一份 `createSceneSlot(容器, manim, 1280, 720)`（src/engine/canvas.ts）：
+//     按 CE 的场景基类名建画布、跑到 class X(ThreeDScene) 时自动换真 3D 场景。
+//     **不另抄一份**——手抄的那份在 Phase 2 加 3D 时漏改了，3D 语料全被误报成「无对应方法」。
+//     唯一有意的差别：页面底色给 #1C1C1C（manim 默认底色），让白描边的默认形状看得见——
 //   卡片是透明底、靠宿主主题透出来，截图里没有「宿主主题」这东西，不给底色就等于白底白线。
 //
 // 运行：node scripts/shot-corpus.mjs [组名…] [选项]
@@ -106,12 +107,12 @@ function parseArgs(argv) {
  */
 const HARNESS_SCRIPT = `
 import * as manim from '/manim/manim-web.browser.js'
-import { runPython, setPyodideLoader, createManimWebBridge } from '/manim-live.js'
+import { runPython, setPyodideLoader, createManimWebBridge, createSceneSlot } from '/manim-live.js'
 
 const WIDTH = ${WIDTH}
 const HEIGHT = ${HEIGHT}
 const container = document.getElementById('stage')
-let scene = null
+let slot = null
 
 const loadScript = (src) => new Promise((ok, fail) => {
   const tag = document.createElement('script')
@@ -129,16 +130,14 @@ setPyodideLoader(async () => {
   return load({ indexURL: '/pyodide/' })
 })
 
-// 与 src/engine/canvas.ts 的 createScene 逐字一致（含坐标系归一）
+// 画布用**产品那一份** createSceneSlot，不另抄：按 CE 的场景基类名（Scene / ThreeDScene / …）
+// 建画布，跑到 class X(ThreeDScene) 时自动换真 3D 场景——与 src/engine/canvas.ts 逐字同一份代码。
+// （以前这里手抄了一份 new manim.Scene(...)，Phase 2 加 3D 时漏改，3D 语料全被误报成「无对应方法」。）
 const newScene = () => {
-  if (scene !== null) { try { scene.dispose() } catch {} scene = null; container.innerHTML = '' }
-  scene = new manim.Scene(container, {
-    width: WIDTH, height: HEIGHT,
-    autoResize: false, backgroundOpacity: 0,
-  })
-  scene.camera.frameHeight = 8
-  scene.camera.frameWidth = 8 * (WIDTH / HEIGHT)
-  return scene
+  if (slot !== null) slot.dispose()
+  container.innerHTML = ''
+  slot = createSceneSlot(container, manim, WIDTH, HEIGHT)
+  return slot
 }
 
 /**
@@ -167,7 +166,7 @@ const inkOf = (target) => {
 window.__run = async ({ code, fast }) => {
   const logs = []
   const target = newScene()
-  const bridge = createManimWebBridge({ manim, scene: target, fast })
+  const bridge = createManimWebBridge({ manim, scene: target.scene(), sceneFor: target.sceneFor, fast })
   let error = null
   try {
     await runPython(code, bridge, { output: (text) => logs.push(text) })
@@ -175,10 +174,11 @@ window.__run = async ({ code, fast }) => {
     error = thrown && thrown.message ? thrown.message : String(thrown)
   }
   // 极速模式下 duration=0 的动画可能在第一 tick 就收尾，落帧不保证发生过；补一帧兜底，
-  // 顺手在同一帧里量墨迹。
+  // 顺手在同一帧里量墨迹。场景可能已被换成 3D 那块，所以要现取一次。
+  const live = target.scene()
   const ink = await new Promise((done) => requestAnimationFrame(() => {
-    try { target.render() } catch {}
-    done(inkOf(target))
+    try { live.render() } catch {}
+    done(inkOf(live))
   }))
   return { ok: error === null, error, logs, ink }
 }
@@ -187,7 +187,7 @@ window.__run = async ({ code, fast }) => {
 window.__inspect = async ({ code, fast }) => {
   const logs = []
   const target = newScene()
-  const bridge = createManimWebBridge({ manim, scene: target, fast })
+  const bridge = createManimWebBridge({ manim, scene: target.scene(), sceneFor: target.sceneFor, fast })
   let error = null
   try {
     await runPython(code, bridge, { output: (text) => logs.push(text) })
@@ -213,7 +213,7 @@ window.__inspect = async ({ code, fast }) => {
     return row
   }
   const objects = []
-  try { for (const mobject of target.mobjects) objects.push(describe(mobject)) } catch {}
+  try { for (const mobject of target.scene().mobjects) objects.push(describe(mobject)) } catch {}
   return { ok: error === null, error, logs, objects }
 }
 

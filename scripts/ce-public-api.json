@@ -1,5 +1,5 @@
 {
-  "_comment": "Manim CE 的公开域名清单，由 scripts/export-ce-api.py 生成（勿手改）。probe-api.mjs 逐项实测 manim-web，产出 src/core/py/api-map.generated.ts。",
+  "_comment": "Manim CE 的公开域名清单，由 scripts/export-ce-api.py 生成（勿手改）。probe-api.mjs 逐项实测 manim-web，产出 src/py/api-map.generated.ts。",
   "_source": {
     "package": "manim",
     "version": "0.22.0",
@@ -462,11 +462,18 @@
       "wait",
       "clear",
       "bring_to_front",
-      "bring_to_back"
+      "bring_to_back",
+      "set_camera_orientation",
+      "move_camera",
+      "begin_ambient_camera_rotation",
+      "stop_ambient_camera_rotation",
+      "add_fixed_in_frame_mobjects",
+      "remove_fixed_in_frame_mobjects",
+      "add_fixed_orientation_mobjects",
+      "remove_fixed_orientation_mobjects"
     ]
   },
   "_phantomMethods": [
-    "get_parts",
     "put_start_and_end"
   ]
 }

@@ -12,21 +12,23 @@
  * 运行在真 CPython（Pyodide）上，所以 numpy 是真的——向量就是 ndarray，运算天然逐元素。
  */
 import { PY_ANIMATE_METHODS, PY_API_MAP, PY_COLOR_HEX } from './api-map.generated.ts'
-import { ABSTRACT_CLASSES, ANIMATE_REWRITES, INDEX_GETTERS, PROP_READS } from './surface.ts'
+import {
+  ABSTRACT_CLASSES,
+  ANIMATE_REWRITES,
+  INDEX_GETTERS,
+  PROP_READS,
+  SCENE_CLASS_NAMES,
+  SCENE_FAMILY,
+} from './surface.ts'
 
 /** snake_case → camelCase（manim-web 的方法名是 camel）。 */
 const camel = (name: string): string => name.replace(/_([a-z0-9])/g, (_, c: string) => c.toUpperCase())
 
-/** 场景基类不是「能 new 的物体」，不能生成成形状别名。 */
-const SCENE_CLASSES = new Set([
-  'Scene',
-  'ThreeDScene',
-  'MovingCameraScene',
-  'ZoomedScene',
-  'LinearTransformationScene',
-  'VectorScene',
-  'GraphScene',
-])
+/**
+ * 场景基类不是「能 new 的物体」，不能生成成形状别名。
+ * 名字表不在这里手写——去 surface.ts 的 SCENE_FAMILY 取（同一张表还决定「映射到 manim-web 的哪个类」）。
+ */
+const SCENE_CLASSES = new Set(SCENE_CLASS_NAMES)
 
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/
 
@@ -66,18 +68,35 @@ function objectAliases(): string {
 }
 
 /**
- * 场景家族：`ThreeDScene` / `MovingCameraScene` / … 都定义为 Scene 的子类。
+ * 场景家族：`ThreeDScene` / `MovingCameraScene` / … 都生成为 Scene 的**真子类**。
  *
- * 探针把它们记成 ok（manim-web 里确实有这些类），但**本实现只有一块画布**——真桥的 create
- * 只对 "Scene" 返回已建好的句柄，其它 kind 会去 new 一个没有容器的场景对象。所以这里统一
- * 继承 Scene、共用同一个句柄；不定义的话 `class X(ThreeDScene)` 直接 NameError
- * （技能把 ThreeDScene 列在可用清单里，模型照写就炸——真机事故）。
+ * 真子类不是为了好看——**类的名字要一路传到桥那边**：`Scene.__init__` 把「用户类的 MRO 里
+ * 第一个场景基类名」发给 `_mb_create`（见下面的 `_scene_kind`），桥按这个名字挑 manim-web 的
+ * 对应类 new 出**那一种**场景（`ThreeDScene` → 真 3D 相机 + 光照 + 深度写回）。
+ *
+ * 以前这里统一 `class X(Scene): pass`、且所有名字共用同一个句柄，于是 `class X(ThreeDScene)`
+ * 拿到的是 **2D 画布**：3D 形状（Cube / Sphere / …）用的是吃光的材质，而 2D 场景里一盏灯都没有、
+ * 材质的 depthTest 还被关掉——渲染出来**全黑**（真机现象，Phase 2 才修）。
+ *
+ * manim-web 没有的场景名（SCENE_FAMILY 里 `js: null`，如 GraphScene）照样要定义成类——
+ * 不定义的话 `class X(GraphScene)` 直接 NameError；定义了就退回 2D Scene，解析处 warn 一次。
  */
 function sceneAliases(): string {
-  return [...SCENE_CLASSES]
-    .filter((name) => name !== 'Scene' && usable(name))
-    .map((name) => `class ${name}(Scene):\n    pass`)
+  return SCENE_CLASS_NAMES.filter((name) => name !== 'Scene' && usable(name))
+    .map((name) => {
+      const js = SCENE_FAMILY[name]?.js ?? null
+      const doc =
+        js === null
+          ? 'manim-web 没有对应类，退回 2D 的 Scene（见 surface.ts 的 SCENE_FAMILY）'
+          : `真 ${js} 场景：相机 / 光照 / 深度由 manim-web 提供`
+      return `class ${name}(Scene):\n    """${doc}"""\n    pass`
+    })
     .join('\n\n')
+}
+
+/** 适配层认得的场景基类名（surface.ts 的 SCENE_FAMILY 键）——`_scene_kind` 靠它认亲。 */
+function sceneKindSet(): string {
+  return `_SCENE_KINDS = (${SCENE_CLASS_NAMES.map((name) => JSON.stringify(name)).join(', ')},)`
 }
 
 /** 缺失项存根：表里 state=missing 的名字生成一个「用一下就抛」的存根，报错带上替代写法。
@@ -656,15 +675,125 @@ def _checked_mobjects(where, values):
     return values
 
 
+def _scene_kind(cls):
+    """用户类 → 它真正继承的**场景种类**（ThreeDScene / MovingCameraScene / …）。
+
+    按 MRO 找**第一个**认识的场景基类：用户写 class My3D(ThreeDScene) 时，
+    type(self).__name__ 是 "My3D"，桥不认这个名字；要的是它爹那一层。找不到就按 Scene
+    （适配层自己生成的子类、以及用户直接继承 Scene 的写法，MRO 里总有一层是 Scene）。
+
+    只认**适配层自己生成的**那些类（__module__ 是本模块）：只看名字会撞车——用户写
+    class VectorScene(Scene) 时，那个类恰好叫 VectorScene，继承的却是普通 Scene；
+    按名字认亲会把它当成 manim-web 的真 VectorScene（那个类**自带一块坐标平面**），
+    于是用户没要的东西凭空出现（2026-10-11 全量重截图时抓到，_dev/examples/ctor/05-vector.py）。
+    用户类的 __module__ 是 "__main__"，所以这一层过滤正好把它们挡在外面。
+    """
+    for base in getattr(cls, "__mro__", (cls,)):
+        if getattr(base, "__module__", None) != __name__:
+            continue
+        name = getattr(base, "__name__", None)
+        if name in _SCENE_KINDS:
+            return name
+    return "Scene"
+
+
 class Scene(object):
-    """场景：一块已建好的 manim-web 画布的句柄 + add / remove / play / wait。
+    """场景：一块已建好的 manim-web 画布（按种类）的句柄 + add / remove / play / wait。
 
     play / wait 是 async——CPython 里没法在同步函数中途让出控制权去等渲染完成，
     所以由 _compile 把 construct 与其中的调用改写成 async / await（见下）。
     """
 
     def __init__(self):
-        self._h = _mb_create("Scene", [], {})
+        # 把**真实的场景种类**告诉桥：它据此换一块对应种类的 manim-web 场景
+        # （ThreeDScene → 真 3D 相机 + 光照）。写死 "Scene" 的话 3D 形状会落在 2D 画布上——全黑。
+        self._kind = _scene_kind(type(self))
+        self._h = _mb_create(self._kind, [], {})
+
+    def _require_3d(self, where):
+        """相机方法只在 3D 场景上存在。
+
+        CE 里对普通 Scene 调 set_camera_orientation 是 AttributeError（那些方法就定义在
+        ThreeDScene 上）；适配层把它们挂在 Scene 上（好让名字一直可解析、报错发生在能读懂的地方），
+        所以得自己拦——不然真桥会说「setCameraOrientation() 在 manim-web 无对应方法」，
+        看着像拼写错，其实是场景种类不对。
+        """
+        if self._kind != "ThreeDScene":
+            raise AttributeError(
+                "%s() 只在 3D 场景上可用——把场景类改成 class 你的类名(ThreeDScene)；"
+                "当前是 %s" % (where, self._kind)
+            )
+
+    # ---- 3D 相机（Phase 2）----
+    # 参数形状的翻译（CE 的 gamma / zoom / focal_distance → manim-web 的 phi / theta / distance、
+    # run_time → duration）在 surface.ts 的方法改写表里，这里只管把参数递过去。
+    # 没给的参数**不在这里补默认值**：补在判定层（cameraPosition），统一走同一份登记。
+
+    def set_camera_orientation(self, phi=None, theta=None, distance=None):
+        """CE 的 self.set_camera_orientation(phi=…, theta=…)：立刻把相机摆到该朝向。"""
+        self._require_3d("set_camera_orientation")
+        _mb_method(self._h, "set_camera_orientation", _tag_args([phi, theta, distance]), {})
+
+    async def move_camera(self, phi=None, theta=None, distance=None, run_time=None):
+        """CE 的 self.move_camera(…)：把相机**动画**移到该朝向（不是瞬移）。
+
+        是异步的——construct 会被改写成 async 并在这一句前补 await（见 _AWAIT_METHODS）；
+        因此只能当语句写（与 play / wait 同一条限制）。
+        """
+        self._require_3d("move_camera")
+        await _mb_method(self._h, "move_camera", _tag_args([phi, theta, distance, run_time]), {})
+
+    def begin_ambient_camera_rotation(self, rate=None):
+        """CE 的 self.begin_ambient_camera_rotation(rate)：让相机一直慢慢绕着转。"""
+        self._require_3d("begin_ambient_camera_rotation")
+        _mb_method(self._h, "begin_ambient_camera_rotation", _tag_args([rate]), {})
+
+    def stop_ambient_camera_rotation(self):
+        """停掉 begin_ambient_camera_rotation 起的自转。"""
+        self._require_3d("stop_ambient_camera_rotation")
+        _mb_method(self._h, "stop_ambient_camera_rotation", [], {})
+
+    def add_fixed_in_frame_mobjects(self, *mobjects):
+        """把物体**钉在屏幕上**：相机怎么转它都不动（标题 / 说明这类要用的）。
+
+        先 self.add 再钉：CE 的 add_fixed_in_frame_mobjects 里本来就有一句 self.add(*mobjects)
+        （manim/scene/three_d_scene.py），而 manim-web 的同名方法**只登记、不加入场景**——
+        不补这一句，照 CE 写的代码会「不报错、画面上什么都没有」。
+        """
+        checked = _checked_mobjects("add_fixed_in_frame_mobjects", mobjects)
+        self.add(*checked)
+        self._require_3d("add_fixed_in_frame_mobjects")
+        _mb_method(self._h, "add_fixed_in_frame_mobjects", _tag_args(checked), {})
+
+    def remove_fixed_in_frame_mobjects(self, *mobjects):
+        """把 add_fixed_in_frame_mobjects 钉住的物体放开（之后随相机一起转）。"""
+        self._require_3d("remove_fixed_in_frame_mobjects")
+        _mb_method(
+            self._h,
+            "remove_fixed_in_frame_mobjects",
+            _tag_args(_checked_mobjects("remove_fixed_in_frame_mobjects", mobjects)),
+            {},
+        )
+
+    def add_fixed_orientation_mobjects(self, *mobjects):
+        """钉住**朝向**（位置仍随相机远近变化）：字面始终正对着观众。
+
+        同 add_fixed_in_frame_mobjects：CE 里也有一句 self.add(*mobjects)，manim-web 只登记。
+        """
+        checked = _checked_mobjects("add_fixed_orientation_mobjects", mobjects)
+        self.add(*checked)
+        self._require_3d("add_fixed_orientation_mobjects")
+        _mb_method(self._h, "add_fixed_orientation_mobjects", _tag_args(checked), {})
+
+    def remove_fixed_orientation_mobjects(self, *mobjects):
+        """放开 add_fixed_orientation_mobjects 钉住的朝向。"""
+        self._require_3d("remove_fixed_orientation_mobjects")
+        _mb_method(
+            self._h,
+            "remove_fixed_orientation_mobjects",
+            _tag_args(_checked_mobjects("remove_fixed_orientation_mobjects", mobjects)),
+            {},
+        )
 
     def add(self, *mobjects):
         # add 走桥的**专用入口**（Scene.add(...mobjects)，收裸句柄号）。
@@ -721,7 +850,9 @@ async def _run(namespace):
 
 # play / wait 需要 await 才能等到渲染完成。这个改写必须做在**语法树**上，不能拿正则凑：
 # 要精确识别「construct 里的表达式语句且被调方法是 play/wait」，还要只作用于 construct。
-_AWAIT_METHODS = ("play", "wait")
+# move_camera 同理：manim-web 的 moveCamera 是 async（要一帧一帧推），不 await 就当场返回、
+# 相机纹丝不动。
+_AWAIT_METHODS = ("play", "wait", "move_camera")
 
 # 排版异步的类：construct 里对这些类的构造调用自动包一层 await _flush_after(...)，
 # 让随后的 to_edge / next_to / move_to 测到渲染后的真实宽度（缺了这步，角落标签会超界）。
@@ -816,4 +947,4 @@ async def _run_source(source):
 /** Python 适配层模块的完整源码。手写部分里的 __GENERATED_MEMBERS__ 换成表生成的属性/下标。 */
 export const MANIM_SHIM_SOURCE = `${SHIM_BASE.replace('    # __GENERATED_MEMBERS__\n', `${memberSection()}\n`)}${
   animateAliases()
-}\n\n${rateAliases()}\n\n${colorAliases()}\n\n${objectAliases()}\n\n${sceneAliases()}\n\n${missingAliases()}\n`
+}\n\n${rateAliases()}\n\n${colorAliases()}\n\n${objectAliases()}\n\n${sceneAliases()}\n\n${sceneKindSet()}\n\n${missingAliases()}\n`

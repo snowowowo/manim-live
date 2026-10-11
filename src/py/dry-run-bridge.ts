@@ -16,6 +16,7 @@ import {
   planCreate,
   planMethod,
   planPlayOptions,
+  SCENE_FAMILY,
 } from './surface.ts'
 
 export function createDryRunBridge(): ManimBridge {
@@ -32,6 +33,10 @@ export function createDryRunBridge(): ManimBridge {
 
   return {
     create(kind, args, kwargs) {
+      // 场景族不是「构造一个物体」，而是「换一块哪种场景的画布」（名字表在 surface.ts 的
+      // SCENE_FAMILY，真桥只管换画布不做判定）——所以不走 planCreate。与真桥同判：
+      // 同一段 `class X(ThreeDScene)` 两边都不该被当成「构造 ThreeDScene」来审。
+      if (SCENE_FAMILY[kind] !== undefined) return nextHandle++
       // 名字缺失、位置参数与构造规则对不上，都在这里当场拒——和真桥同一份判定
       planCreate(kind, args, kwargs)
       const handle = nextHandle++

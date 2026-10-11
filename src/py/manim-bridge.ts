@@ -33,6 +33,7 @@ import {
   planPlayOptions,
   PY_API_MAP,
   type RatePlan,
+  SCENE_FAMILY,
 } from './surface.ts'
 
 export interface ManimNamespace {
@@ -44,14 +45,26 @@ export interface ManimNamespace {
 
 export interface ManimWebBridgeOptions {
   manim: ManimNamespace
-  /** 已建好的 manim-web Scene 实例；适配层里的 Scene() 会绑到它。 */
+  /** 已建好的 manim-web Scene 实例；适配层里的 `Scene()` 默认绑到它。 */
   scene: object
+  /**
+   * 按**场景种类**换一块画布（Phase 2）。
+   *
+   * 为什么由调用方注入而不是这里自己建：建场景要碰 DOM / WebGL（属于 Client 半边），
+   * 本模块刻意不碰 DOM——它是能在 Node 里对真 manim-web 做单测的纯逻辑。
+   *
+   * 不给 = 所有场景族都绑到上面那个 `scene`（单测的假画布、截图脚本的旧路径都走这个）。
+   */
+  sceneFor?: (kind: string) => object
   /**
    * 极速：不等时间，直接落到终态。实验场「全部渲染」要跑上百条语料，
    * 按 `run_time` / `wait` 真等一遍要几分钟（一条 `wait(4.4)` 就 4.4 秒）。
    */
   fast?: boolean
 }
+
+/** 是不是「场景基类」而非「要 new 的物体」——表在 surface.ts（SCENE_FAMILY）。 */
+const isSceneKind = (kind: string): boolean => SCENE_FAMILY[kind] !== undefined
 
 /** Python 的 _zip / VGroup 等传入的物体是 `{ __handle: n }`，这里换回真对象。 */
 type HandleTag = { [HANDLE_KEY]: number }
@@ -517,7 +530,16 @@ export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridg
 
   return {
     create(kind, args, kwargs) {
-      if (kind === 'Scene') return SCENE_HANDLE
+      // 场景族不是「构造一个物体」，而是「这块画布该是哪种场景」：`class X(ThreeDScene)` 要的是
+      // 一块**真 3D 场景**（3D 相机 + 光照），`class X(Scene)` 要的是已经开始用的那块 2D 画布。
+      // 句柄恒为 SCENE_HANDLE 0——一次运行只会实例化一个场景子类，画布随种类换掉即可。
+      if (isSceneKind(kind)) {
+        const wanted = options.sceneFor?.(kind)
+        if (wanted !== undefined && wanted !== objects.get(SCENE_HANDLE)) {
+          objects.set(SCENE_HANDLE, wanted)
+        }
+        return SCENE_HANDLE
+      }
       // 位置参数与关键字都先深解析（句柄标记换真对象），再交给支持面定形状（规则在 surface.ts）
       const ctorArgs = planCreate(kind, args.map(deepResolve), deepResolve(kwargs) as Record<string, unknown>)
       // 上游造歪的弧线形状先用 Arc 重造（surface 的 ARC_SHAPE_REPAIRS 点名了是哪几个）。

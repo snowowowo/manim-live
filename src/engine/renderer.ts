@@ -9,7 +9,7 @@
 // 这里那条 tail 只管同一块画布上的先后。
 import { PyRunCancelled, PyRuntimeError, runPython } from '../py/runtime.ts'
 import { createManimWebBridge, type ManimNamespace } from '../py/manim-bridge.ts'
-import { createScene, type ManimScene } from './canvas.ts'
+import { createSceneSlot } from './canvas.ts'
 import { loadManim } from './library.ts'
 
 const WIDTH = 1280
@@ -60,7 +60,9 @@ export interface SurfaceOptions {
 export async function createSurface(container: HTMLDivElement, options: SurfaceOptions = {}): Promise<Surface> {
   const manim = await loadManim()
 
-  let scene: ManimScene = createScene(container, manim, WIDTH, HEIGHT)
+  // 场景槽：2D 起手，真跑到 3D 场景时换一块真 3D 画布。**「换」的动作只有一处实现**
+  // （engine/canvas.ts 的 createSceneSlot）——工具侧的截图自查台用的是同一份。
+  const slot = createSceneSlot(container, manim, WIDTH, HEIGHT)
   let tail: Promise<unknown> = Promise.resolve()
   let disposed = false
   let lastCode: string | null = null
@@ -71,7 +73,8 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
   const execute = async (code: string, handlers: RunHandlers): Promise<void> => {
     const bridge = createManimWebBridge({
       manim: manim as unknown as ManimNamespace,
-      scene,
+      scene: slot.scene(),
+      sceneFor: slot.sceneFor,
       fast: options.fast === true,
     })
     await runPython(code, bridge, {
@@ -117,15 +120,9 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
       if (code === null) throw new Error('manim-live：还没跑过任何代码，没得重播')
       const job = tail.then(async () => {
         if (disposed) throw new PyRunCancelled()
-        // 作废当前场景并建一块新的：这条就是「从头真播」——不复用旧场景，
+        // 作废当前场景并建一块新的（**同一场景种类**）：这条就是「从头真播」——不复用旧场景，
         // 免得上一次留下的物体、追踪器、相机姿态串到这一遍里。
-        try {
-          scene.dispose()
-        } catch (error) {
-          console.error('[manim-live] replay dispose failed:', error)
-        }
-        container.innerHTML = ''
-        scene = createScene(container, manim, WIDTH, HEIGHT)
+        slot.reset()
         rendered = false
         await execute(code, lastHandlers)
         rendered = true
@@ -145,12 +142,9 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
 
     dispose(): void {
       disposed = true
-      try {
-        // scene.dispose() 释放 mobject、WebGL 上下文与 resize 观察者，并从容器摘掉 canvas。
-        scene.dispose()
-      } catch (error) {
-        console.error('[manim-live] scene dispose failed:', error)
-      }
+      // slot.dispose() 里就是 scene.dispose()：释放 mobject、WebGL 上下文与 resize 观察者，
+      // 并从容器摘掉 canvas。
+      slot.dispose()
     },
   }
 }

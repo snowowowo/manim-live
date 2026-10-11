@@ -74,12 +74,106 @@ function assertTableCells(values: Record<string, unknown>): void {
  *
  * 所以按「缺失」处理：适配层生成一个「用一下即抛、并给出具体替代类」的存根，
  * 技能文档也把它们从「可用清单」挪进「实测缺失」（gen-skill 读的就是这张表）。
- * 与场景家族（有类、只是共用一块画布）不同：那些是能用的，这些是不能直接构造的。
+ * 与场景家族（SCENE_FAMILY：有对应类、能真的建出那一种场景）不同：那些是能用的，这些是不能直接构造的。
  *
  * ⚠️ 放这儿而不是 manim-shim.ts 里：两边（执行侧与文档生成侧）都读这一份，免得漂。
  */
 export const ABSTRACT_CLASSES: Record<string, string> = {
   Polyhedron: '抽象基类，不能直接构造——用具体类：Cube / Sphere / Cone / Cylinder / Torus / Prism / Tetrahedron / Octahedron / Dodecahedron / Icosahedron',
+}
+
+/**
+ * 场景族 SSOT：CE 的场景基类名 → manim-web 的对应类。
+ *
+ * 适配层照这张表把 `ThreeDScene` / `MovingCameraScene` / … 生成成 Scene 的**真子类**，
+ * 真桥再按「用户类的 MRO 里出现的第一个场景基类」去 manim-web 里 new 出**对应种类**的场景
+ * （见 manim-bridge 的 `create`、canvas.ts 的 createScene）。
+ *
+ * 为什么非这样不可（Phase 2 的核心，Node 实测）：3D 形状套在 2D 画布上会**全黑**——
+ * `Scene.add` 为了让 2D 图层正确叠放会把材质的 `depthTest` 关掉（`[false]`），
+ * 而且场景里**一盏灯都没有**（`lights=0`）；Cube / Sphere 这些用的是吃光的材质，没光就是纯黑。
+ * 换成 `ThreeDScene` 之后同一段代码是 `lights=3, depthTest=[true]`，形状才有明暗。
+ *
+ * `js: null` = manim-web 没有这个类 → 退回 2D 的 Scene（**不静默**：note 写清为什么，
+ * `resolveSceneKind` 退回时 warn 一次）。
+ */
+export const SCENE_FAMILY: Record<string, { js: string | null; note?: string }> = {
+  Scene: { js: 'Scene' },
+  ThreeDScene: { js: 'ThreeDScene' },
+  MovingCameraScene: { js: 'MovingCameraScene' },
+  ZoomedScene: { js: 'ZoomedScene' },
+  VectorScene: { js: 'VectorScene' },
+  LinearTransformationScene: { js: 'LinearTransformationScene' },
+  GraphScene: {
+    js: null,
+    note: 'manim-web 没有 GraphScene（CE 0.22 的公共 API 里也没有——那是 ManimGL 的写法）',
+  },
+}
+
+/** CE 的场景基类名：适配层靠它决定「哪些名字要生成为场景子类、且不给它们形状别名」。 */
+export const SCENE_CLASS_NAMES: readonly string[] = Object.keys(SCENE_FAMILY)
+
+/** 已经 warn 过「退回了 Scene」的种类：同一页同一个名字只吵一次。 */
+const sceneFallbackWarned = new Set<string>()
+
+/**
+ * 把 CE 的场景基类名解析成 **manim-web 的类名**。manim-web 没有的（GraphScene）退回 `'Scene'`，
+ * 并**大声**说明——静默退回会让「写法被吃掉了」看起来像「写法生效了」。
+ */
+export function resolveSceneKind(kind: string): string {
+  const entry = SCENE_FAMILY[kind]
+  if (entry?.js != null) return entry.js
+  if (!sceneFallbackWarned.has(kind)) {
+    sceneFallbackWarned.add(kind)
+    console.warn(
+      `[manim-live] ${kind}：${entry?.note ?? 'manim-web 没有这个场景类'}——本场景退回 2D 的 Scene`,
+    )
+  }
+  return 'Scene'
+}
+
+/** 世界坐标系的一帧（Manim 标准）：高 8 单位、宽按画布比例（16:9 → 14.22）。 */
+export const FRAME_HEIGHT = 8
+
+/**
+ * 3D 相机的距离：对着 CE 的 `ThreeDCamera.focal_distance = 20` 取。
+ *
+ * 为什么要对齐它：透视强度只由「距离 / 可视高度」这个比决定。manim-web 的 fov 默认 45°，
+ * 配上「可视高度 = 8」反推出来的距离只有 9.66——比值 1.21，透视**很冲**：
+ * 一帧里 y=+4 的东西比 y=-4 的小三分之一，按 2D 尺度摆好的网格排出来上下大小不一。
+ * CE 的 focal_distance 是 20（帧高 8），比值 2.5，透视温和得多。取同一个比值，
+ * 「一帧 8 单位高」的尺度直觉在 3D 里才真的和 2D 一致（CE 的 8 单位帧下，
+ * `side_length=2` 的立方体占画面高度的 1/4）。
+ */
+const THREE_D_DISTANCE = 20
+
+/** 距离钉在 20 之后，由「原点平面可视高度 = FRAME_HEIGHT」反推 fov（度）：≈ 22.6°。 */
+const THREE_D_FOV = (2 * Math.atan(FRAME_HEIGHT / 2 / THREE_D_DISTANCE) * 180) / Math.PI
+
+/**
+ * `ThreeDScene` 的相机默认值（fov 用度、phi/theta 用弧度）——三处取值都对着 CE 抄。
+ *
+ * - **phi / theta**：CE 的 `ThreeDCamera` 初值是 `phi=0, theta=-90°`，即「相机蹲在 +Z 轴上正对
+ *   XY 平面」的退化视角——看起来跟 2D 一模一样（实测渲染出来就是个正方形），
+ *   CE 用户几乎总要先 `set_camera_orientation` 才见立体。CE 自己把「漂亮的斜视」定义成
+ *   `default_angled_camera_orientation_kwargs = phi 70° / theta -135°`
+ *   （`set_to_default_angled_camera_orientation()` 与无参 `move_camera()` 用的就是它）。
+ *   默认取这一组：`class X(ThreeDScene)` 一眼就是 3D，显式 `set_camera_orientation` 照常覆盖。
+ * - **distance / fov**：见 `THREE_D_DISTANCE`。两者必须成对改——单改一个，可视高度就跑了
+ *   （可视高度 = 2·d·tan(fov/2)）。
+ */
+export const THREE_D_CAMERA_DEFAULTS = {
+  fov: THREE_D_FOV,
+  phi: (70 * Math.PI) / 180,
+  theta: (-135 * Math.PI) / 180,
+  distance: THREE_D_DISTANCE,
+  /** 默认光照：没有它吃光的材质就是纯黑（见 SCENE_FAMILY 的注释）。 */
+  setupLighting: true,
+  /**
+   * 关掉鼠标拖拽转视角：卡片活在可滚动页面里，拖拽会跟页面手势抢事件；
+   * 而且录屏 / 重播时相机姿态是「被用户摸过的」，画面就不可复现了。要交互另开一期。
+   */
+  enableOrbitControls: false,
 }
 
 const CTOR: Record<string, CtorSpec> = {
@@ -929,6 +1023,108 @@ const METHOD_REWRITES: Record<
     if (args[1] !== undefined) options.yValues = args[1]
     return [[{ js: 'plotLineGraph', args: [options] }]]
   },
+
+  // ---- 3D 相机（Phase 2）----
+  //
+  // 这八个方法名 camel 之后与 manim-web 同名，本来可以「表里记 ok、直接透传」——但**参数形状**
+  // 对不上，透传会静默出 NaN：
+  //   - CE 的 `set_camera_orientation(phi, theta, gamma, zoom, focal_distance, frame_center)`
+  //     里 manim-web 只有 `setCameraOrientation(phi, theta, distance)`。多给一个键，它就落到
+  //     第 3 个位置参数（distance）上——`orbit(phi, theta, {…})` 里 `Math.cos(对象)` 出 NaN，
+  //     相机位置变 NaN、画面不动、**不报错**。
+  //   - CE 的 `move_camera(..., run_time=)` 在 manim-web 是 `moveCamera({phi, theta, distance, duration})`
+  //     ——一个选项对象，而且时长叫 `duration`。
+  // 所以一律显式挑键；挑不出来的键当场报可读错（这是「预检过、真桥静默画错」的解药）。
+  set_camera_orientation: (args, kwargs) => {
+    rejectCameraKeys('set_camera_orientation', CAMERA_KEYS, kwargs)
+    return [[{ js: 'setCameraOrientation', args: cameraPosition(args, kwargs) }]]
+  },
+  move_camera: (args, kwargs) => {
+    rejectCameraKeys('move_camera', [...CAMERA_KEYS, 'run_time', 'duration'], kwargs)
+    const [phi, theta, distance] = cameraPosition(args, kwargs)
+    const options: Record<string, unknown> = { phi, theta, distance }
+    // CE 的 run_time 落在 `**kwargs` 里再交给 play；manim-web 直接收 duration。
+    const duration = kwargs.run_time ?? kwargs.duration ?? args[3]
+    // duration 缺省交给 manim-web 自己的默认（1 秒）——它 `e.duration ?? 1`。
+    if (duration !== undefined && duration !== null) options.duration = duration
+    return [[{ js: 'moveCamera', args: [options] }]]
+  },
+  begin_ambient_camera_rotation: (args, kwargs) => {
+    // CE 还有 `about="theta"`（绕哪个轴转）；manim-web 只会绕方位角 theta 转。
+    rejectCameraKeys('begin_ambient_camera_rotation', ['rate'], kwargs)
+    const rate = kwargs.rate ?? args[0]
+    // 缺省就不传：manim-web 的默认 0.1（CE 是 0.02，转得慢些）——交给它，别硬塞一个数
+    return [[{ js: 'beginAmbientCameraRotation', args: rate === undefined || rate === null ? [] : [rate] }]]
+  },
+  stop_ambient_camera_rotation: (args, kwargs) => {
+    rejectCameraKeys('stop_ambient_camera_rotation', [], kwargs)
+    return [[{ js: 'stopAmbientCameraRotation', args: [] }]]
+  },
+  // 「钉在屏幕上」/「钉住朝向」两族：CE 是变长位置参数，manim-web 同形。改写只为把
+  // 「写成了关键字」这种注定不生效的写法当场拦下（`*mobjects` 没有键名可用）。
+  add_fixed_in_frame_mobjects: (args, kwargs) => fixedMobjectsCall('add_fixed_in_frame_mobjects', 'addFixedInFrameMobjects', args, kwargs),
+  remove_fixed_in_frame_mobjects: (args, kwargs) => fixedMobjectsCall('remove_fixed_in_frame_mobjects', 'removeFixedInFrameMobjects', args, kwargs),
+  add_fixed_orientation_mobjects: (args, kwargs) => fixedMobjectsCall('add_fixed_orientation_mobjects', 'addFixedOrientationMobjects', args, kwargs),
+  remove_fixed_orientation_mobjects: (args, kwargs) => fixedMobjectsCall('remove_fixed_orientation_mobjects', 'removeFixedOrientationMobjects', args, kwargs),
+}
+
+/** 相机位置三件套：CE 与 manim-web 唯一对得上的三个方位参数。 */
+const CAMERA_KEYS = ['phi', 'theta', 'distance'] as const
+
+/**
+ * 相机方法的 phi / theta / distance：位置参数在前、关键字优先。
+ *
+ * 缺的项回落到**登记的默认斜视**（THREE_D_CAMERA_DEFAULTS），而不是「保持当前值」：
+ * manim-web 的 `orbit` 三个参数是一起算相机坐标的，塞 undefined 进去就是 NaN——
+ * 而 NaN 一旦写进相机位置就再也回不来（后面每一帧都是空的），且**不报错**。
+ * 「明确的默认」比「不清不楚的原值」安全，也比静默 NaN 可解释。
+ */
+function cameraPosition(args: unknown[], kwargs: Record<string, unknown>): [number, number, number] {
+  // Python 的 None 过桥是 JS 的 **null**（不是 undefined），两个都要当「没给」——
+  // 只判 undefined 的话 `set_camera_orientation(theta=…)`（phi 缺省）会把 null 当角度用。
+  const missing = (value: unknown): boolean => value === undefined || value === null
+  const pick = (index: number, key: string, fallback: number): number => {
+    const value = kwargs[key] ?? args[index]
+    return missing(value) ? fallback : (value as number)
+  }
+  return [
+    pick(0, 'phi', THREE_D_CAMERA_DEFAULTS.phi),
+    pick(1, 'theta', THREE_D_CAMERA_DEFAULTS.theta),
+    pick(2, 'distance', THREE_D_CAMERA_DEFAULTS.distance),
+  ]
+}
+
+/**
+ * 相机方法只认 manim-web 真有的键；多给的当场报可读错（病根见 METHOD_REWRITES 里那段注释）。
+ * `accepted` 是「这个方法允许的键」全集——含 run_time 这类会被改名的。
+ */
+function rejectCameraKeys(where: string, accepted: readonly string[], kwargs: Record<string, unknown>): void {
+  const extra = Object.keys(kwargs).filter((key) => !accepted.includes(key))
+  if (extra.length === 0) return
+  throw new Error(
+    `${where} 不支持 ${extra.join(' / ')}——manim-web 的 3D 相机只收 ${accepted.join(' / ') || '位置参数'}` +
+      '（CE 的 gamma / zoom / focal_distance / frame_center 它没有；要同时放动画请另起 self.play(...)）',
+  )
+}
+
+/**
+ * 「钉在屏幕上 / 钉住朝向」那族：CE 与 manim-web 都是 `*mobjects`，直接透传参数。
+ *
+ * 唯一的改写理由：CE 的 `add_fixed_orientation_mobjects` 还收 `use_static_center_func` /
+ * `center_func` 两个关键字，manim-web 没有对应物——写成关键字要**当场**说清，别静默丢。
+ * （`add` 那一半在适配层：CE 本体会 `self.add(*mobjects)`，manim-web 只登记，见 manim-shim.ts。）
+ */
+function fixedMobjectsCall(
+  where: string,
+  js: string,
+  args: unknown[],
+  kwargs: Record<string, unknown>,
+): MethodCall[][] {
+  if (Object.keys(kwargs).length > 0) {
+    const extra = where === 'add_fixed_orientation_mobjects' ? '（含 CE 的 use_static_center_func / center_func）' : ''
+    throw new Error(`${where} 只收位置参数${extra}——写成 ${where}(标题, 注释) 这样，别用关键字`)
+  }
+  return [[{ js, args }]]
 }
 
 /**

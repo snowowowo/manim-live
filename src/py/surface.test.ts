@@ -144,6 +144,57 @@ describe('支持面一致性：表 ↔ 判定', () => {
     ])
   })
 
+  it('3D 相机：CE 的相机写法翻成 manim-web 的真参数形状', () => {
+    // set_camera_orientation：manim-web 只收三个**位置**参数（phi, theta, distance），
+    // 多给的键会被挤成第 3 个位置参数——orbit(phi, theta, {…}) 里 Math.cos(对象) 出 NaN、
+    // 画面不动且不报错。所以显式挑键，其余当场拒。
+    expect(planMethod('set_camera_orientation', [1, 2, 3], {}).variants[0]).toEqual([
+      { js: 'setCameraOrientation', args: [1, 2, 3] },
+    ])
+    const named = planMethod('set_camera_orientation', [], { phi: 1, theta: 2 }).variants[0]
+    expect(named[0].js).toBe('setCameraOrientation')
+    expect(named[0].args[0]).toBe(1)
+    expect(named[0].args[1]).toBe(2)
+    // 缺的项回落**默认斜视**（不是 NaN、也不是 undefined）
+    expect(Number.isFinite(named[0].args[2] as number)).toBe(true)
+    // Python 的 None 过桥是 JS 的 null——也必须当「没给」
+    const nullish = planMethod('set_camera_orientation', [null, 2, null], {}).variants[0]
+    expect(Number.isFinite(nullish[0].args[0] as number)).toBe(true)
+    expect(nullish[0].args[1]).toBe(2)
+    expect(throws(() => planMethod('set_camera_orientation', [], { focal_distance: 20 }))).toBe(true)
+
+    // move_camera：manim-web 收**一个选项对象**，而且时长叫 duration
+    const move = planMethod('move_camera', [], { phi: 1, theta: 2, run_time: 3 }).variants[0]
+    expect(move[0].js).toBe('moveCamera')
+    expect(move[0].args).toEqual([{ phi: 1, theta: 2, distance: expect.any(Number), duration: 3 }])
+
+    // 自转：CE 用 rate；about= 是 CE 独有（manim-web 只会绕方位角转）
+    expect(planMethod('begin_ambient_camera_rotation', [0.5], {}).variants[0]).toEqual([
+      { js: 'beginAmbientCameraRotation', args: [0.5] },
+    ])
+    expect(planMethod('begin_ambient_camera_rotation', [], {}).variants[0]).toEqual([
+      { js: 'beginAmbientCameraRotation', args: [] },
+    ])
+    expect(throws(() => planMethod('begin_ambient_camera_rotation', [], { about: 'phi' }))).toBe(true)
+    expect(planMethod('stop_ambient_camera_rotation', [], {}).variants[0]).toEqual([
+      { js: 'stopAmbientCameraRotation', args: [] },
+    ])
+
+    // 钉在屏幕上 / 钉住朝向：变长位置参数，直接透传；写成关键字（*mobjects 没有键名）当场拒
+    const fixed = planMethod('add_fixed_in_frame_mobjects', [{ __handle: 1 }, { __handle: 2 }], {}).variants[0]
+    expect(fixed).toEqual([{ js: 'addFixedInFrameMobjects', args: [{ __handle: 1 }, { __handle: 2 }] }])
+    expect(planMethod('remove_fixed_in_frame_mobjects', [{ __handle: 1 }], {}).variants[0][0].js).toBe(
+      'removeFixedInFrameMobjects',
+    )
+    expect(planMethod('add_fixed_orientation_mobjects', [{ __handle: 1 }], {}).variants[0][0].js).toBe(
+      'addFixedOrientationMobjects',
+    )
+    expect(planMethod('remove_fixed_orientation_mobjects', [{ __handle: 1 }], {}).variants[0][0].js).toBe(
+      'removeFixedOrientationMobjects',
+    )
+    expect(throws(() => planMethod('add_fixed_in_frame_mobjects', [], { title: 'x' }))).toBe(true)
+  })
+
   it('animate 链：改写表内的换成 manim-web 名，白名单外的拒', () => {
     // ValueTracker 的值动画在 manim-web 是独立方法 animateTo（不在 AnimateProxy 的 builder 上）
     expect(planAnimate([{ name: 'set_value', args: [], kwargs: {} }])).toEqual([

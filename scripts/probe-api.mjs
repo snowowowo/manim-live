@@ -84,25 +84,37 @@ async function measure(page, wanted) {
       for (const method of found) (methodIndex[method] ??= []).push(label)
     }
 
-    // 场景方法：Scene 构造要真画布，这里只读原型（不建实例）
+    // 场景方法：Scene 构造要真画布，这里只读原型（不建实例）。
+    //
+    // ⚠️ 必须取**场景族各原型的并集**，不能只看 `manim.Scene`：CE 把 3D 相机那一组
+    // （set_camera_orientation / move_camera / begin_ambient_camera_rotation / add_fixed_in_frame_mobjects…）
+    // 定义在 `ThreeDScene` 上，`Scene` 的原型链上一个都没有——只看 Scene 会把它们全记成
+    // 「manim-web 没有这个方法」，而技能文档就照着这句把 3D 运镜写成不支持。
+    // 认族的口径：manim-web 里导出名以 `Scene` 结尾的类（Scene / ThreeDScene / MovingCameraScene /
+    // ZoomedScene / VectorScene / LinearTransformationScene / InteractiveScene）——自维护，
+    // 上游加新场景类时自动跟上（与 surface.ts 的 SCENE_FAMILY 是同一族，那张表管「建哪块画布」）。
     const sceneProto = new Set()
-    try {
-      let proto = manim.Scene?.prototype ?? null
-      while (proto !== null && proto !== Object.prototype) {
-        for (const key of Object.getOwnPropertyNames(proto)) {
-          if (key === 'constructor') continue
-          const descriptor = Object.getOwnPropertyDescriptor(proto, key)
-          if (descriptor === undefined) continue
-          if (descriptor.get !== undefined || descriptor.set !== undefined) {
-            accessorsSkipped += 1
-            continue
+    for (const name of names) {
+      const Ctor = manim[name]
+      if (!name.endsWith('Scene') || typeof Ctor !== 'function') continue
+      try {
+        let proto = Ctor.prototype
+        while (proto !== null && proto !== Object.prototype) {
+          for (const key of Object.getOwnPropertyNames(proto)) {
+            if (key === 'constructor') continue
+            const descriptor = Object.getOwnPropertyDescriptor(proto, key)
+            if (descriptor === undefined) continue
+            if (descriptor.get !== undefined || descriptor.set !== undefined) {
+              accessorsSkipped += 1
+              continue
+            }
+            if (typeof descriptor.value === 'function') sceneProto.add(key)
           }
-          if (typeof descriptor.value === 'function') sceneProto.add(key)
+          proto = Object.getPrototypeOf(proto)
         }
-        proto = Object.getPrototypeOf(proto)
+      } catch {
+        /* 这个场景类读不了原型就跳过，别的照读 */
       }
-    } catch {
-      /* 没有 Scene 就留空 */
     }
 
     // animate 链能链哪些方法：从 animate 代理原型实读。begin/interpolate/finish 是
@@ -265,8 +277,10 @@ const KNOWN_MISSING = {
   bring_to_front: '用 set_z(较大值) 提到上层（manim-web 没有 Scene 级层级重排）',
   bring_to_back: '用 set_z(较小值) 压到下层',
   set_z_index: '用 set_z(数值) 设层级',
-  MovingCameraScene: '相机控制不支持——用默认 Scene 构图',
-  ThreeDScene: '3D 相机运镜部分受限——基础 3D 物体可用',
+  // 这两条只在 manim-web **丢掉**这两个场景类时才会出现在表里（当前都是 ok，用不上）；
+  // 文案仍然据实写，免得将来真出现时把人指错路——「3D 相机运镜受限」这话在 Phase 2 之后已经不成立。
+  MovingCameraScene: 'manim-web 没有这个场景类——用 Scene 自己动 camera，或 MovingCamera 动画',
+  ThreeDScene: 'manim-web 没有这个场景类——3D 只能退到 2D 的 Scene（3D 形状会因无光照而全黑）',
   PolarPlane: '极坐标不支持——用 Axes 自画',
   plot_parametric_curve: '用 plot() 画按参数方程采样好的点',
   plot_derivative_graph: '用 plot() 画手算好的导数',
@@ -390,6 +404,18 @@ const REWRITTEN_METHODS = {
   set_stroke: 'setStyle({ strokeColor, strokeWidth, strokeOpacity })',
   set_opacity: 'setStrokeOpacity(x) + setFillOpacity(x)',
   put_start_and_end_on: 'putStartAndEndOn(s, e)（Arrow/Vector）/ setStart(s) + setEnd(e)（Line）',
+  // 3D 相机（Phase 2）：名字 camel 后与 manim-web 同名，但**参数形状**不一样——
+  // CE 多给 gamma / zoom / focal_distance / frame_center，manim-web 只认 phi / theta / distance，
+  // 且 moveCamera 要一个选项对象（时长叫 duration 不叫 run_time）。多给的键会被挤成下一个位置
+  // 参数：orbit(phi, theta, {…}) 里 Math.cos(对象) 出 NaN —— 不报错、画面不动。所以走改写。
+  set_camera_orientation: 'setCameraOrientation(phi, theta, distance)',
+  move_camera: 'moveCamera({ phi, theta, distance, duration })',
+  begin_ambient_camera_rotation: 'beginAmbientCameraRotation(rate)',
+  stop_ambient_camera_rotation: 'stopAmbientCameraRotation()',
+  add_fixed_in_frame_mobjects: 'addFixedInFrameMobjects(...mobjects)',
+  remove_fixed_in_frame_mobjects: 'removeFixedInFrameMobjects(...mobjects)',
+  add_fixed_orientation_mobjects: 'addFixedOrientationMobjects(...mobjects)',
+  remove_fixed_orientation_mobjects: 'removeFixedOrientationMobjects(...mobjects)',
 }
 
 /**

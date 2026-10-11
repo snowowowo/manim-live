@@ -3,7 +3,8 @@
   "_why_methods_are_manual": "CE 的 Mobject 继承体系有 240+ 公开方法，大半是内部工具（add_cubic_bezier_curve / align_points_with_larger / gen_subpaths_from_points_2d…），没有能把「模型会写的」切出来的命名空间边界；自动枚举会把三态表灌满噪声，替代文案也没法给准。故这一组由人维护，并由 export-ce-api.py 的 phantom_methods() 门禁盯着（对不上 CE 就告警）。",
   "_conventions": [
     "方法名一律写 CE 的 snake_case——探测时转 camelCase 去 manim-web 里找。",
-    "indexing 不是 CE 方法名，是适配层造的写法（m[i] 取段），登记在这里只为让它进三态表。"
+    "indexing 不是 CE 方法名，是适配层造的写法（m[i] 取段），登记在这里只为让它进三态表。",
+    "scene 组里的相机方法（set_camera_orientation / move_camera / *_ambient_camera_rotation / *_fixed_*_mobjects）定义在 CE 的 ThreeDScene 上，不在 Scene 上——探针按「场景族各原型的并集」认它们（只读 manim.Scene 会全部记成 missing）。"
   ],
   "mobjectMethods": {
     "generic": [
@@ -62,6 +63,7 @@
     ],
     "mathtex": [
       "get_part_by_tex",
+      "get_parts",
       "indexing"
     ],
     "tracker": [
@@ -76,7 +78,15 @@
       "wait",
       "clear",
       "bring_to_front",
-      "bring_to_back"
+      "bring_to_back",
+      "set_camera_orientation",
+      "move_camera",
+      "begin_ambient_camera_rotation",
+      "stop_ambient_camera_rotation",
+      "add_fixed_in_frame_mobjects",
+      "remove_fixed_in_frame_mobjects",
+      "add_fixed_orientation_mobjects",
+      "remove_fixed_orientation_mobjects"
     ]
   }
 }

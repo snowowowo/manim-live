@@ -160,6 +160,13 @@ export { createManimWebBridge, type ManimNamespace } from './py/manim-bridge.ts'
 export { createRecordingBridge, HANDLE_KEY, GROUP_KEY, ANIMATE_KIND } from './py/bridge.ts'
 export { createDryRunBridge } from './py/dry-run-bridge.ts'
 export { planMethod, planAnimate, planCreate, PY_API_MAP, PY_ANIMATE_METHODS } from './py/surface.ts'
+// 场景族（Phase 2）：`class X(ThreeDScene)` 要一块**真 3D 场景**——按种类建画布的人要用这两样。
+export {
+  resolveSceneKind,
+  SCENE_FAMILY,
+  THREE_D_CAMERA_DEFAULTS,
+  FRAME_HEIGHT,
+} from './py/surface.ts'
 export { canonicalPackageName } from './py/pkg-names.ts'
 export { loadManim, type ManimRuntime } from './engine/library.ts'
-export { createScene, type ManimScene } from './engine/canvas.ts'
+export { createScene, createSceneSlot, SURFACE_CLASS, type CreateSceneOptions, type ManimScene, type SceneSlot } from './engine/canvas.ts'

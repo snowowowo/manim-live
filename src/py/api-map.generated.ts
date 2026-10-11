@@ -2624,6 +2624,46 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
     "kind": "method",
     "state": "missing",
     "alt": "用 set_z(较小值) 压到下层"
+  },
+  "set_camera_orientation": {
+    "kind": "scene-method",
+    "state": "alias",
+    "js": "setCameraOrientation(phi, theta, distance)"
+  },
+  "move_camera": {
+    "kind": "scene-method",
+    "state": "alias",
+    "js": "moveCamera({ phi, theta, distance, duration })"
+  },
+  "begin_ambient_camera_rotation": {
+    "kind": "scene-method",
+    "state": "alias",
+    "js": "beginAmbientCameraRotation(rate)"
+  },
+  "stop_ambient_camera_rotation": {
+    "kind": "scene-method",
+    "state": "alias",
+    "js": "stopAmbientCameraRotation()"
+  },
+  "add_fixed_in_frame_mobjects": {
+    "kind": "scene-method",
+    "state": "alias",
+    "js": "addFixedInFrameMobjects(...mobjects)"
+  },
+  "remove_fixed_in_frame_mobjects": {
+    "kind": "scene-method",
+    "state": "alias",
+    "js": "removeFixedInFrameMobjects(...mobjects)"
+  },
+  "add_fixed_orientation_mobjects": {
+    "kind": "scene-method",
+    "state": "alias",
+    "js": "addFixedOrientationMobjects(...mobjects)"
+  },
+  "remove_fixed_orientation_mobjects": {
+    "kind": "scene-method",
+    "state": "alias",
+    "js": "removeFixedOrientationMobjects(...mobjects)"
   }
 }
 
