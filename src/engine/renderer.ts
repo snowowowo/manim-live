@@ -18,7 +18,7 @@ const HEIGHT = 720
 export interface RunResult {
   ok: boolean
   error?: string
-  /** 这段运行作废了（画布在轮到它之前就被拆）：不是错误，调用方一个字都不该显示。 */
+  /** 该段运行已作废（画布在执行到它之前已被销毁）：不是错误，调用方不应显示任何内容。 */
   cancelled?: boolean
 }
 
@@ -26,33 +26,33 @@ export interface RunHandlers {
   /** 按 import 取包时的进展：开始时给包名，取完给空数组（见 runtime 的 RunOptions.onLoading）。 */
   onLoading?: (names: string[]) => void
   /**
-   * 执行上下文（**Phase 3 未实现**，这里只占位——签名先留出来，免得抽完的包黑板接不上）。
+   * 执行上下文（**尚未实现**，此处只保留签名占位，传入会抛错）。
    *
-   * 语义（定案）：同一 context 内**变量跨次保留**（第 N 次能看到第 1 次建的 `circle`，且重画被禁止）；
-   * **新 context = 从零**（冷挂载 / 纠错重演前缀靠它）。今天三层都刻意隔离：Python 命名空间每次新建、
-   * 每次 run 用新桥、updater 包装表清空——所以它是**行为反转**，不能混进 Phase 1 的「零行为变化」。
+   * 既定语义：同一 context 内**变量跨次保留**（第 N 次能看到第 1 次建的 `circle`，且禁止重画）；
+   * **新 context = 从零开始**（冷挂载与纠错重演依赖它）。当前三层都是刻意隔离的：Python 命名空间
+   * 每次新建、每次 run 用新桥、updater 包装表清空——因此实现它是一次行为反转，不能与其他改动混做。
    */
   context?: string
 }
 
 export interface Surface {
-  /** 跑一段 Manim Python（内部交给 Pyodide 执行并驱动画布）。 */
+  /** 执行一段 Manim Python（内部交给 Pyodide 执行并驱动画布）。 */
   run(code: string, handlers?: RunHandlers): Promise<RunResult>
   /**
-   * 作废当前画布 → 建一块新的 → 把上一段代码从头真播一遍。resolve 时表示这一遍真的播完了。
+   * 作废当前画布 → 创建一块新画布 → 把上一段代码从头完整播放一遍。resolve 表示这一遍播放完毕。
    *
-   * ⚠️ **它会换掉 canvas 元素**（新场景带新 canvas）。所以要拿它去喂录屏时得注意：
-   * `browserRecorder` 是在 `replay()` **之前**就 `captureStream()` 抓住当前 canvas 的，
-   * 画布一换，流还挂在那块被丢弃的旧画布上，录出来是个 0 字节的空文件（实测踩过）。
-   * 正确姿势见 `RenderController.replay` 的注释：给它一个**已经新建好的空画布** +
-   * 「在同一块画布上跑一遍」的 replay，而不是直接把本对象当控制器。
+   * ⚠️ **它会更换 canvas 元素**（新场景带新 canvas）。因此用它配合录屏时要注意：
+   * `browserRecorder` 在 `replay()` **之前**就已对当前 canvas 执行 `captureStream()`，
+   * 画布一换，录制流仍留在被丢弃的旧画布上，结果是 0 字节的空文件（实测结论）。
+   * 正确做法见 `RenderController.replay` 的注释：给它一个**已经新建好的空画布**，
+   * 以及一个「在同一块画布上执行一遍」的 replay，而不是直接把本对象当控制器。
    */
   replay(): Promise<void>
-  /** 当前画布元素；还没建出来时给 null。 */
+  /** 当前画布元素；尚未创建时为 null。 */
   canvas(): HTMLCanvasElement | null
-  /** 画布上已经有画面了吗（录屏要非空才值得录）。 */
+  /** 画布上是否已有内容（录屏要求非空）。 */
   isRendered(): boolean
-  /** 拆掉这块画布；之后 run 一律作废（cancelled），不会真的跑。 */
+  /** 销毁这块画布；之后的 run 全部作废（cancelled），不会执行。 */
   dispose(): void
 }
 
@@ -104,12 +104,12 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
       const job = tail.then(async () => {
         if (handlers.context !== undefined) {
           throw new Error(
-            'manim-live：执行上下文（run 的 context 参数）排在 Phase 3，尚未实现——' +
+            'manim-live：执行上下文（run 的 context 参数）尚未实现——' +
               '现在每次 run 都是独立执行，变量不跨次保留。',
           )
         }
-        // 拆掉之后一律作废（不是「失败」）：调用方看见 cancelled 就该闭嘴，
-        // 不像错误那样报出来——自己拆的画布跑不成，不算渲染失败。
+        // 销毁之后全部作废（不是「失败」）：cancelled 不向用户显示、也不作为错误上报——
+        // 调用方自己销毁的画布无法执行，不算渲染失败。
         if (disposed) throw new PyRunCancelled()
         await execute(code, handlers)
         lastCode = code

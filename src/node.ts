@@ -2,7 +2,7 @@
 //
 // 用途两件：① 干跑预检（`runPython` + `createDryRunBridge`），可跑在服务端 / 宿主里；
 //          ② 语料装载（Node 侧回归、截图脚本、插件端技能生成的数据源）。
-// 这个入口里的一切都不该 import DOM / WebGL 相关的东西——否则在 Node 里 import 就会炸。
+// 这个入口里的任何模块都不应 import DOM / WebGL 相关内容——否则在 Node 里 import 即失败。
 
 // ---- Python 运行时（Pyodide 真 CPython + manim 适配层）----
 export {

@@ -2,10 +2,10 @@
 //
 // 它只碰两个 DOM 原语：给一个容器元素、拿到 `run` / `dispose`。零 UI、零框架、零宿主。
 //
-// ⚠️ 两条契约（必须让使用者知道，否则会在 SPA 里踩坑）：
+// ⚠️ 两条契约（使用者必须知道，否则 SPA 的生命周期实现会出错）：
 //   1. **多实例**：WASM 运行时与串行执行队列是**页面级单例**（py/runtime.ts 的 queue），
 //      不是每实例一份。同时挂两个组件不会启两份 13 MB 的 Pyodide 核心，但它们的渲染是串行的。
-//   2. **销毁**：`dispose()` 要真的释放 WASM / WebGL。SPA 路由切换不销毁就是内存泄漏。
+//   2. **销毁**：`dispose()` 会真实释放 WASM / WebGL。SPA 路由切换时不释放即内存泄漏。
 import { createDryRunBridge } from './py/dry-run-bridge.ts'
 import { runPython, warmupRuntime } from './py/runtime.ts'
 import { createSurface, type Surface, type SurfaceOptions, type RunResult, type RunHandlers } from './engine/renderer.ts'
@@ -39,7 +39,7 @@ export interface ManimRendererOptions {
 }
 
 export interface ManimRenderer {
-  /** 提前把 Pyodide（核心约 13 MB）拉起来——不给预热，用户第一次点渲染会以为卡死。 */
+  /** 提前把 Pyodide（核心约 13 MB）拉起来——不预热时，第一次渲染需等待完整下载，期间界面无进展。 */
   warmup(): Promise<void>
   /** 干跑预检：语法错 / 未定义名 / 实测缺失的 manim-web 能力当场回 ok:false，调用方不必再自校验一份。 */
   check(python: string): Promise<CheckResult>
