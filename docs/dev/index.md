@@ -15,6 +15,10 @@ pnpm check:pkg     # publint + attw，发布前自检产物
 pnpm setup:assets  # 准备 assets/（Pyodide 发行版等）
 ```
 
+## 语料回归的唯一归属地
+
+`corpus/`（239 条语料 + 真机截图）是本库**独有**的职责：支持面实测、回归测试、重跑截图全在这里做。下游消费方（如 dsh-manim-live 的实验场）**不再承担语料回归**——它们只验收自己在宿主里的功能表现，需要样例就内置一小份自己的。
+
 ## 演示台（playground）
 
 `pnpm playground` 起一个 vite 开发服务器（`playground/vite.config.ts`），是本仓的本地演示台。
