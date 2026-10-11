@@ -53,7 +53,7 @@ class AxesPlotScene(Scene):
 ```
 
 <figure>
-  <img src="./images/axes-plot.png" alt="上段代码实时渲染的结果" loading="lazy" />
+  <img src="../corpus/shots/basic/09-axes-plot.png" alt="上段代码实时渲染的结果" loading="lazy" />
   <figcaption>上段代码的实时渲染结果（终态）—— <code>corpus/examples/basic/09-axes-plot.py</code></figcaption>
 </figure>
 
@@ -88,15 +88,15 @@ pnpm add manim-live
 
 <div class="gallery">
   <figure>
-    <img src="./images/determinant-area.png" alt="行列式的几何意义" loading="lazy" />
+    <img src="../corpus/shots/math-linear/02-determinant-area.png" alt="行列式的几何意义" loading="lazy" />
     <figcaption>线性变换：单位正方形面积被放大 |det| 倍</figcaption>
   </figure>
   <figure>
-    <img src="./images/monte-carlo-pi.png" alt="蒙特卡洛估算 π" loading="lazy" />
+    <img src="../corpus/shots/math-prob/10-monte-carlo-pi.png" alt="蒙特卡洛估算 π" loading="lazy" />
     <figcaption>向正方形内撒点，估算出 π ≈ 3.140</figcaption>
   </figure>
   <figure>
-    <img src="./images/space-cube.png" alt="真 3D 场景" loading="lazy" />
+    <img src="../corpus/shots/lesson/13-space-cube-camera.png" alt="真 3D 场景" loading="lazy" />
     <figcaption>ThreeDScene：带光照与深度的真实 3D</figcaption>
   </figure>
 </div>
@@ -116,7 +116,7 @@ pnpm add manim-live
 | [行为契约](/guide/contracts) | 页面级单例、真实释放、单段独立执行；以及复用画布的已知问题 |
 | [第三方包](/guide/packages) | 按需取包的机制、两种部署环境、失败时的分档诊断 |
 | [Node 预检](/guide/node) | 不碰 DOM 的 CI 预检与能力边界 |
-| [示例画廊](/examples/) | 真机渲染的成品与对应语料源码 |
+| [示例画廊](/examples/) | 17 个领域各一页：每条示例两个 tab（代码 / 画面），共 188 张真机截图 |
 | [API 参考](/api/) | 八页按对象分：入口、渲染器、画布、钩子、导出、Node 入口、语料与测试台、低层导出；每个成员带类型定义、参数与例子 |
 | [开发与调试](/dev/) | 面向本仓库开发者：构建、测试、演示台、发布自检 |
 

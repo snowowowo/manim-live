@@ -50,7 +50,7 @@ class AxesPlotScene(Scene):
 ```
 
 <figure>
-  <img src="../images/axes-plot.png" alt="Live-rendered result of the code above" loading="lazy" />
+  <img src="../../corpus/shots/basic/09-axes-plot.png" alt="Live-rendered result of the code above" loading="lazy" />
   <figcaption>The live-rendered result of the code above (end state) —— <code>corpus/examples/basic/09-axes-plot.py</code></figcaption>
 </figure>
 
@@ -85,15 +85,15 @@ Every image below is a **real end state rendered on a real machine**: generated 
 
 <div class="gallery">
   <figure>
-    <img src="../images/determinant-area.png" alt="Geometric meaning of the determinant" loading="lazy" />
+    <img src="../../corpus/shots/math-linear/02-determinant-area.png" alt="Geometric meaning of the determinant" loading="lazy" />
     <figcaption>Linear map: the unit square's area scales by |det|</figcaption>
   </figure>
   <figure>
-    <img src="../images/monte-carlo-pi.png" alt="Monte Carlo estimate of π" loading="lazy" />
+    <img src="../../corpus/shots/math-prob/10-monte-carlo-pi.png" alt="Monte Carlo estimate of π" loading="lazy" />
     <figcaption>Scatter points into a square and estimate π ≈ 3.140</figcaption>
   </figure>
   <figure>
-    <img src="../images/space-cube.png" alt="A real 3D scene" loading="lazy" />
+    <img src="../../corpus/shots/lesson/13-space-cube-camera.png" alt="A real 3D scene" loading="lazy" />
     <figcaption>ThreeDScene: real 3D with lighting and depth</figcaption>
   </figure>
 </div>
@@ -113,7 +113,7 @@ A screenshot captures the frame after an animation finishes playing. The **anima
 | [Behavioural Contracts](/en/guide/contracts) | Page-level singleton, real release, one segment per run; known issues with reusing a canvas |
 | [Third-Party Packages](/en/guide/packages) | How on-demand fetching works, two deployment environments, tiered failure diagnosis |
 | [Node Precheck](/en/guide/node) | DOM-free precheck in CI and its limits |
-| [Gallery](/en/examples/) | Real rendered results with their corpus sources |
+| [Gallery](/en/examples/) | One page per domain: every example offers two tabs (Code / Rendered), 188 real screenshots in total |
 | [API Reference](/en/api/) | Eight pages by object: entry, renderer, canvas, hooks, export, Node entry, corpus and test bench, low-level exports; every member with type definitions, parameters, and examples |
 | [Development & Debugging](/en/dev/) | For contributors of this repository: build, tests, playground, publication checks |
 

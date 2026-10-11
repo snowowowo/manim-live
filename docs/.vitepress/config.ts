@@ -57,7 +57,51 @@ export default defineConfig({
           },
           {
             text: '示例',
-            items: [{ text: '示例画廊', link: '/examples/' }],
+            items: [
+              { text: '示例画廊', link: '/examples/' },
+              // 一页一个语料分组（17 组有截图）；子组顺序与 scripts/gen-examples-docs.mjs 的 SECTIONS 一致。
+              {
+                text: '基础与语法',
+                collapsed: false,
+                items: [
+                  { text: '基础几何', link: '/examples/basic' },
+                  { text: '构造器参数', link: '/examples/ctor' },
+                  { text: '方法与改写', link: '/examples/method' },
+                  { text: '坐标系与数据', link: '/examples/graph' },
+                  { text: '文字与公式', link: '/examples/text' },
+                  { text: '语法综合', link: '/examples/syntax' },
+                ],
+              },
+              {
+                text: '动画与场景',
+                collapsed: false,
+                items: [
+                  { text: '动画', link: '/examples/animate' },
+                  { text: '更新器与轨迹', link: '/examples/updater' },
+                  { text: '场景与分组', link: '/examples/scene' },
+                ],
+              },
+              {
+                text: '学科讲解',
+                collapsed: false,
+                items: [
+                  { text: '高等数学与数学分析', link: '/examples/math-calculus' },
+                  { text: '线性代数', link: '/examples/math-linear' },
+                  { text: '概率论与统计', link: '/examples/math-prob' },
+                  { text: '群论', link: '/examples/math-group' },
+                  { text: '离散数学', link: '/examples/math-discrete' },
+                  { text: '讲解场景（模板）', link: '/examples/lesson' },
+                ],
+              },
+              {
+                text: '支持面与第三方',
+                collapsed: false,
+                items: [
+                  { text: 'API 点名', link: '/examples/api' },
+                  { text: '综合场景（需联网）', link: '/examples/combo' },
+                ],
+              },
+            ],
           },
           {
             text: 'API 参考',
@@ -137,7 +181,51 @@ export default defineConfig({
           },
           {
             text: 'Examples',
-            items: [{ text: 'Gallery', link: '/en/examples/' }],
+            items: [
+              { text: 'Gallery', link: '/en/examples/' },
+              // One page per corpus group (the 17 groups with screenshots); section order matches SECTIONS in scripts/gen-examples-docs.mjs.
+              {
+                text: 'Basics and syntax',
+                collapsed: false,
+                items: [
+                  { text: 'Basic shapes', link: '/en/examples/basic' },
+                  { text: 'Constructor arguments', link: '/en/examples/ctor' },
+                  { text: 'Methods and rewrites', link: '/en/examples/method' },
+                  { text: 'Axes and data', link: '/en/examples/graph' },
+                  { text: 'Text and formulas', link: '/en/examples/text' },
+                  { text: 'Syntax (offline)', link: '/en/examples/syntax' },
+                ],
+              },
+              {
+                text: 'Animation and scenes',
+                collapsed: false,
+                items: [
+                  { text: 'Animations', link: '/en/examples/animate' },
+                  { text: 'Updaters and trails', link: '/en/examples/updater' },
+                  { text: 'Scenes and groups', link: '/en/examples/scene' },
+                ],
+              },
+              {
+                text: 'Subject lessons',
+                collapsed: false,
+                items: [
+                  { text: 'Calculus and analysis', link: '/en/examples/math-calculus' },
+                  { text: 'Linear algebra', link: '/en/examples/math-linear' },
+                  { text: 'Probability and statistics', link: '/en/examples/math-prob' },
+                  { text: 'Group theory', link: '/en/examples/math-group' },
+                  { text: 'Discrete mathematics', link: '/en/examples/math-discrete' },
+                  { text: 'Lesson scenes (templates)', link: '/en/examples/lesson' },
+                ],
+              },
+              {
+                text: 'Support surface and third-party',
+                collapsed: false,
+                items: [
+                  { text: 'API roll call (offline)', link: '/en/examples/api' },
+                  { text: 'Combined pipelines (network)', link: '/en/examples/combo' },
+                ],
+              },
+            ],
           },
           {
             text: 'API Reference',

@@ -88,3 +88,37 @@
   font-size: 13px;
   color: var(--vp-c-text-2);
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   示例章：code-group 的两个 tab（代码 / 画面）等高。
+   截图统一 1280×720（16:9），所以给 .blocks 一个 16:9 的框：画面 tab 正好铺满，
+   代码 tab 在同一高度内滚动——切换 tab 时页面高度不变，长的源码也不把页面撑开。
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.vp-code-group .blocks {
+  aspect-ratio: 16 / 9;
+}
+
+.vp-code-group .blocks > div[class*='language-'] {
+  height: 100%;
+}
+
+.vp-code-group .blocks > div[class*='language-'] pre {
+  height: 100%;
+  margin: 0;
+  overflow: auto;
+  border-radius: 0 0 8px 8px;
+}
+
+.vp-code-group .blocks > .vp-block {
+  height: 100%;
+  margin: 0;
+}
+
+.vp-code-group .blocks > .vp-block img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 0 0 8px 8px;
+}

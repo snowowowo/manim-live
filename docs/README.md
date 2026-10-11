@@ -17,8 +17,10 @@ pnpm build       # 产物在 .vitepress/dist/
 的项目页地址对齐）。正文里的图片**全是相对路径**，vite 构建时会自动带上 base——
 换域名 / 换用户页只改 config 里那一处，正文不用动。
 
-截图从 `corpus/shots/`（语料真机渲染的 188 张）里挑的，都注明了出处语料；
-想换图就去那里重新挑，或先跑 `pnpm shot:corpus` 重截。
+示例章的 36 个页面（17 组 × 中英 + 两个总览）由 `scripts/gen-examples-docs.mjs` 生成：标题与预期取自
+语料 docstring（唯一出处），英文文案在 `docs/examples-i18n.json`，代码走 snippet import、截图直接引
+`corpus/shots/`（语料真机渲染的 188 张）——页面里不复制任何字节。改语料或翻译表后重跑脚本；
+想换截图先去 `corpus/shots/` 重挑，或跑 `pnpm shot:corpus` 重截。仓里不再存复制图（旧的 `docs/images/` 已删）。
 
 ## i18n 约定
 
