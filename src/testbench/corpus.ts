@@ -1,4 +1,4 @@
-// 语料的**唯一**位置与读取入口（Node 侧：核心包的测试、playground 的测试台、以及插件端的实验场路由共用）。
+// 语料的**唯一**位置与读取入口（Node 侧：核心包的测试、playground、以及插件端的实验场路由共用）。
 //
 // 为什么语料在仓根的 `_dev/` 而不进发布集：这批文件是**开发期的回归网**（外加讲解模板的出处），
 // 不是产品功能——跟着发布等于把上百条源码打进产物，还给每个使用者一个只有开发者才用的实验场。
@@ -11,30 +11,25 @@
 //   ② 插件端 src/host/index.js 的语料路由（浏览器侧实验场）—— 经 `manim-live/node` 导入本模块
 //   ③ 插件端 scripts/gen-skill.mjs（把 @template 语料内联进技能）
 //   ④ scripts/shot-corpus.mjs（真浏览器截图落盘）
+//   ⑤ 浏览器侧：包内的 playground —— 它拿不到 `node:fs`，走 vite 的 `import.meta.glob` 读源码，
+//      再用**同一个** `buildCorpus()` 收成 Corpus（格式那一半在 `src/py/corpus-format.ts`）。
 //
 // 截图（`_dev/shots/<组>/<同名>.png`）也在这里定路径，理由同上：
 //   它是「这条语料**真渲染出来长什么样**」的唯一记录——回归只证明没炸，画面对不对只能看图。
 //   存成与 .py 同名同目录，`collectCorpus()` 顺手就能给出每条对应的图，页面直接显示，
 //   不必每次现截。同样在包外，正式安装里没有。路径只有 shotPath() 一处定义。
 //
-// 文件即元数据（写在开头的模块 docstring 里，不影响独立运行）：
-//   """画一个圆                  ← 第一行 = 条目标题
-//
-//   @reject Table                ← 可选：本条应被**当场拒绝**，后面那个词必须出现在报错里
-//   @expect 出现一个青色圆…       ← 可选：**预期表现**（一句话，人看得懂就算数）。
-//                                  「跑通」只说明没炸；画得对不对要靠这句对着画面核。
-//   @browser                     ← 可选：**只能真浏览器跑**（要 DOM / WebGL，如 SVGMobject 的 DOMParser）。
-//                                  Node 套件跳过它，改由真浏览器核。
-//   @note 2026-10-09 事故：…      ← 可选：为什么有这条
-//   @template 要画带坐标系的函数图…  ← 可选：**标记为技能里的场景模板**，后面那句 = 「什么时候照它抄」。
-//                                  消费在插件端 scripts/gen-skill.mjs——只有带这条的才进技能模板区。
-//   """
+// 文件即元数据（写法见 src/py/corpus-format.ts 的顶注）：标题 / @expect / @reject / @note / @template / @browser。
 // 目录即分组：<语料根>/<组>/NN-<名字>.py → 分组 <组>、条目 id `<组>-<名字>`（NN- 只用于排序）。
-// 分组的中文名与顺序在下面的 GROUPS 里——目录没登记就报错，免得新加的文件夹被静默漏掉。
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { Corpus, ExampleGroup, ManimExample } from '../py/examples.ts'
+import { buildCorpus, GROUPS, shotPath, type CorpusSource } from '../py/corpus-format.ts'
+import type { Corpus } from '../py/examples.ts'
+
+// 格式那一半（分组表 / 文件头解析 / id 与截图路径）在 corpus-format.ts，两栖共用；这里原样转出，
+// 免得老消费者（测试、插件路由、gen-skill）改 import 路径。
+export { GROUPS, exampleId, parseExampleHeader, shotPath } from '../py/corpus-format.ts'
 
 /**
  * 本包根：**向上找**含 `package.json` 的那一级。
@@ -57,35 +52,6 @@ function findPackageRoot(start: string): string {
 
 export const PACKAGE_ROOT = findPackageRoot(dirname(fileURLToPath(import.meta.url)))
 
-/** 分组：[id, 显示名, 是否需要联网取包]，顺序即页面上的顺序。 */
-export const GROUPS: ReadonlyArray<{ id: string; title: string; network?: boolean }> = [
-  { id: 'basic', title: '基础几何' },
-  { id: 'ctor', title: '构造器参数' },
-  { id: 'method', title: '方法与改写' },
-  { id: 'graph', title: '坐标系与数据' },
-  { id: 'text', title: '文字与公式' },
-  { id: 'updater', title: '更新器与轨迹' },
-  { id: 'animate', title: '动画' },
-  { id: 'scene', title: '场景与分组' },
-  { id: 'lesson', title: '讲解场景（模板）' },
-  // 按学科的实际讲解场景（下面五组）。与 lesson 的区别：lesson 是**通用范式**（也是技能里的模板），
-  // 这五组是**具体知识点**——高数、线代、概率、群论、离散，都是真上课会讲的那一类画面。
-  { id: 'math-calculus', title: '高等数学与数学分析' },
-  { id: 'math-linear', title: '线性代数' },
-  { id: 'math-prob', title: '概率论与统计' },
-  { id: 'math-group', title: '群论' },
-  { id: 'math-discrete', title: '离散数学' },
-  // 语法综合：只用 manim + 标准库（numpy 随包），所以**离线也跑**，默认套件里就有一份。
-  { id: 'syntax', title: '语法综合（离线）' },
-  // API 覆盖兜底：把三态表里 state=ok 的名字成批点名（颜色 / 速率 / 动画法 / 物体），
-  // 一次一条维度钉全。也是离线的。
-  { id: 'api', title: 'API 点名（离线）' },
-  // 下面两组要真联网取包（首次跑会下载几十 MB），默认不进自动测试；见 examples.test.ts 的 MANIM_NET。
-  { id: 'net', title: '第三方包（按需取·需联网）', network: true },
-  { id: 'combo', title: '综合场景（多库协同·需联网）', network: true },
-  { id: 'reject', title: '应当被当场拒绝' },
-]
-
 /** 语料根目录（绝对路径）。目录不存在时返回路径本身，由调用方按「这台机器没有语料」处理。 */
 export function corpusRoot(): string {
   const configured = process.env.MANIM_CORPUS?.trim()
@@ -102,14 +68,6 @@ export function shotsRoot(): string {
   return configured ? resolve(configured) : join(PACKAGE_ROOT, '_dev', 'shots')
 }
 
-/**
- * 一条语料的截图相对路径（相对 shotsRoot()）：同名同目录，只换扩展名。
- * 于是「这条语料的图在哪」不用查表——看文件名就知道，改名也不会漏。
- */
-export function shotPath(group: string, fileName: string): string {
-  return `${group}/${fileName.replace(/\.py$/, '.png')}`
-}
-
 /** 语料是否就位（开发机有、正式安装没有）。 */
 export function corpusAvailable(): boolean {
   return existsSync(corpusRoot())
@@ -121,52 +79,6 @@ const listFiles = (dir: string): string[] =>
     .filter((name) => statSync(join(dir, name)).isFile() && name.endsWith('.py'))
     .sort()
 
-interface Header {
-  title: string
-  notes: string[]
-  reject: boolean
-  errorIncludes?: string
-  expectation?: string
-  browser: boolean
-  template?: string
-}
-
-/** 解析文件头的模块 docstring：第一行是标题，`@reject` / `@note` 是可选元数据。 */
-function readHeader(file: string, text: string): Header {
-  const match = text.match(/^"""([\s\S]*?)"""/)
-  if (match === null) throw new Error(`${file}：缺少开头的模块 docstring（第一行写标题）`)
-  const lines = match[1]!.split('\n').map((line) => line.trim())
-  const title = lines.find((line) => line !== '')
-  if (title === undefined) throw new Error(`${file}：docstring 第一行要写标题`)
-  let reject = false
-  let errorIncludes: string | undefined
-  let expectation: string | undefined
-  let browser = false
-  let template: string | undefined
-  const notes: string[] = []
-  for (const line of lines) {
-    if (line.startsWith('@note')) notes.push(line.slice('@note'.length).trim())
-    else if (line.startsWith('@expect')) {
-      const text = line.slice('@expect'.length).trim()
-      if (text !== '') expectation = text
-    } else if (line.startsWith('@browser')) {
-      browser = true
-    } else if (line.startsWith('@template')) {
-      const text = line.slice('@template'.length).trim()
-      if (text !== '') template = text // 入选理由（「什么时候照它抄」），gen-skill 原样写进技能
-    } else if (line.startsWith('@reject')) {
-      reject = true
-      const keyword = line.slice('@reject'.length).trim()
-      if (keyword !== '') errorIncludes = keyword
-    }
-  }
-  return { title, notes, reject, errorIncludes, expectation, browser, template }
-}
-
-/** 排序前缀 `NN-` 只用于文件排序，不进 id。 */
-const idOf = (group: string, name: string): string =>
-  `${group}-${name.replace(/^\d+-/, '').replace(/\.py$/, '')}`
-
 /** 报错回执里的路径：包内给包根相对路径，包外（MANIM_CORPUS 指过去）给绝对路径。 */
 function relativeToRoot(path: string): string {
   const rel = relative(PACKAGE_ROOT, path)
@@ -176,24 +88,13 @@ function relativeToRoot(path: string): string {
 
 /**
  * 读全部语料。目录不存在（正式安装）返回空表，**不抛**——调用方据此走降级。
- * 目录在、分组对不上则**抛**：那是开发机上的配置错误，静默漏掉更糟。
+ * 目录在、分组对不上则**抛**（判定在 `buildCorpus()` 里）：开发机上的配置错误，静默漏掉更糟。
  */
 export function collectCorpus(): Corpus {
   const root = corpusRoot()
   if (!existsSync(root)) return { groups: [], examples: [] }
 
-  const known = new Set(GROUPS.map((group) => group.id))
-  const strays = readdirSync(root).filter(
-    (name) => statSync(join(root, name)).isDirectory() && !known.has(name),
-  )
-  if (strays.length > 0) {
-    throw new Error(
-      `${root} 下有未登记的分组：${strays.join(', ')}——请在 src/testbench/corpus.ts 的 GROUPS 里登记`,
-    )
-  }
-
-  const groups: ExampleGroup[] = []
-  const examples: ManimExample[] = []
+  const sources: CorpusSource[] = []
   for (const group of GROUPS) {
     const dir = join(root, group.id)
     let files: string[]
@@ -202,37 +103,15 @@ export function collectCorpus(): Corpus {
     } catch {
       throw new Error(`${group.id}/ 目录不存在（${dir}）——GROUPS 里登记了就得建`)
     }
-    if (files.length === 0) throw new Error(`${group.id}/ 里没有 .py`)
-    groups.push({
-      id: group.id,
-      title: group.title,
-      ...(group.network === true ? { network: true } : {}),
-    })
     for (const name of files) {
       const path = join(dir, name)
-      const python = readFileSync(path, 'utf8')
-      const header = readHeader(`${group.id}/${name}`, python)
-      // 上次真渲染的截图。**只在文件真在时才带上这个字段**——页面拿它当 <img> 的地址，
-      // 给了地址却 404 会在控制台留噪声，也会被当成故障。
-      const shot = shotPath(group.id, name)
-      const shotExists = existsSync(join(shotsRoot(), shot))
-      examples.push({
-        id: idOf(group.id, name),
-        group: group.id,
-        // 报错回执要按它定位：语料在包里就给包根相对路径，指到包外（MANIM_CORPUS 覆盖）就给绝对路径
-        file: relativeToRoot(path),
-        title: header.title,
-        ...(shotExists ? { shot } : {}),
-        expect: header.reject ? 'reject' : 'ok',
-        ...(header.errorIncludes === undefined ? {} : { errorIncludes: header.errorIncludes }),
-        ...(group.network === true ? { network: true } : {}),
-        ...(header.browser ? { browser: true } : {}),
-        ...(header.notes.length === 0 ? {} : { note: header.notes.join(' ') }),
-        ...(header.expectation === undefined ? {} : { expectation: header.expectation }),
-        ...(header.template === undefined ? {} : { template: header.template }),
-        python,
-      })
+      sources.push({ group: group.id, name, file: relativeToRoot(path), python: readFileSync(path, 'utf8') })
     }
   }
-  return { groups, examples }
+  return buildCorpus(sources, {
+    hasShot: (shot) => existsSync(join(shotsRoot(), shot)),
+    // 读盘这一路是仓里自己的语料：登记了就必须有（未登记的分组 / 某组被删空都当场抛）。
+    // playground 走 bundler 时也开这一条，两个世界口径一致。
+    requireComplete: true,
+  })
 }

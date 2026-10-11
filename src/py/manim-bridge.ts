@@ -412,7 +412,10 @@ function centerFromPoints(target: Record<string, unknown>, depth = 0): number[] 
             else if (Array.isArray(item)) for (const value of item as number[]) flat.push(Number(value))
           }
         } else if (ArrayBuffer.isView(raw)) {
-          for (const value of raw as ArrayLike<number>) flat.push(Number(value))
+          // 按下标读，别写 `for…of`：TS 的 `ArrayLike<number>` 没有 `[Symbol.iterator]`，
+          // 而 `ArrayBufferView` 直转 `ArrayLike<number>` 会被判「两边没有充分重叠」——下标最省事也最准确。
+          const view = raw as unknown as ArrayLike<number>
+          for (let index = 0; index < view.length; index += 1) flat.push(Number(view[index]))
         }
         for (let index = 0; index + 2 < flat.length; index += 3) {
           const [x, y, z] = [flat[index], flat[index + 1], flat[index + 2]]

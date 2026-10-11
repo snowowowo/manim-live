@@ -102,13 +102,23 @@ export function createManimRenderer(options: ManimRendererOptions = {}): ManimRe
         await runPython(python, createDryRunBridge())
         return { ok: true }
       } catch (error) {
-        console.error('[manim-live] check failed:', error)
+        // `info` 而不是 `error`：**预检不通过是一个结论，不是故障**。
+        // 语料里整整一组（`reject/`，39 条）验的就是「该被当场拒掉」——用 error 记，
+        // 用户点一遍那一组，控制台就灌满 39 条红字，而真正该看的错误反而被淹掉。
+        // 留一条 info 供排查（想复现那段代码时知道它跑了什么），但不进错误面板。
+        console.info('[manim-live] check rejected:', error instanceof Error ? error.message : String(error))
         return { ok: false, error: error instanceof Error ? error.message : String(error) }
       }
     },
 
     async createSurface(container: HTMLElement, surfaceOptions: SurfaceOptions = {}): Promise<Surface> {
-      const surface = await createSurface(container as HTMLDivElement, surfaceOptions)
+      const surface = await createSurface(container as HTMLDivElement, {
+        ...surfaceOptions,
+        // 工厂那一层的 `onLoading` 一路传下来：它的文档写的就是「按 import 取包时的进展回调」，
+        // 而在此之前它**没有接线**（接口上有、实现里没用）——浏览器里的「正在取包」于是永远不出现。
+        // 本次 run 自己传的 handlers.onLoading 优先（见 engine/renderer.ts 的 execute）。
+        ...(options.onLoading === undefined ? {} : { onLoading: options.onLoading }),
+      })
       surfaces.add(surface)
       return surface
     },
@@ -149,6 +159,23 @@ export {
   type ExampleExpect,
   type ManimExample,
 } from './py/examples.ts'
+
+// ---- 语料的**格式**（不碰 node: 的那一半：分组表 / 文件头解析 / id 与截图路径）----
+//
+// 为什么浏览器入口也出这一段：语料在浏览器侧的来源是 bundler（vite 的 `import.meta.glob`），
+// 不是磁盘——读到的是一堆「组名 + 文件名 + 源码 + 仓库内路径」。要把它们收成 Corpus，
+// 靠的就是这几个纯函数。它们与 Node 侧 `collectCorpus()` 用的是**同一份实现**
+// （`src/py/corpus-format.ts`，Node 侧只是多了读盘那几步），
+// 于是 playground 与回归网对「这条语料是什么意思」永远一个口径。
+export {
+  GROUPS,
+  buildCorpus,
+  exampleId,
+  parseExampleHeader,
+  shotPath,
+  type CorpusSource,
+  type ExampleHeader,
+} from './py/corpus-format.ts'
 
 // ---- 低层入口（给需要直接驱动运行时 / 自己接管画布的使用者）----
 //

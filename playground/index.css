@@ -1,0 +1,170 @@
+/*
+ * playground 的样式底：Tailwind v4 + 一套**语义 token**。
+ *
+ * 为什么是语义 token 而不是到处写 `dark:` 变体：这一页要同时支持亮/暗两套（右下角能切、默认跟着
+ * localStorage 走），组件里散着 `dark:bg-...` 的话，改一个色得翻十几个文件。token 只在这里翻面，
+ * 组件永远只写 `bg-background` / `text-muted-foreground` / `border-border` 这类语义名。
+ * （这套命名与 shadcn/ui 是同一套约定，方便直接搬它的组件过来。）
+ *
+ * `@theme inline` 把 token 映成 Tailwind 的工具类（`--color-background` → `bg-background`）；
+ * 用 `inline` 是因为值本身是 `var(--…)`，不 inline 会多留一层间接、亮暗切换时解析不及时。
+ */
+@import "tailwindcss";
+
+/* 明确扫哪些文件：自动探测在「CSS 在 playground/、组件同在 playground/」时本来也对，
+   写出来是为了换目录 / 加子目录时不会静默漏扫（漏扫的表现是类名突然不生效，很难查）。 */
+@source "./**/*.{ts,tsx,html}";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  /* 亮色 */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.955 0.002 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.646 0.014 285.938);
+  --success: oklch(0.52 0.15 152);
+  --danger: oklch(0.55 0.21 27);
+  --warn: oklch(0.62 0.14 72);
+}
+
+.dark {
+  /* 暗色。底色与旧版 playground 的 #16161a 一脉（比纯 zinc-950 略偏冷），
+     观感上与「画布黑 #1c1c1c」拉开一点层次，免得控件和画布糊成一片。 */
+  --background: oklch(0.163 0.004 285.8);
+  --foreground: oklch(0.965 0.001 286);
+  --card: oklch(0.205 0.006 285.9);
+  --card-foreground: oklch(0.965 0.001 286);
+  --muted: oklch(0.245 0.006 286);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.965 0.001 286);
+  --primary: oklch(0.92 0.004 286.32);
+  --primary-foreground: oklch(0.21 0.006 285.885);
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.552 0.016 285.938);
+  --success: oklch(0.75 0.17 152);
+  --danger: oklch(0.70 0.19 22);
+  --warn: oklch(0.80 0.15 78);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+
+  /* 画布底：与 scripts/shot-corpus.mjs 落盘的背景 (#1C1C1C) 同一个值。
+     两处必须一样——不然「页面上看到的」与「存下来的图」底色不同，比对时先自己把自己绕进去。 */
+  --color-stage: #1c1c1c;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@layer base {
+  /* 原生控件（滚动条、输入框）也跟着主题走，否则暗色里会冒出亮色滚动条。 */
+  .dark { color-scheme: dark; }
+  :root { color-scheme: light; }
+
+  * { border-color: var(--color-border); }
+
+  html, body, #root { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button { font: inherit; }
+  :focus-visible { outline: 2px solid var(--color-ring); outline-offset: 2px; }
+}
+
+/* 细滚动条：一侧清单动辄上百条，默认滚动条在暗色里太抢眼。 */
+@utility scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  &::-webkit-scrollbar { width: 8px; height: 8px; }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 999px;
+  }
+  &::-webkit-scrollbar-track { background: transparent; }
+}
+
+/*
+ * 画布槽：16:9 固定比例 + 画布**铺满**容器。
+ *
+ * 核心包刻意不锁 canvas 的尺寸与样式（`style.css` 只把它变成块级元素）——那是使用者的排版自由。
+ * 所以「铺满这个框」是**本页**的决定。
+ *
+ * `!important` 不是偷懒，是**必须**：manim-web 建场景时会给 canvas 写上**内联**
+ * `style="width:1280px;height:720px"`（实测），而内联样式一律压过样式表——不管选择器多具体。
+ * 不挡的话，画布永远按 1280×720 的固有尺寸铺开，被容器的 `overflow: hidden` 裁掉右边一大块：
+ * 窗口够宽时看不出来，一换到窄栏（平铺 / 文档版式）就露馅——那正是「切版式画面没了」的真身。
+ * 场景是 1280×720 建的、`autoResize: false`，所以缩放只能发生在 CSS 这一层。
+ * 好处也顺带有了：1280×720 的渲染结果缩到一栏宽，等于自带一次降采样，比按栏宽渲染更锐利。
+ *
+ * 为什么不用 JS 在每次 run 后改 canvas.style：画布会被换掉（跑到 3D 场景换一类、
+ * replay 重建一块），每次换都得记得再补一次，漏一次就前功尽弃。CSS 一处拦住，所有情形都覆盖。
+ */
+.stage-shell { aspect-ratio: 16 / 9; }
+.stage-shell > canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/*
+ * 骨架块（画布上「马上会出现一张图」的那层，见 components/live-stage.tsx）。
+ *
+ * 为什么要有呼吸动画：静止的灰块与「渲染挂了、留了个空框」长得一样；
+ * 一动起来就明确是「在等」。颜色取的是 `--muted` 提亮一档，压得住 `#1c1c1c` 的画布底。
+ * 关了动效偏好就退回静止半透明——「还没好」这层意思照样传达到（DSH 卡片同款处理）。
+ */
+.stage-skel {
+  background: color-mix(in oklab, var(--color-muted-foreground) 26%, transparent);
+  animation: stage-skel-breathe 1.4s ease-in-out infinite;
+}
+@keyframes stage-skel-breathe {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-skel { animation: none; opacity: 0.6; }
+}

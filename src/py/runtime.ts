@@ -63,6 +63,23 @@ export function setPyodideLoader(next: PyodideLoader): void {
   runtimePromise = null
 }
 
+/**
+ * 取包失败后的**补诊断**接缝：拿失败包名，再花几个请求把「为什么」问清楚；问不出更多就返 `null`。
+ *
+ * 为什么要做成接缝而不是在这儿直接判：只有加载器那头知道 `indexURL` 是谁（见 engine/pyodide.ts）。
+ * 为什么非做不可：浏览器侧取 wheel 是**带 SRI 校验的 fetch**，「文件不在」与「网络不通」抛的是
+ * **同一句 `Failed to fetch`**——原话直接给用户，等于把人往「是不是网断了」上引。完整实测见
+ * engine/pyodide.ts 的 `diagnosePackageNames`。
+ */
+export type PackageDiagnoser = (names: string[]) => Promise<string | null>
+
+let diagnoser: PackageDiagnoser | null = null
+
+/** 登记诊断器（幂等；传 `null` 撤掉）。 */
+export function setPackageDiagnoser(next: PackageDiagnoser | null): void {
+  diagnoser = next
+}
+
 /** print 的落点；每次 runPython 覆盖，跑完清空。 */
 let outputSink: (text: string) => void = () => {}
 
@@ -313,30 +330,62 @@ async function loadImports(
     if (announced) onLoading?.([])
   }
   if (failures.length === 0) return
-  throw new PyRuntimeError(packageFailureMessage(failures))
+  const names = failedPackageNames(failures)
+  throw new PyRuntimeError(packageFailureMessage(failures, await diagnoseQuietly(names)))
 }
 
 /**
- * 把 Pyodide 的取包失败拼成一句人话。
- *
- * 失败消息成对出现（实测）：先一行标题 `The following error occurred while loading scipy:`，
- * 再一行原因。包名只在标题里，所以从标题里扣；原因是给用户看的唯一有效信息，取它、压平、限长。
+ * 诊断是**锦上添花**：它自己出岔子不该把真正的失败盖掉——问不出来就退回默认文案。
+ * 这一层的存在感很低，但没有它，「诊断探针自己挂了」会伪装成「取包失败」。
  */
-export function packageFailureMessage(failures: string[]): string {
-  const names = [
+async function diagnoseQuietly(names: string[]): Promise<string | null> {
+  if (diagnoser === null || names.length === 0) return null
+  try {
+    return await diagnoser(names)
+  } catch {
+    return null
+  }
+}
+
+/**
+ * 失败消息成对出现（实测）：先一行标题 `The following error occurred while loading scipy:`，
+ * 再一行原因。包名**只在标题里**，所以从标题里扣。
+ */
+export function failedPackageNames(failures: string[]): string[] {
+  return [
     ...new Set(
       failures
         .map((text) => /while loading (\S+?):/.exec(text)?.[1])
         .filter((name): name is string => name !== undefined),
     ),
   ]
+}
+
+/**
+ * 问不出诊断时的兜底建议。
+ *
+ * 这句话是**按「宿主代取」那条路**写的（Host 把 wheel 下载、校验、落进用户缓存目录），
+ * 在那儿是真的；在纯静态自托管下**不成立**——那种环境里没有任何东西替你缓存，
+ * 缺的文件只会一直缺。所以一旦诊断器给出更准的话（`hint`），这句就被整句换掉。
+ */
+const DEFAULT_ADVICE =
+  '首次用到需要联网取一次，取到后缓存在本机、之后离线也能用；也可以用 numpy 或标准库改写。'
+
+/**
+ * 把 Pyodide 的取包失败拼成一句人话。
+ *
+ * `hint` 是诊断器问出来的真因（见 engine/pyodide.ts）。给了就**整句替掉**兜底建议：
+ * 缺文件那档若还留着「取到后缓存在本机、之后离线也能用」，就是在骗人。
+ */
+export function packageFailureMessage(failures: string[], hint?: string | null): string {
+  const names = failedPackageNames(failures)
   const reason = failures
     .filter((text) => !text.startsWith('The following error occurred'))
     .join(' ')
     .replace(/\s+/g, ' ')
     .slice(0, 160)
   const who = names.length > 0 ? `（${names.join('、')}）` : ''
-  return `取不到代码里 import 的库${who}：${reason || '原因未知'}。首次用到需要联网取一次，取到后缓存在本机、之后离线也能用；也可以用 numpy 或标准库改写。`
+  return `取不到代码里 import 的库${who}：${reason || '原因未知'}。${hint ?? DEFAULT_ADVICE}`
 }
 
 /** 用户代码的栈帧长这样：`  File "<manim>", line 12, in construct`。 */

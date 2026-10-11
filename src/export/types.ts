@@ -12,9 +12,17 @@ export interface RenderController {
   /** 画布上已经有画面了吗（录屏要非空才值得录）。 */
   isRendered(): boolean
   /**
-   * 作废当前画布 → 重新排队 → 从头真播。
-   * 它不是新概念：就是卡片里 `rerun('manual')` 那条现成路径。
-   * resolve 时表示这一遍真的播完了（录屏据此停表）。
+   * 从头真播一遍。resolve 时表示这一遍真的播完了（录屏据此停表）。
+   *
+   * ⚠️ **实现必须保证 canvas 元素本身不变**。理由：录屏在调它**之前**就
+   * `captureStream()` 抓住了 `canvas()` 返回的那一块，之后换画布等于把录制流留在了一块
+   * 被丢弃的旧画布上——录出来是 0 字节的空文件，而过程中不报任何错（实测踩过）。
+   *
+   * 于是 `Surface.replay()` **不能**直接拿来当这个控制器（它会重建场景、连带换掉 canvas）。
+   * 正确姿势两步：
+   *   ① 先建一块**新的**画布（已经新建好了，所以接下来那遍就是「从头」）；
+   *   ② controller.replay = 在这块画布上再跑一遍同一段代码（`surface.run(python)`）。
+   * 参考实现见包内 playground 的 `exportCurrent`。
    */
   replay(): Promise<void>
 }

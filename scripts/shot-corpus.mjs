@@ -407,6 +407,9 @@ try {
       ok: outcome.ok,
       error: outcome.error ?? null,
       ink: Number((outcome.ink ?? 0).toFixed(4)),
+      // 这一条是在哪个档位下跑的。放**每行里**而不是只放文件头：清单会被多轮合并，
+      // 头部那个 fast 只说得清「最近这轮」，说不清某一行——而页面上一栏一栏读的是行。
+      fast: !options.realtime,
       logs: outcome.logs,
       console: consoleErrors.slice(before),
     })
@@ -422,10 +425,54 @@ try {
   await browser.close()
 }
 
-writeFileSync(
-  join(options.out, 'index.json'),
-  `${JSON.stringify({ generatedAt: new Date().toISOString(), fast: !options.realtime, background: options.bg, results }, null, 2)}\n`,
-)
+/**
+ * 上一次的清单：**必须读回来合**，不能直接覆盖。
+ *
+ * 原来的写法是「本轮 results 整体写进 index.json」——于是一次调试用的
+ * `--only ctor-vector` 就把 188 条的全量记录抹成了 1 条（实测踩过），而这份清单正是
+ * playground 用来显示「上一轮真机结果」的东西，抹掉之后页面上那一栏整片消失，
+ * 看着像功能坏了。
+ *
+ * 规则：本轮跑到的**覆盖**旧记录；语料里还在、本轮没跑到的**沿用**旧记录；
+ * 语料里已经没有的（改名 / 删了）**丢掉**——这样它永远不会有孤儿条目。
+ */
+function readPreviousIndex(file) {
+  try {
+    const parsed = JSON.parse(readFileSync(file, 'utf8'))
+    return Array.isArray(parsed?.results) ? parsed.results : []
+  } catch {
+    return []
+  }
+}
+
+function writeIndex(file, corpus, fresh, settings) {
+  const live = new Set(corpus.examples.map((item) => item.id))
+  const merged = new Map()
+  for (const row of readPreviousIndex(file)) {
+    if (typeof row?.id === 'string' && live.has(row.id)) merged.set(row.id, row)
+  }
+  for (const row of fresh) merged.set(row.id, row)
+  // 顺序跟语料表走：清单是给人顺着看的，不该按「哪次跑的」排。
+  const results = corpus.examples.map((item) => merged.get(item.id)).filter((row) => row !== undefined)
+  writeFileSync(
+    file,
+    `${JSON.stringify({
+      generatedAt: new Date().toISOString(),
+      // 本轮的选择（历史条目的档位看各自行里的 fast——两轮可能档位不同）
+      fast: settings.fast,
+      background: settings.background,
+      ranThisPass: fresh.length,
+      results,
+    }, null, 2)}\n`,
+  )
+  return results
+}
+
+/** 合进清单（本轮覆盖、旧的沿用、语料没了的丢掉）——见 writeIndex 的注释。 */
+const allResults = writeIndex(join(options.out, 'index.json'), corpus, results, {
+  fast: !options.realtime,
+  background: options.bg,
+})
 
 const failed = results.filter((result) => !result.ok)
 const blank = results.filter((result) => result.ok && result.ink < 0.002)
@@ -453,7 +500,7 @@ for (const group of touchedGroups) {
 }
 
 console.info(
-  `\n截图完成：${results.length} 条 → ${options.out}\n` +
+  `\n截图完成：本轮 ${results.length} 条（清单累计 ${allResults.length} 条）→ ${options.out}\n` +
     `  跑通 ${results.length - failed.length} / 报错 ${failed.length} / 疑似空白 ${blank.length}` +
     (failed.length > 0 ? `\n  报错：${failed.map((item) => item.id).join('、')}` : '') +
     (blank.length > 0 ? `\n  疑似空白：${blank.map((item) => item.id).join('、')}` : '') +

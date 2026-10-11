@@ -40,7 +40,12 @@ export interface Surface {
   run(code: string, handlers?: RunHandlers): Promise<RunResult>
   /**
    * 作废当前画布 → 建一块新的 → 把上一段代码从头真播一遍。resolve 时表示这一遍真的播完了。
-   * 用处：导出（录屏要在动画开始前拿到活画布，并从头录一遍，见 export/types.ts 的 RenderController）。
+   *
+   * ⚠️ **它会换掉 canvas 元素**（新场景带新 canvas）。所以要拿它去喂录屏时得注意：
+   * `browserRecorder` 是在 `replay()` **之前**就 `captureStream()` 抓住当前 canvas 的，
+   * 画布一换，流还挂在那块被丢弃的旧画布上，录出来是个 0 字节的空文件（实测踩过）。
+   * 正确姿势见 `RenderController.replay` 的注释：给它一个**已经新建好的空画布** +
+   * 「在同一块画布上跑一遍」的 replay，而不是直接把本对象当控制器。
    */
   replay(): Promise<void>
   /** 当前画布元素；还没建出来时给 null。 */
@@ -54,6 +59,13 @@ export interface Surface {
 export interface SurfaceOptions {
   /** 极速：不等时间，直接落终态（实验场「全部渲染」用，见 manim-bridge 的 fast）。 */
   fast?: boolean
+  /**
+   * 按 import 取包时的进展回调（开始取时给包名，取完给空数组）。
+   *
+   * 给**没走工厂**的使用者用（自己 `createSurface` 那种）；走 `createManimRenderer` 的
+   * 直接把回调写在工厂选项里就行，会一路传下来。`run()` 的 `handlers.onLoading` 优先于此。
+   */
+  onLoading?: (names: string[]) => void
 }
 
 /** 在给定容器里造一块画布。契约：容器由调用方给、由调用方管生命周期。 */
@@ -79,7 +91,8 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
     })
     await runPython(code, bridge, {
       output: (text) => console.info('[manim-live] print:', text.trimEnd()),
-      onLoading: handlers.onLoading,
+      // 本次 run 自己给的回调优先，其次退化到建画布时给的那一份（工厂选项一路传下来的）。
+      onLoading: handlers.onLoading ?? options.onLoading,
       // 排队期间（全页一次只跑一段）这块画布可能已经拆了：轮到这段时再问一次，
       // 作废就整段丢，不占着队首白跑一遍代码。
       active: () => !disposed,

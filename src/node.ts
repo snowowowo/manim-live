@@ -80,6 +80,15 @@ export {
   type ExampleExpect,
   type ManimExample,
 } from './py/examples.ts'
+// 格式那一半（不碰 node:）：Node 侧从磁盘读之后，与浏览器侧（vite 的 import.meta.glob）
+// 收敛成 Corpus 走的是同一组函数。 exporters / 消费者手上有「一堆源码」时用它。
+export {
+  buildCorpus,
+  exampleId,
+  parseExampleHeader,
+  type CorpusSource,
+  type ExampleHeader,
+} from './py/corpus-format.ts'
 
 // ---- 导入失败时的可读文案（子路径记账）----
 export { healSubpathBookkeeping, subpathsConsistent, subpathTreeConsistent } from './py/subpath-bookkeeping.ts'

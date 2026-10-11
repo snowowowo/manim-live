@@ -8,7 +8,21 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node"]
+    // `vite/client`：playground 要用 `import.meta.glob` 读语料 / 截图清单，那是个 vite 才有的
+    // `ImportMeta` 扩展，不带上它 `tsc --noEmit` 会在那儿报「Property 'glob' does not exist」。
+    // `node`：`src` 里 Node 那一半（`src/node.ts`、`src/testbench/`、脚本）要用 `node:fs` 等。
+    "types": ["node", "vite/client"],
+    // playground 是 React + TSX（核心包本身一个 .tsx 都没有）。
+    "jsx": "react-jsx",
+    // `@/` = playground 目录（vite 那边在 playground/vite.config.ts 的 resolve.alias 里配同一个）。
+    // 两处必须成对：只配 vite，编辑器与 `tsc` 会报「找不到模块」；只配这里，打包会解析失败。
+    // `manim-live` → 源码入口：vite 那边也是这么别名的（裸 import **源码**，改一处立刻热更）。
+    // 不这么配的话 `tsc` 会顺着 package.json 的 exports 去读 `dist/index.d.ts`——
+    // 那是**上一次 build 的产物**，于是「刚加进源码的导出」在类型检查里凭空不存在（实测踩过）。
+    "paths": {
+      "@/*": ["./playground/*"],
+      "manim-live": ["./src/index.ts"]
+    }
   },
   "include": ["src", "playground"],
   "exclude": ["src/**/*.test.ts", "dist", "node_modules"]
