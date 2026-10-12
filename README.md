@@ -2,8 +2,8 @@
 
 在浏览器里用**真实 Python** 执行 Manim 代码并渲染出画面。
 
-> 📖 文档（安装 / 各框架用法 / 示例画廊 / API）：`docs/` 目录，`pnpm docs:dev` 本地预览；
-> 线上地址 <https://snowowowo.github.io/manim-live/>（待 Pages 开通后生效）。
+> 📖 文档（安装 / 各框架用法 / 示例画廊 / API）：仓根 `pnpm docs` 本地预览；
+> 线上地址 <https://snowowowo.github.io/manim-live/>。
 
 纯逻辑：零 UI、零框架、零宿主、零本地 Manim。可以在 React / Vue / 原生 JS 里直接用；
 DSH 插件 `dsh-manim-live` 只是它的消费者之一。
