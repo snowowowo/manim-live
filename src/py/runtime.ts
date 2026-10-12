@@ -171,6 +171,17 @@ _sys.modules["manim"] = _dsh_manim
 const RUN_SNIPPET = 'import manim as _dsh_manim\nawait _dsh_manim._run_source(_dsh_src)\n'
 const EXEC_SNIPPET = 'import manim as _dsh_manim\n_dsh_manim._exec_source(_dsh_src)\n'
 
+// ---- 会话（黑板步进）驱动片段：操作对象（命名空间 / 段）由适配层的 _session_* 家族按 _dsh_sid 管理 ----
+const SESSION_SNIPPETS = {
+  begin: 'import manim as _dsh_manim\n_dsh_manim._session_begin(_dsh_sid)\n',
+  exec: 'import manim as _dsh_manim\nawait _dsh_manim._session_exec(_dsh_sid, _dsh_src)\n',
+  check: 'import manim as _dsh_manim\nawait _dsh_manim._session_check(_dsh_sid, _dsh_src)\n',
+  reset: 'import manim as _dsh_manim\n_dsh_manim._session_reset(_dsh_sid)\n',
+  end: 'import manim as _dsh_manim\n_dsh_manim._session_end(_dsh_sid)\n',
+} as const
+
+export type SessionOp = keyof typeof SESSION_SNIPPETS
+
 async function getRuntime(): Promise<PyodideRuntime> {
   if (!loader) throw new Error('manim-live：未注入 Pyodide 加载器，无法执行 Python')
   runtimePromise ??= (async () => {
@@ -291,6 +302,37 @@ export async function runPython(code: string, bridge: ManimBridge, options: RunO
     // 作废判定要在拿到队位之后：作废的活儿必须「到点直接丢」，不能占着队首也不算数。
     if (options.active?.() === false) throw new PyRunCancelled()
     return execute(code, bridge, options)
+  })
+}
+
+/**
+ * 会话操作：begin / exec / check / reset / end——与 runPython 同一条全局队列、同样的
+ * 逐次桥注入（`_dsh_bridge`），区别只在驱动片段与会话状态（`_dsh_sid`）的传递。
+ */
+export async function runSessionOp(
+  op: SessionOp,
+  sid: string,
+  source: string | undefined,
+  bridge: ManimBridge,
+  options: RunOptions = {},
+): Promise<void> {
+  return enqueue(async () => {
+    if (options.active?.() === false) throw new PyRunCancelled()
+    const runtime = await getRuntime()
+    // 段里的 import 也要按需取包（会话段与一次性运行走同一条取包路）。
+    await loadImports(runtime, source ?? 'pass', options.onLoading)
+    outputSink = options.output ?? (() => {})
+    runtime.globals.set('_dsh_bridge', bridge)
+    runtime.globals.set('_dsh_sid', sid)
+    if (source !== undefined) runtime.globals.set('_dsh_src', source)
+    try {
+      await runtime.runPythonAsync(SESSION_SNIPPETS[op])
+    } catch (error) {
+      // 段源码的行号与原文一致（_compile_segment 保行号），没有外壳偏移。
+      throw toPyRuntimeError(error, 0)
+    } finally {
+      outputSink = () => {}
+    }
   })
 }
 

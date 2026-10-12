@@ -83,9 +83,14 @@ export interface ManimBridge {
    * 等待所有已发起的 MathTex/Tex 渲染完成（真桥实现；空桥/预检即时返回）。
    * MathTex 的排版是异步的——渲染完之前宽度是 0，`to_edge` / `next_to` 这类定位
    * 会按 0 宽算错（两位数的角落标签就是被顶出画面的）。Python 侧在 MathTex 构造
-   * 之后插入 `await`，落到这里。
+   * 之后插入的 `await`，落到这里。
    */
   flush(): Promise<void>
+  /**
+   * 运行期切换极速档（真桥实现，可选）：不换桥、只翻档——场景会话的回滚重演要在
+   * **同一块桥**上极速重放已提交段（句柄连续性要求桥不能换），播完再翻回真速。
+   */
+  setFast?(fast: boolean): void
 }
 
 /** 一次桥调用的记录，供空桥与测试断言用。 */

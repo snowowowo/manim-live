@@ -174,6 +174,9 @@ export type { Exporter, ExportRequest, ExportResult, RenderController } from './
 export { environmentStatus, onEnvironmentStatus } from './engine/environment.ts'
 export type { EnvironmentStatus, EnvironmentCapabilities, RuntimePhase, KatexPhase } from './engine/environment.ts'
 export type { Surface, SurfaceOptions, RunResult, RunHandlers } from './engine/renderer.ts'
+// ---- 场景会话（黑板步进）：持久命名空间 + 段提交协议（Surface.createSession 的本体）----
+export { createPySession } from './engine/session.ts'
+export type { Session, SessionVerdict, SessionAppend, PySessionOptions } from './engine/session.ts'
 export { DEFAULT_PYODIDE_INDEX_URL } from './engine/pyodide.ts'
 
 // ---- 语料的**形状**：类型 + 边界校验（`parseCorpus`）----

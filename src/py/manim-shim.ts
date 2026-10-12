@@ -940,6 +940,154 @@ async def _run_source(source):
     await _run(namespace)
 
 
+# ===== 会话（黑板步进）：持久命名空间 + 常驻场景，段只增不改 =====
+#
+# 与一次性运行的隔离**刻意相反**：命名空间与 updater 包装表跨段保留；桥由 JS 侧
+# 每会话建一块并全程复用（句柄跨段有效）。会话内不定义场景类——self 绑定常驻场景。
+
+
+class _SegmentAwait(_AwaitTransform):
+    """段式改写：顶层语句视同 construct 体——play / wait / move_camera 自动补 await、
+    排版类构造自动 flush；嵌套函数体照旧不动（用户函数里的 await 自己写，见复用规则）。"""
+
+    def __init__(self):
+        _AwaitTransform.__init__(self)
+        self._in_construct = True
+
+    def _visit_function(self, node):
+        previous = self._in_construct
+        self._in_construct = False
+        node = self.generic_visit(node)
+        self._in_construct = previous
+        return node
+
+
+def _compile_segment(source, filename):
+    """编译一段会话代码：顶层 await 生效（eval 驱动 play 的协程），行号与原文一致。"""
+    tree = _ast.parse(source, filename)
+    tree = _SegmentAwait().visit(tree)
+    _ast.fix_missing_locations(tree)
+    # 带 PyCF_ALLOW_TOP_LEVEL_AWAIT 的 code 对象不能 exec、只能 eval（CPython 约定）
+    return compile(
+        tree, filename, "exec",
+        flags=_ast.PyCF_ALLOW_TOP_LEVEL_AWAIT, dont_inherit=True,
+    )
+
+
+class _AnyStub(object):
+    """干跑存根：可调用、属性宽容、算术退化为 0——拦得住「名字不存在」，
+    也不误伤「调用已提交的函数」（调用结果参与 + - * / 时按 0 走，形状校验尽力而为）。"""
+
+    def __call__(self, *args, **kwargs):
+        return _AnyStub()
+
+    def __getattr__(self, name):
+        if name.startswith("_"):
+            raise AttributeError(name)
+        return _AnyStub()
+
+    def __add__(self, other):
+        return 0.0
+
+    def __radd__(self, other):
+        return 0.0
+
+    def __sub__(self, other):
+        return 0.0
+
+    def __rsub__(self, other):
+        return 0.0
+
+    def __mul__(self, other):
+        return 0.0
+
+    def __rmul__(self, other):
+        return 0.0
+
+    def __truediv__(self, other):
+        return 0.0
+
+    def __rtruediv__(self, other):
+        return 0.0
+
+    def __neg__(self):
+        return 0.0
+
+    def __abs__(self):
+        return 0.0
+
+    def __float__(self):
+        return 0.0
+
+    def __int__(self):
+        return 0
+
+
+async def _run_segment(code, ns):
+    """执行一段：含顶层 await 的 code 对象由 eval 折成协程再驱动；纯同步段
+    eval 直接跑完返回 None——不分辨的话 await None 会炸（实测）。"""
+    result = eval(code, ns)
+    if _inspect.iscoroutine(result):
+        await result
+
+
+_SESSIONS = {}
+
+
+def _fresh_namespace():
+    ns = {"__name__": "__main__"}
+    exec(_compile("from manim import *", "<manim>"), ns)
+    return ns
+
+
+def _session_begin(sid):
+    """开一场会话：持久命名空间 + 常驻场景（self 绑定到当前画布场景，句柄恒为 0）。"""
+    _session_end(sid)
+    ns = _fresh_namespace()
+    ns["self"] = Scene()
+    _SESSIONS[sid] = ns
+
+
+async def _session_exec(sid, source):
+    """追加执行一段：顶层语句的 await 由 _compile_segment 补好，_run_segment 驱动。"""
+    await _run_segment(_compile_segment(source, "<manim>"), _SESSIONS[sid])
+
+
+async def _session_check(sid, source):
+    """干跑预检一段：在**临时命名空间**里执行。已提交名字按种类造存根——函数可调用、
+    数值存原值（算术不误伤）、物体在**当前桥**上现造（真会话的句柄在这张干跑桥上无效）。
+    """
+    live = _SESSIONS[sid]
+    ns = _fresh_namespace()
+    ns["self"] = Scene()
+    for name, value in list(live.items()):
+        if name.startswith("_") or name in ns:
+            continue
+        if isinstance(value, Mobject):
+            ns[name] = Mobject()
+        elif callable(value):
+            ns[name] = _AnyStub()
+        elif isinstance(value, (bool, int, float, str)):
+            ns[name] = value
+        else:
+            ns[name] = _AnyStub()
+    await _run_segment(_compile_segment(source, "<manim>"), ns)
+
+
+def _session_reset(sid):
+    """回滚的前半段：换新命名空间并清场（桥与画布不动；重演由后续 _session_exec 完成）。"""
+    _session_end(sid)
+    ns = _fresh_namespace()
+    scene = Scene()
+    scene.clear()
+    ns["self"] = scene
+    _SESSIONS[sid] = ns
+
+
+def _session_end(sid):
+    _SESSIONS.pop(sid, None)
+
+
 # ===== 以下由 api-map.generated.ts（探针实测）生成，勿手改：重跑探针即更新 =====
 
 `

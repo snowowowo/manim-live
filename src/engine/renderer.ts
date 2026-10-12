@@ -11,6 +11,7 @@ import { PyRunCancelled, PyRuntimeError, runPython } from '../py/runtime.ts'
 import { createManimWebBridge, type ManimNamespace } from '../py/manim-bridge.ts'
 import { createSceneSlot } from './canvas.ts'
 import { loadManim } from './library.ts'
+import { createPySession, type Session } from './session.ts'
 
 const WIDTH = 1280
 const HEIGHT = 720
@@ -38,6 +39,11 @@ export interface RunHandlers {
 export interface Surface {
   /** 执行一段 Manim Python（内部交给 Pyodide 执行并驱动画布）。 */
   run(code: string, handlers?: RunHandlers): Promise<RunResult>
+  /**
+   * 场景会话（黑板步进）：持久命名空间 + 段提交协议（见 engine/session.ts）。
+   * 同时至多一个活会话——开新的会先收旧的；随 `dispose()` 级联销毁。
+   */
+  createSession(): Promise<Session>
   /**
    * 作废当前画布 → 创建一块新画布 → 把上一段代码从头完整播放一遍。resolve 表示这一遍播放完毕。
    *
@@ -80,6 +86,7 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
   let lastCode: string | null = null
   let lastHandlers: RunHandlers = {}
   let rendered = false
+  let endSession: (() => void) | null = null
 
   /** 跑一段（在 tail 排队内调用）。 */
   const execute = async (code: string, handlers: RunHandlers): Promise<void> => {
@@ -128,6 +135,26 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
       )
     },
 
+    async createSession(): Promise<Session> {
+      if (disposed) throw new Error('manim-live：画布已销毁，不能再开会话')
+      // 同一块画布同时至多一个活会话：开新的先收旧的（旧句柄表随之作废）。
+      endSession?.()
+      const session = await createPySession({
+        manim: manim as unknown as ManimNamespace,
+        scene: slot.scene(),
+        sceneFor: slot.sceneFor,
+        fast: options.fast === true,
+        // 会话的画布工作排进本 Surface 的串行尾：与 run / replay 同一条队，单写入方不破。
+        enqueueOnSurface: (job) => {
+          const next = tail.then(job, job)
+          tail = next.then(() => undefined, () => undefined)
+          return next
+        },
+      })
+      endSession = () => session.dispose()
+      return session
+    },
+
     async replay(): Promise<void> {
       const code = lastCode
       if (code === null) throw new Error('manim-live：还没跑过任何代码，没得重播')
@@ -155,6 +182,9 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
 
     dispose(): void {
       disposed = true
+      // 会话先于画布收掉：名字空间与排队中的段随之作废。
+      endSession?.()
+      endSession = null
       // slot.dispose() 里就是 scene.dispose()：释放 mobject、WebGL 上下文与 resize 观察者，
       // 并从容器摘掉 canvas。
       slot.dispose()

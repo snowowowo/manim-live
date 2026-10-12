@@ -465,7 +465,8 @@ function recoverBoundsFailure(
 
 export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridge {
   const { manim, scene } = options
-  const fast = options.fast === true
+  // let 而非常量：场景会话的回滚重演要在同一块桥上临时切极速（见 ManimBridge.setFast）。
+  let fast = options.fast === true
   const objects = new Map<number, unknown>()
   const SCENE_HANDLE = 0
   objects.set(SCENE_HANDLE, scene)
@@ -832,6 +833,10 @@ export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridg
 
     async flush() {
       await flushRenders()
+    },
+
+    setFast(next: boolean) {
+      fast = next
     },
   }
 }
