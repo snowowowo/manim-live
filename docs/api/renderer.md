@@ -41,7 +41,8 @@ check(python: string): Promise<CheckResult>
 
 interface CheckResult {
   ok: boolean
-  error?: string   // ok 为 false 时给出原因，带行号
+  error?: string       // ok 为 false 时给出原因，带行号
+  warnings?: string[]  // 不阻断渲染的提醒；没有提醒时缺席
 }
 ```
 
@@ -69,6 +70,7 @@ await surface.run(python)
 - 源码为空（去掉首尾空白后长度为 0）时直接返回 `{ ok: true }`，不启动运行时。
 - 「预检不通过」是一个结论而不是故障，核心用 `console.info` 记一条，不写 `console.error`——批量筛代码时控制台不会被红字淹掉。
 - 预检不保证渲染成功：它跑的是「什么都不画」的桥，涉及真实绘制与布局的错误仍要到 `run()` 才暴露。
+- 代码含 `MathTex` / `Tex` 而创建渲染器时没传 `katexBaseURL` 时，`warnings` 给一条提醒（公式将以无样式形态渲染）；它不改变 `ok` 的判定。
 - 只在浏览器入口提供。Node 侧用 `manim-live/node` 的 `runPython` 加 `createDryRunBridge` 组合，见[Node 入口](/api/node)。
 
 ## renderer.createSurface(container, options?)

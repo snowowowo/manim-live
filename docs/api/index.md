@@ -1,12 +1,13 @@
 # API 参考：总览与入口
 
-`manim-live` 的全部公开接口按对象分成八页：本页讲对象关系与入口工厂，其余各页讲一个对象的全部成员。每个成员给出类型定义、参数说明、返回值与可直接抄的例子。浏览器入口是 `manim-live`，不碰 DOM 的入口是 `manim-live/node`。第一次上手看[快速开始](/guide/quick-start)，集成前必须知道的行为约定看[行为契约](/guide/contracts)。
+`manim-live` 的全部公开接口按对象分成九页：本页讲对象关系与入口工厂，其余各页讲一个对象的全部成员。每个成员给出类型定义、参数说明、返回值与可直接抄的例子。浏览器入口是 `manim-live`，不碰 DOM 的入口是 `manim-live/node`。第一次上手看[快速开始](/guide/quick-start)，集成前必须知道的行为约定看[行为契约](/guide/contracts)。
 
 | 页 | 内容 |
 | --- | --- |
 | [渲染器](/api/renderer) | `warmup` / `check` / `createSurface` / `exporters` / `pyodideIndexURL` / `dispose` |
 | [画布](/api/surface) | `run` / `replay` / `canvas` / `isRendered` / `dispose`，以及重画一幅新内容的正确做法 |
 | [钩子](/api/hooks) | `onLoading` / `onProgress` / `signal` |
+| [环境状态](/api/status) | `environmentStatus` / `onEnvironmentStatus`：能力 / 运行时 / KaTeX / 取包四组条件 |
 | [导出](/api/export) | `Exporter` 契约、`probe` / `run`、内置录屏的三条边界 |
 | [Node 入口](/api/node) | 不碰 DOM 的那一半：干跑预检与语料装载 |
 | [语料与测试台](/api/corpus) | 语料格式函数与判定 / 统计 / 报告 |
@@ -40,7 +41,7 @@ createManimRenderer(options)          → ManimRenderer        一个页面通�
 
 - `Surface` 只能从渲染器上拿到（`createSurface()`），不能单独构造；`Exporter` 从 `renderer.exporters` 上取，自带的那个始终在列表最前。
 - 渲染器上除 `exporters` 是数组属性，其余都是方法；`Surface` 的五个成员全是方法，没有属性。
-- 状态不挂在对象属性上：一次运行的结论在 `run()` 的返回值里，画布有没有画面靠 `isRendered()` 查，过程信息只有 `onLoading` 这一个回调。
+- 状态不挂在对象属性上：一次运行的结论在 `run()` 的返回值里，画布有没有画面靠 `isRendered()` 查；过程信息有两个出口——per-call 的 `onLoading`，与模块级的[环境状态](/api/status)。
 
 ## createManimRenderer(options?)
 

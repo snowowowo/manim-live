@@ -2,6 +2,8 @@
 
 Three callbacks and signals. They are all attached at **call sites**, not on objects: there is no "subscribe to an object" API, and progress information can only come in through these parameters.
 
+Environment-level readiness (capabilities / runtime / KaTeX / package fetching) does not attach at call sites; see [Environment Status](/en/api/status).
+
 ## onLoading(names)
 
 Progress callback while third-party packages are fetched for an `import`. Three mounting points, in increasing precedence:

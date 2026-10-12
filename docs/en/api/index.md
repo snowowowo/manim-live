@@ -1,12 +1,13 @@
 # API Reference: Overview and Entry
 
-The public interface of `manim-live` is split across eight pages by object: this page covers the object map and the entry factory; each other page covers every member of one object. Each member gets a type definition, parameter notes, return value, and an example you can copy as-is. The browser entry is `manim-live`; the entry that never touches the DOM is `manim-live/node`. For a first run see [Quick Start](/en/guide/quick-start); for the behavioural contracts you must know before integrating see [Behavioural Contracts](/en/guide/contracts).
+The public interface of `manim-live` is split across nine pages by object: this page covers the object map and the entry factory; each other page covers every member of one object. Each member gets a type definition, parameter notes, return value, and an example you can copy as-is. The browser entry is `manim-live`; the entry that never touches the DOM is `manim-live/node`. For a first run see [Quick Start](/en/guide/quick-start); for the behavioural contracts you must know before integrating see [Behavioural Contracts](/en/guide/contracts).
 
 | Page | Contents |
 | --- | --- |
 | [Renderer](/en/api/renderer) | `warmup` / `check` / `createSurface` / `exporters` / `pyodideIndexURL` / `dispose` |
 | [Canvas](/en/api/surface) | `run` / `replay` / `canvas` / `isRendered` / `dispose`, plus how to redraw new content |
 | [Hooks](/en/api/hooks) | `onLoading` / `onProgress` / `signal` |
+| [Environment Status](/en/api/status) | `environmentStatus` / `onEnvironmentStatus`: capabilities / runtime / KaTeX / package fetching |
 | [Export](/en/api/export) | The `Exporter` contract, `probe` / `run`, and the three limits of the built-in recorder |
 | [Node Entry](/en/api/node) | The half that never touches the DOM: dry-run precheck and corpus loading |
 | [Corpus and Test Bench](/en/api/corpus) | Corpus format functions, verdict / tally / report |
@@ -40,7 +41,7 @@ Three notes on reading the map:
 
 - A `Surface` can only be obtained from the renderer (`createSurface()`); it cannot be constructed on its own. Exporters come from `renderer.exporters`, where the built-in one is always first in the list.
 - On the renderer everything is a method except `exporters`, which is an array property. All five members of `Surface` are methods; it has no properties.
-- State is not exposed as object properties: the outcome of a run lives in the return value of `run()`, whether the canvas holds a picture is queried with `isRendered()`, and the only progress callback is `onLoading`.
+- State is not exposed as object properties: the outcome of a run lives in the return value of `run()`, whether the canvas holds a picture is queried with `isRendered()`, and progress information has two outlets — the per-call `onLoading`, and the module-level [Environment Status](/en/api/status).
 
 ## createManimRenderer(options?)
 

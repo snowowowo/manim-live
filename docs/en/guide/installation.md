@@ -29,6 +29,8 @@ About 13 MB for the core, plus about 7 MB for the bundled numpy and sympy. Point
 
 A modern browser with WebAssembly and WebGL support: Pyodide runs WASM and manim-web renders with three.js. DOM-less environments (Node) use the `manim-live/node` entry, which supports the dry-run precheck only; see [Node Precheck](/en/guide/node).
 
+For the readiness of the four condition groups — capabilities, runtime, KaTeX, package fetching — and its subscribable changes, see [Environment Status](/en/api/status).
+
 ## Next steps
 
 - Your first frame in about twenty lines → [Quick Start](/en/guide/quick-start)

@@ -29,6 +29,8 @@ pnpm add manim-live
 
 需要支持 WebAssembly 与 WebGL 的现代浏览器：Pyodide 跑 WASM，manim-web 用 three.js 渲染。没有 DOM 的环境（Node）走 `manim-live/node` 入口，只支持干跑预检，见 [Node 预检](/guide/node)。
 
+能力、运行时、KaTeX、取包四组条件的就绪状态与可订阅的变化，见[环境状态](/api/status)。
+
 ## 下一步
 
 - 约二十行代码渲染出第一幅画面 → [快速开始](/guide/quick-start)

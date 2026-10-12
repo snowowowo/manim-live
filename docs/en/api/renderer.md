@@ -41,7 +41,8 @@ check(python: string): Promise<CheckResult>
 
 interface CheckResult {
   ok: boolean
-  error?: string   // present when ok is false; carries line numbers
+  error?: string       // present when ok is false; carries line numbers
+  warnings?: string[]  // non-blocking notices; absent when there is nothing to notice
 }
 ```
 
@@ -69,6 +70,7 @@ await surface.run(python)
 - Empty source (zero length after trimming) returns `{ ok: true }` immediately, without starting the runtime.
 - A failed precheck is a conclusion rather than a fault, so the core logs it with `console.info` and not `console.error` — filtering a batch of code will not flood the console.
 - Passing the precheck does not guarantee a successful render: it runs against a "draw nothing" bridge, so errors that involve real drawing or layout only surface in `run()`.
+- When the code contains `MathTex` / `Tex` but the renderer was created without `katexBaseURL`, `warnings` carries one notice (formulas will render unstyled); it does not change the `ok` verdict.
 - Available on the browser entry only. On the Node side, combine `runPython` with `createDryRunBridge` from `manim-live/node`; see [Node Entry](/en/api/node).
 
 ## renderer.createSurface(container, options?)
