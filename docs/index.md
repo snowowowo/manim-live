@@ -116,30 +116,3 @@ pnpm add manim-live
 ::: warning 截图为终态，不含动画过程
 截图截取的是一段动画播放完毕后的那一帧。**动画过程本身**（物体如何运动、变形）静态图无法呈现——本仓库附带一个本地演示台，`pnpm playground` 启动后 239 条语料均可逐条播放。该演示台仅用于本地开发，不随文档上线。
 :::
-
-## 全部章节
-
-| 章节 | 内容 |
-| --- | --- |
-| [概述](/guide/overview) | 与原生 Manim 的差别、包的形态、适用场景 |
-| [安装](/guide/installation) | 安装命令、两项外部资源、浏览器要求 |
-| [快速开始](/guide/quick-start) | 约二十行代码渲染出第一幅画面，逐步说明每一步不调用的后果 |
-| [框架集成](/guide/frameworks) | 原生 JS / React / Vue / Next.js（SSR 结论）与更多框架 |
-| [行为契约](/guide/contracts) | 页面级单例、真实释放、单段独立执行；以及复用画布的已知问题 |
-| [第三方包](/guide/packages) | 按需取包的机制、两种部署环境、失败时的分档诊断 |
-| [Node 预检](/guide/node) | 不碰 DOM 的 CI 预检与能力边界 |
-| [示例画廊](/examples/) | 17 个领域各一页：每条示例两个 tab（代码 / 画面），共 188 张真机截图 |
-| [API 参考](/api/) | 八页按对象分：入口、渲染器、画布、钩子、导出、Node 入口、语料与测试台、低层导出；每个成员带类型定义、参数与例子 |
-| [开发与调试](/dev/) | 面向本仓库开发者：构建、测试、演示台、发布自检 |
-
-<style>
-.hero-demo { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 16px; align-items: start; margin: 4px 0 8px; }
-.hero-demo figure { margin: 0; }
-.hero-demo img { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--vp-c-divider); }
-.hero-demo figcaption { font-size: 13px; color: var(--vp-c-text-2); text-align: center; margin-top: 6px; }
-@media (max-width: 960px) { .hero-demo { grid-template-columns: 1fr; } }
-.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 8px 0; }
-.gallery img { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--vp-c-divider); }
-.gallery figcaption { font-size: 13px; color: var(--vp-c-text-2); text-align: center; margin-top: 6px; }
-@media (max-width: 960px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
-</style>

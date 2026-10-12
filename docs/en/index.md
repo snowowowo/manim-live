@@ -113,30 +113,3 @@ Every image below is a **real end state rendered on a real machine**: generated 
 ::: warning Screenshots are end states and contain no animation
 A screenshot captures the frame after an animation finishes playing. The **animation process itself** (how objects move and morph) cannot be shown statically — this repository includes a local playground; after `pnpm playground`, all 239 corpus entries can be played one by one. The playground is for local development only and is not deployed with these docs.
 :::
-
-## All sections
-
-| Section | Content |
-| --- | --- |
-| [Overview](/en/guide/overview) | Differences from native Manim, package shape, applicable scenarios |
-| [Installation](/en/guide/installation) | Install command, the two external assets, browser requirements |
-| [Quick Start](/en/guide/quick-start) | Render your first frame in ~20 lines, what each step does if skipped |
-| [Framework Integration](/en/guide/frameworks) | Vanilla JS / React / Vue / Next.js (SSR findings) and more frameworks |
-| [Behavioural Contracts](/en/guide/contracts) | Page-level singleton, real release, one segment per run; known issues with reusing a canvas |
-| [Third-Party Packages](/en/guide/packages) | How on-demand fetching works, two deployment environments, tiered failure diagnosis |
-| [Node Precheck](/en/guide/node) | DOM-free precheck in CI and its limits |
-| [Gallery](/en/examples/) | One page per domain: every example offers two tabs (Code / Rendered), 188 real screenshots in total |
-| [API Reference](/en/api/) | Eight pages by object: entry, renderer, canvas, hooks, export, Node entry, corpus and test bench, low-level exports; every member with type definitions, parameters, and examples |
-| [Development & Debugging](/en/dev/) | For contributors of this repository: build, tests, playground, publication checks |
-
-<style>
-.hero-demo { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 16px; align-items: start; margin: 4px 0 8px; }
-.hero-demo figure { margin: 0; }
-.hero-demo img { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--vp-c-divider); }
-.hero-demo figcaption { font-size: 13px; color: var(--vp-c-text-2); text-align: center; margin-top: 6px; }
-@media (max-width: 960px) { .hero-demo { grid-template-columns: 1fr; } }
-.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 8px 0; }
-.gallery img { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--vp-c-divider); }
-.gallery figcaption { font-size: 13px; color: var(--vp-c-text-2); text-align: center; margin-top: 6px; }
-@media (max-width: 960px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
-</style>
