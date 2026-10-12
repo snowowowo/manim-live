@@ -19,7 +19,7 @@ pnpm build       # 产物在 .vitepress/dist/
 
 示例章的 36 个页面（17 组 × 中英 + 两个总览）由 `scripts/gen-examples-docs.mjs` 生成：标题与预期取自
 语料 docstring（唯一出处），英文文案在 `docs/examples-i18n.json`，代码走 snippet import——页面里不复制任何字节。
-改语料或翻译表后重跑脚本；想换截图先去 `corpus/shots/` 重挑，或跑 `pnpm shot:corpus` 重截。
+改语料或翻译表后重跑脚本；想换截图先去 `corpus/shots/` 重挑，或跑 `node scripts/shot-corpus.mjs` 重截。
 
 示例章另有自己的一套侧栏：`sidebar` 是按路径前缀分的对象（示例章一套、兜底 `/` 一套），前缀匹配的是页面的
 `relativePath`，所以英文侧栏的键要写成 `/en/examples/`。子组按 `collapsed` 收起，含当前页的子组会自动展开。
