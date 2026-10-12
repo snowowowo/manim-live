@@ -1,6 +1,6 @@
 {
   "name": "manim-live",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "type": "module",
   "description": "在浏览器里用真 Python 跑 Manim 代码并渲出一幅画面——纯逻辑，零框架、零 DSH",
