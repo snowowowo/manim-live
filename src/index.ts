@@ -10,12 +10,20 @@ import { createDryRunBridge } from './py/dry-run-bridge.ts'
 import { runPython, warmupRuntime } from './py/runtime.ts'
 import { createSurface, type Surface, type SurfaceOptions, type RunResult, type RunHandlers } from './engine/renderer.ts'
 import { installPyodideLoader, DEFAULT_PYODIDE_INDEX_URL, currentPyodideIndexURL } from './engine/pyodide.ts'
+import {
+  noteKatexInjecting,
+  noteKatexLoaded,
+  noteKatexError,
+  noteKatexRemoved,
+} from './engine/environment.ts'
 import { browserRecorder } from './export/browser-recorder.ts'
 import type { Exporter } from './export/types.ts'
 
 export interface CheckResult {
   ok: boolean
   error?: string
+  /** 不阻断渲染的提醒（如「代码含公式但 KaTeX 未配置」）；没有提醒时缺席。 */
+  warnings?: string[]
 }
 
 export interface ManimRendererOptions {
@@ -56,6 +64,9 @@ export interface ManimRenderer {
 /** 已注入的 KaTeX 样式表（按 URL 去重，避免多实例重复插同一份）。 */
 const katexLinks = new Map<string, HTMLLinkElement>()
 
+/** 代码里是否用了走 KaTeX 的公式物体（`MathTex(` / `Tex(`；`Text(` 不算）。 */
+const TEX_SOURCE = /\b(MathTex|Tex)\s*\(/
+
 /**
  * 注入 KaTeX 样式（幂等；同一 URL 只插一次）。
  * 单独导出是为了让「不经过工厂」的使用者也能用同一条路径。
@@ -67,16 +78,22 @@ export function injectKatexStyles(baseURL: string): void {
   const link = document.createElement('link')
   link.rel = 'stylesheet'
   link.href = href
+  // 加载结果进环境状态：样式取不到时公式是「裸」的，不报错也不出声，只能在这里接住。
+  noteKatexInjecting(baseURL)
+  link.addEventListener('load', () => noteKatexLoaded())
+  link.addEventListener('error', () => noteKatexError(href))
   document.head.append(link)
   katexLinks.set(href, link)
 }
 
 /** 摘掉本模块注入的 KaTeX 样式（dispose 用；只摘自己插的，不动使用者自己加的）。 */
 function removeKatexStyles(): void {
+  if (katexLinks.size === 0) return
   for (const [href, link] of katexLinks) {
     link.remove()
     katexLinks.delete(href)
   }
+  noteKatexRemoved()
 }
 
 /**
@@ -98,16 +115,23 @@ export function createManimRenderer(options: ManimRendererOptions = {}): ManimRe
 
     async check(python: string): Promise<CheckResult> {
       if (python.trim().length === 0) return { ok: true }
+      // 公式没样式是**静默劣化**（画面照出、公式是裸的），预检是它唯一能出声的地方。
+      const warnings =
+        options.katexBaseURL === undefined && TEX_SOURCE.test(python)
+          ? ['代码含 MathTex / Tex 但未配置 KaTeX 样式：公式将以无样式形态渲染。创建渲染器时传 katexBaseURL 即可注入。']
+          : []
+      const withWarnings = (result: CheckResult): CheckResult =>
+        warnings.length === 0 ? result : { ...result, warnings }
       try {
         await runPython(python, createDryRunBridge())
-        return { ok: true }
+        return withWarnings({ ok: true })
       } catch (error) {
         // `info` 而不是 `error`：**预检不通过是一个结论，不是故障**。
         // 语料里整整一组（`reject/`，39 条）验的就是「该被当场拒掉」——用 error 记，
         // 用户点一遍那一组，控制台就灌满 39 条红字，而真正该看的错误反而被淹掉。
         // 留一条 info 供排查（想复现那段代码时知道它跑了什么），但不进错误面板。
         console.info('[manim-live] check rejected:', error instanceof Error ? error.message : String(error))
-        return { ok: false, error: error instanceof Error ? error.message : String(error) }
+        return withWarnings({ ok: false, error: error instanceof Error ? error.message : String(error) })
       }
     },
 
@@ -145,6 +169,10 @@ export function createManimRenderer(options: ManimRendererOptions = {}): ManimRe
 
 export { browserRecorder } from './export/browser-recorder.ts'
 export type { Exporter, ExportRequest, ExportResult, RenderController } from './export/types.ts'
+
+// ---- 环境状态（浏览器专属）：能力 / 运行时 / KaTeX / 取包四组条件 + 订阅 ----
+export { environmentStatus, onEnvironmentStatus } from './engine/environment.ts'
+export type { EnvironmentStatus, EnvironmentCapabilities, RuntimePhase, KatexPhase } from './engine/environment.ts'
 export type { Surface, SurfaceOptions, RunResult, RunHandlers } from './engine/renderer.ts'
 export { DEFAULT_PYODIDE_INDEX_URL } from './engine/pyodide.ts'
 

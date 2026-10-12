@@ -80,6 +80,31 @@ export function setPackageDiagnoser(next: PackageDiagnoser | null): void {
   diagnoser = next
 }
 
+/**
+ * 运行时生命周期的播报接缝：浏览器入口的「环境状态」订这里（Node 侧不设，no-op）。
+ * 为什么做成接缝而不是让环境状态模块自己包一层：初始化与重试的时机只在本模块的
+ * `getRuntime` 里（失败要把缓存的 Promise 摘掉），外面包只能看到结果、看不到阶段。
+ */
+export type RuntimePhaseListener = (phase: 'loading' | 'ready' | 'error', error?: string) => void
+
+let runtimePhaseListener: RuntimePhaseListener | null = null
+
+export function setRuntimePhaseListener(next: RuntimePhaseListener | null): void {
+  runtimePhaseListener = next
+}
+
+/**
+ * 取包进展的播报接缝：`fetching` 空数组 = 这一轮取包结束；带 `lastError` = 本轮失败的人话原因。
+ * 与 per-call 的 `onLoading` 并存：那个挂在调用上、给单张卡片用；这个挂在模块上、给全页状态用。
+ */
+export type PackageStatusListener = (fetching: string[], lastError?: string) => void
+
+let packageStatusListener: PackageStatusListener | null = null
+
+export function setPackageStatusListener(next: PackageStatusListener | null): void {
+  packageStatusListener = next
+}
+
 /** print 的落点；每次 runPython 覆盖，跑完清空。 */
 let outputSink: (text: string) => void = () => {}
 
@@ -149,14 +174,21 @@ const EXEC_SNIPPET = 'import manim as _dsh_manim\n_dsh_manim._exec_source(_dsh_s
 async function getRuntime(): Promise<PyodideRuntime> {
   if (!loader) throw new Error('manim-live：未注入 Pyodide 加载器，无法执行 Python')
   runtimePromise ??= (async () => {
-    const runtime = await loader!()
-    // numpy 必须先装：适配层模块一 import 就要用
-    await runtime.loadPackage('numpy')
-    runtime.setStdout({ batched: (text) => outputSink(text) })
-    runtime.globals.set('_dsh_manim_src', MANIM_SHIM_SOURCE)
-    await runtime.runPythonAsync(BRIDGE_BOOTSTRAP)
-    await runtime.runPythonAsync(MANIM_MODULE_SETUP)
-    return runtime
+    runtimePhaseListener?.('loading')
+    try {
+      const runtime = await loader!()
+      // numpy 必须先装：适配层模块一 import 就要用
+      await runtime.loadPackage('numpy')
+      runtime.setStdout({ batched: (text) => outputSink(text) })
+      runtime.globals.set('_dsh_manim_src', MANIM_SHIM_SOURCE)
+      await runtime.runPythonAsync(BRIDGE_BOOTSTRAP)
+      await runtime.runPythonAsync(MANIM_MODULE_SETUP)
+      runtimePhaseListener?.('ready')
+      return runtime
+    } catch (error) {
+      runtimePhaseListener?.('error', error instanceof Error ? error.message : String(error))
+      throw error
+    }
   })()
   // 初始化失败要允许重试：把失败的 Promise 从缓存里摘掉，否则会一直拿到同一个拒绝
   runtimePromise.catch(() => {
@@ -320,18 +352,25 @@ async function loadImports(
         const match = LOADING.exec(text.trim())
         if (match === null) return
         announced = true
-        onLoading?.(match[1].split(',').map((name) => name.trim()))
+        const names = match[1].split(',').map((name) => name.trim())
+        onLoading?.(names)
+        packageStatusListener?.(names)
       },
       errorCallback: (text) => failures.push(text),
     })
   } catch (error) {
     failures.push(error instanceof Error ? error.message : String(error))
   } finally {
-    if (announced) onLoading?.([])
+    if (announced) {
+      onLoading?.([])
+      packageStatusListener?.([])
+    }
   }
   if (failures.length === 0) return
   const names = failedPackageNames(failures)
-  throw new PyRuntimeError(packageFailureMessage(failures, await diagnoseQuietly(names)))
+  const message = packageFailureMessage(failures, await diagnoseQuietly(names))
+  packageStatusListener?.([], message)
+  throw new PyRuntimeError(message)
 }
 
 /**
