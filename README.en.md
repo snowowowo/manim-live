@@ -50,14 +50,9 @@ What each skipped step costs, plus per-framework mounting and cleanup, are in th
 2. **Real disposal**: `dispose()` destroys the WASM and WebGL contexts; skipping it on SPA route changes leaks memory.
 3. **Single-segment execution**: `surface.run(code)` keeps no variables between calls; concatenate segments that must share variables into one.
 
-## Assets and licence
+## Runtime assets
 
-The package itself is MIT and contains only logic. The two static assets required at runtime are not shipped and are specified by URL:
-
-- **Pyodide** (core about 13 MB, plus about 7 MB for numpy and sympy): via `pyodideIndexURL`, official CDN or self-hosted; Pyodide is MPL-2.0 licensed, and self-hosting must ship its LICENSE.
-- **KaTeX** styles and fonts: via `katexBaseURL`.
-
-On-demand loading of third-party packages such as `pandas` / `matplotlib`, and the tiered diagnosis when a fetch fails, are covered in [Third-Party Packages](https://snowowowo.github.io/manim-live/en/guide/packages).
+The package contains only logic. The assets it needs at runtime — Pyodide (CPython compiled to WASM), KaTeX styles and fonts, and on-demand Python packages such as `pandas` — are not shipped: by default they are fetched from the official CDN; for intranet or offline use, serve them from your own static path and point `pyodideIndexURL` / `katexBaseURL` at them. Self-hosting steps and the tiered diagnosis of failed fetches are in the documentation's [Installation](https://snowowowo.github.io/manim-live/en/guide/installation) and [Third-Party Packages](https://snowowowo.github.io/manim-live/en/guide/packages).
 
 ## Development
 
@@ -76,4 +71,7 @@ The corpus (`corpus/examples/`) is both the regression net and the only input of
 
 It is **one canvas plus one runtime**: "render Manim Python into one frame". Card UI, playback head, step-by-step narration and local mp4 export are the consumer's responsibility. The DSH plugin `dsh-manim-live` is one of its consumers.
 
-MIT licensed. Manim and Pyodide are each under their own licences.
+## Licence
+
+- The package itself is MIT licensed.
+- Runtime assets keep their own licences: Pyodide is MPL-2.0 — when fetched from the official CDN this package is not the distributor; self-hosting it requires shipping its LICENSE and stating the source location.

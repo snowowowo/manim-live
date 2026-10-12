@@ -50,14 +50,9 @@ await runPython(python, createDryRunBridge())
 2. **真实释放**：`dispose()` 销毁 WASM 与 WebGL 上下文；SPA 路由切换时不释放即内存泄漏。
 3. **单段独立执行**：`surface.run(code)` 不跨次保留变量；多段需共享变量时由调用方拼成一段。
 
-## 资源与许可
+## 运行期资源
 
-包本体 MIT，只含逻辑；运行所需的两项静态资源不随包分发，由 URL 指定：
-
-- **Pyodide**（核心约 13 MB，另含 numpy 与 sympy 约 7 MB）：`pyodideIndexURL`，官方 CDN 或自托管皆可；Pyodide 依 MPL-2.0 授权，自托管时须随附其 LICENSE。
-- **KaTeX** 的样式与字体：`katexBaseURL`。
-
-代码里 `import pandas` / `matplotlib` 等第三方包的按需获取与失败时的分档诊断，见文档的[第三方包](https://snowowowo.github.io/manim-live/guide/packages)。
+包本体只含逻辑；运行所需的资源——Pyodide（WASM 版 CPython）、KaTeX 样式与字体、`pandas` 等按需 Python 包——不随包分发：默认取官方 CDN，内网或离线时自置于静态地址并经 `pyodideIndexURL` / `katexBaseURL` 指向。自托管做法与取包失败的分档诊断见文档的[安装](https://snowowowo.github.io/manim-live/guide/installation)与[第三方包](https://snowowowo.github.io/manim-live/guide/packages)。
 
 ## 开发
 
@@ -76,4 +71,7 @@ pnpm docs              # 文档站本地预览（docs/ 独立依赖图）
 
 它是**一块画布 + 一个运行时**，职责是「把 Manim Python 渲染成一幅画面」；卡片 UI、播放头、分步旁白、本机导出 mp4 均由使用者实现。DSH 插件 `dsh-manim-live` 是它的消费者之一。
 
-MIT licensed · Manim 与 Pyodide 各依其自身许可。
+## 许可
+
+- 包本体依 MIT 授权。
+- 运行期资源各依其自身许可：Pyodide 依 MPL-2.0——取官方 CDN 时本包不是分发方；自托管时须随附其 LICENSE 并注明源码位置。
