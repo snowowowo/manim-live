@@ -48,7 +48,7 @@ onProgress?: (note: string) => void
 **例子**
 
 ```ts
-await recorder.run({ python, controller, onProgress: (note) => setStatus(note) })
+await exporter.run({ python, controller, onProgress: (note) => setStatus(note) })
 ```
 
 ## signal
@@ -64,10 +64,10 @@ run(request: ExportRequest, signal?: AbortSignal): Promise<ExportResult>
 ```ts
 const abort = new AbortController()
 stopButton.onclick = () => abort.abort()
-await recorder.run({ python, controller }, abort.signal)
+await exporter.run({ python, controller }, abort.signal)
 ```
 
-abort 之后录屏停表，返回 `{ ok: false, reason: 'error', error: '已取消' }`。
+abort 之后导出中止，返回 `{ ok: false, reason: 'error', error: '已取消' }`。
 
 **注意**
 

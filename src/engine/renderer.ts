@@ -54,16 +54,21 @@ export interface Surface {
   /**
    * 作废当前画布 → 创建一块新画布 → 把上一段代码从头完整播放一遍。resolve 表示这一遍播放完毕。
    *
-   * ⚠️ **它会更换 canvas 元素**（新场景带新 canvas）。因此用它配合录屏时要注意：
-   * `browserRecorder` 在 `replay()` **之前**就已对当前 canvas 执行 `captureStream()`，
-   * 画布一换，录制流仍留在被丢弃的旧画布上，结果是 0 字节的空文件（实测结论）。
-   * 正确做法见 `RenderController.replay` 的注释：给它一个**已经新建好的空画布**，
-   * 以及一个「在同一块画布上执行一遍」的 replay，而不是直接把本对象当控制器。
+   * ⚠️ **它会更换 canvas 元素**（新场景带新 canvas）。导出那条路不再依赖「画布元素不变」了
+   * （逐帧导出直接从场景取画布，见 `RenderController.collect`），但**会留下副作用**：
+   * 收集模式真的把代码跑了一遍，屏幕上的画面会停在收集完的样子。
    */
   replay(): Promise<void>
+  /**
+   * 收集模式跑一遍源码并把**场景**交出去（导出接入者用，见 export/types.ts 的 RenderController.collect）。
+   *
+   * 与 `createPlayback` 同一条路，只差回报的东西：那个给回放控制器，这个给场景。
+   * 副作用同 `replay()`——代码会真的跑一遍（动画不实时播），画面会停在收集完的样子。
+   */
+  collect(python: string): Promise<unknown | null>
   /** 当前画布元素；尚未创建时为 null。 */
   canvas(): HTMLCanvasElement | null
-  /** 画布上是否已有内容（录屏要求非空）。 */
+  /** 画布上是否已有内容。 */
   isRendered(): boolean
   /** 销毁这块画布；之后的 run 全部作废（cancelled），不会执行。 */
   dispose(): void
@@ -114,6 +119,37 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
     })
   }
 
+  /**
+   * 收集模式跑一遍（在 tail 排队内调用）：整段代码的动画都排进时间轴，返回回放控制器。
+   * `createPlayback` 与 `collect` 共用——两者只差「回报什么」。
+   */
+  const collectPlaybackRun = async (python: string, handlers: RunHandlers): Promise<Playback> => {
+    // 「至多一个活形态」：新回放收掉旧会话与旧回放。
+    endSession?.()
+    endSession = null
+    endPlayback?.()
+    endPlayback = null
+    const { collector, finish } = collectPlayback(manim as unknown as ManimNamespace, slot.scene())
+    const bridge = createManimWebBridge({
+      manim: manim as unknown as ManimNamespace,
+      scene: slot.scene(),
+      sceneFor: slot.sceneFor,
+      collect: collector,
+    })
+    await runPython(python, bridge, {
+      output: (text) => console.info('[manim-live] print:', text.trimEnd()),
+      onLoading: handlers.onLoading ?? options.onLoading,
+      active: () => !disposed,
+    })
+    const playback = finish()
+    endPlayback = () => playback.dispose()
+    // 记下这段，replay() 依旧可从头真播一遍（走实时路径）。
+    lastCode = python
+    lastHandlers = handlers
+    rendered = true
+    return playback
+  }
+
   return {
     run(code: string, handlers: RunHandlers = {}): Promise<RunResult> {
       const job = tail.then(async () => {
@@ -149,30 +185,25 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
     async createPlayback(python: string, handlers: RunHandlers = {}): Promise<Playback> {
       const job = tail.then(async () => {
         if (disposed) throw new PyRunCancelled()
-        // 「至多一个活形态」：新回放收掉旧会话与旧回放。
-        endSession?.()
-        endSession = null
-        endPlayback?.()
-        endPlayback = null
-        const { collector, finish } = collectPlayback(manim as unknown as ManimNamespace, slot.scene())
-        const bridge = createManimWebBridge({
-          manim: manim as unknown as ManimNamespace,
-          scene: slot.scene(),
-          sceneFor: slot.sceneFor,
-          collect: collector,
-        })
-        await runPython(python, bridge, {
-          output: (text) => console.info('[manim-live] print:', text.trimEnd()),
-          onLoading: handlers.onLoading ?? options.onLoading,
-          active: () => !disposed,
-        })
-        const playback = finish()
-        endPlayback = () => playback.dispose()
-        // 记下这段，replay() 依旧可从头真播一遍（走实时路径）。
-        lastCode = python
-        lastHandlers = handlers
-        rendered = true
-        return playback
+        return collectPlaybackRun(python, handlers)
+      })
+      tail = job.catch(() => {})
+      return job
+    },
+
+    /**
+     * 收集模式跑一遍并把**场景**交出去（导出接入者用；见 export/types.ts 的 RenderController.collect）。
+     *
+     * 与 createPlayback 走同一条路，只是把回报的东西换成场景——上游的逐帧导出器要的正是
+     * 「带着时间轴的场景」：它自己 seek 到每一帧再出图，比实时录屏可复现。
+     * 收集模式下不换场景种类之外不动画布；若源码是 3D 场景，slot 换过之后返回的是**新的**那一块，
+     * 导出器拿到的也就是当前真正在显示的场景。
+     */
+    async collect(python: string): Promise<unknown | null> {
+      const job = tail.then(async () => {
+        if (disposed) return null
+        await collectPlaybackRun(python, {})
+        return slot.scene() as unknown
       })
       tail = job.catch(() => {})
       return job

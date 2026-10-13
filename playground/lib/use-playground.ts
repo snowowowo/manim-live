@@ -637,17 +637,17 @@ export function usePlayground() {
   }, [])
 
   /**
-   * 导出（录屏）。走核心自带的 `browserRecorder`。
+   * 导出（逐帧）。走核心自带的 `browserVideo`——它直接用 manim-web 0.36 自带的导出器
+   * （WebCodecs 优先、退 MediaRecorder），对着**时间轴**逐帧出图，不再实时采样画布。
    *
-   * **两步走，顺序不能反**（这也是契约 ④ 的推论）：
-   *   ① 先建一块**全新的空白画布**。录屏在开录前就 `captureStream()` 抓住当前 canvas，
-   *      而「从头真播」如果靠 `Surface.replay()` 实现，它会重建场景、连带换掉 canvas——
-   *      录制流于是留在了一块被丢弃的旧画布上，录出来是 **0 字节**的空文件，且全程不报错。
-   *      所以要在录制开始前就把新画布准备好，让录制期间的 canvas 元素保持不变。
-   *   ② controller.replay 就在这块画布上跑一遍同一段代码（`run` 不会换画布）。
+   * **两步走**（2026-10-13 升级时改的口径）：
+   *   ① 先建一块**全新的空白画布**：收集模式会把整段代码跑一遍（物体真的建出来、动画排进时间轴），
+   *      留在屏幕上的画面因此会停在「收集完」的样子。在全新画布上做，等于把这次副作用关在
+   *      一块马上要被丢弃的画布上，用户原本那块不受影响（这也正是 `freshSurface()` 的既有契约）。
+   *   ② controller.collect 在这块画布上收集一遍，导出器拿它逐帧出图。
    *
-   * **极速档下不给导**：录的是实时过程，极速没有过程可录（会得到一个几乎空的文件）。
-   * 与其让用户下一次空文件再回来问，不如按钮灰着并说清原因。
+   * 与旧录屏版的差别：**逐帧可复现**（不再受实时掉帧影响），且极速档不再是障碍——
+   * 极速只影响「实时播」的那条路，收集模式本来就不实时播。
    */
   const exportCurrent = useCallback(async (): Promise<void> => {
     const job = shown?.job ?? null
@@ -682,8 +682,8 @@ export function usePlayground() {
     const controller: RenderController = {
       canvas: () => target.canvas(),
       isRendered: () => target.isRendered(),
-      // 在这块**已经新建好的空画布**上跑一遍 = 从头真播。不用 surface.replay()（见函数头 ①）。
-      replay: async () => { await target.run(code) },
+      // 收集模式跑一遍：动画排进时间轴，交给上游的逐帧导出器（它自己 seek 出图）。
+      collect: (python: string) => target.collect(python),
     }
     // 取消把手：ExportRequest 的第二个参数就是 AbortSignal（「导出」分节里那个取消按钮）。
     const abort = new AbortController()

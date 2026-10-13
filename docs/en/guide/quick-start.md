@@ -71,30 +71,30 @@ await surface.replay()
 
 ## Export video
 
-The renderer's `exporters` include the browser recorder (`id: 'browser-recorder'`). It has no access to the source code and can only record a live canvas, so the caller must hand it **rendering control**. The correct approach is to create a fresh canvas first and let the recorder play from the beginning on it:
+The renderer's `exporters` include the browser frame-by-frame exporter (`id: 'browser-video'`): it collect-runs the source to obtain a timeline, then hands it to manim-web's own exporters for frame-by-frame output. Because it really executes the source once, the caller must hand it **rendering control** and do the work on a **fresh blank canvas**:
 
 ```ts
-const recorder = renderer.exporters.find((e) => e.id === 'browser-recorder')!
-if (!(await recorder.probe()).ready) throw new Error('Screen recording is not supported in this browser')
+const exporter = renderer.exporters.find((e) => e.id === 'browser-video')!
+if (!(await exporter.probe()).ready) throw new Error('Frame-by-frame export is not supported in this browser')
 
-const fresh = await renderer.createSurface(container) // ← the recorder needs a freshly created canvas
-const result = await recorder.run({
+const fresh = await renderer.createSurface(container) // ← collection really runs the code; use a fresh canvas
+const result = await exporter.run({
   python,
   controller: {
     canvas: () => fresh.canvas(),
     isRendered: () => fresh.isRendered(),
-    replay: async () => { await fresh.run(python) },
+    collect: (src) => fresh.collect(src),
   },
   onProgress: (note) => console.log(note),
 })
 if (result.ok && result.kind === 'blob') {
   const url = URL.createObjectURL(result.blob)
-  // <a download={result.name} href={url}> → click to download the .webm
+  // <a download={result.name} href={url}> → click to download; derive the extension from result.mime
 }
 ```
 
-::: warning Why the old canvas cannot be recorded directly
-The recorder binds its canvas **before** playback starts; if you then call `surface.replay()` (which swaps in a new canvas), the recording stream stays on the discarded old canvas — the recording ends up as an empty file, and **no error is raised at any point**. That is why the example above creates a fresh canvas first and replays on it. See [Behavioural Contracts](/en/guide/contracts).
+::: tip Why collect on a **fresh** canvas
+Collection really executes the source once (objects are built, animations are queued on the timeline), so the on-screen picture ends up in its "collected" state. Doing it on a fresh blank canvas confines that side effect to a canvas that is about to be discarded — the one the user was looking at stays untouched. See [Behavioural Contracts](/en/guide/contracts).
 :::
 
 The full export contract is in [API Reference: Export](/en/api/export).

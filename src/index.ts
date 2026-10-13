@@ -16,7 +16,7 @@ import {
   noteKatexError,
   noteKatexRemoved,
 } from './engine/environment.ts'
-import { browserRecorder } from './export/browser-recorder.ts'
+import { browserVideo } from './export/browser-video.ts'
 import type { Exporter } from './export/types.ts'
 
 export interface CheckResult {
@@ -41,7 +41,7 @@ export interface ManimRendererOptions {
   onLoading?: (names: string[]) => void
   /**
    * 额外的导出接入者（如 DSH 插件的本机 manim CLI）。
-   * 核心自带 `browserRecorder`（浏览器录屏）**始终在场**，排在列表最前。
+   * 核心自带 `browserVideo`（浏览器逐帧导出）**始终在场**，排在列表最前。
    */
   exporters?: Exporter[]
 }
@@ -106,7 +106,7 @@ export function createManimRenderer(options: ManimRendererOptions = {}): ManimRe
   if (options.katexBaseURL !== undefined) injectKatexStyles(options.katexBaseURL)
 
   const surfaces = new Set<Surface>()
-  const exporters: Exporter[] = [browserRecorder, ...(options.exporters ?? [])]
+  const exporters: Exporter[] = [browserVideo, ...(options.exporters ?? [])]
 
   return {
     warmup(): Promise<void> {
@@ -167,7 +167,7 @@ export function createManimRenderer(options: ManimRendererOptions = {}): ManimRe
   }
 }
 
-export { browserRecorder } from './export/browser-recorder.ts'
+export { browserVideo } from './export/browser-video.ts'
 export type { Exporter, ExportRequest, ExportResult, RenderController } from './export/types.ts'
 
 // ---- 环境状态（浏览器专属）：能力 / 运行时 / KaTeX / 取包四组条件 + 订阅 ----

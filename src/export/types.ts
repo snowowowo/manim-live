@@ -1,30 +1,27 @@
 // 导出能力的**接口**（顶层设计 §6.4）：核心只定形状，实现是两个接入者——
-//   · 核心自带的 `browserRecorder`（浏览器录屏，见 ./browser-recorder.ts）
+//   · 核心自带的 `browserVideo`（浏览器逐帧导出，见 ./browser-video.ts；直接用上游导出器）
 //   · 使用者提供的 `localManim`（本机 manim CLI 渲 mp4，DSH 插件那份）
 //
-// 为什么不是「传源码 → 出文件路径」：浏览器录屏**拿不到源码**，它需要那只**活着的画布**，
-// 而且必须在动画开始前就拿到。所以接口必须把「渲染控制权」一起递出去——这就是 RenderController 存在的唯一理由。
+// 为什么不是「传源码 → 出文件路径」：上游的逐帧导出要的是**带着时间轴的场景**（它自己 seek 到每一帧
+// 再出图），而场景只在渲染器手里。所以接口必须把「渲染控制权」一起递出去——这就是 RenderController
+// 存在的唯一理由。
 
-/** 核心递给接入者的能力：活的画布 + 从头真播一次的控制权。 */
+/** 核心递给接入者的能力：把源码按收集模式跑一遍（动画排进时间轴），交回那块场景。 */
 export interface RenderController {
   /** 当前画布元素；还没建出来时给 null。 */
   canvas(): HTMLCanvasElement | null
-  /** 画布上已经有画面了吗（录屏要非空才值得录）。 */
+  /** 画布上已经有画面了吗。 */
   isRendered(): boolean
   /**
-   * 从头真播一遍。resolve 时表示这一遍真的播完了（录屏据此停表）。
+   * 收集模式跑一遍源码：play / wait 不实时播、全部排进时间轴，resolve 时返回**带时间轴的场景**
+   * （上游 `ExportableScene` 那个形状）——导出器拿它逐帧 seek 出图，比实时录屏可复现。
    *
-   * ⚠️ **实现必须保证 canvas 元素本身不变**。理由：录屏在调它**之前**就
-   * `captureStream()` 抓住了 `canvas()` 返回的那一块，之后换画布等于把录制流留在了一块
-   * 被丢弃的旧画布上——录出来是 0 字节的空文件，而过程中不报任何错（实测踩过）。
+   * 收集期间若代码声明了 3D 场景，画布会被换成 3D 那一块：返回的是**换过之后**的场景，
+   * 也就是当前真正在显示的那一块（导出器从它的 `getCanvas()` 取画面）。
    *
-   * 于是 `Surface.replay()` **不能**直接拿来当这个控制器（它会重建场景、连带换掉 canvas）。
-   * 正确姿势两步：
-   *   ① 先建一块**新的**画布（已经新建好了，所以接下来那遍就是「从头」）；
-   *   ② controller.replay = 在这块画布上再跑一遍同一段代码（`surface.run(python)`）。
-   * 参考实现见包内 playground 的 `exportCurrent`。
+   * 返回 null = 画布已销毁（不算失败，与 run 的 cancelled 同族）。
    */
-  replay(): Promise<void>
+  collect(python: string): Promise<unknown | null>
 }
 
 export interface ExportRequest {

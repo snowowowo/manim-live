@@ -16,8 +16,8 @@ export type KatexPhase = 'unconfigured' | 'loading' | 'loaded' | 'error'
 export interface EnvironmentCapabilities {
   wasm: boolean
   webgl: boolean
-  /** 缺它只影响 browser-recorder 导出，不影响渲染——hint 里会写明这一点。 */
-  mediaRecorder: boolean
+  /** 浏览器侧**视频导出**能不能用（WebCodecs 或 MediaRecorder 有一个即可）；缺它只影响导出，不影响渲染。 */
+  videoExport: boolean
 }
 
 export interface EnvironmentStatus {
@@ -53,7 +53,7 @@ function probeCapabilities(): EnvironmentCapabilities {
   capabilitiesCache ??= {
     wasm: typeof WebAssembly === 'object' && WebAssembly !== null,
     webgl: probeWebgl(),
-    mediaRecorder: typeof MediaRecorder !== 'undefined',
+    videoExport: typeof MediaRecorder !== 'undefined' || (typeof globalThis !== 'undefined' && 'VideoEncoder' in globalThis),
   }
   return capabilitiesCache
 }
@@ -65,7 +65,7 @@ function collectHints(): string[] {
   if (typeof document !== 'undefined') {
     if (!caps.wasm) out.push('当前浏览器不支持 WebAssembly：Pyodide 无法启动，请换现代桌面浏览器。')
     if (!caps.webgl) out.push('当前浏览器没有可用 WebGL：manim-web 出不了画面。')
-    if (!caps.mediaRecorder) out.push('当前浏览器没有 MediaRecorder：browser-recorder 导出不可用（不影响渲染）。')
+    if (!caps.videoExport) out.push('当前浏览器既没有 WebCodecs 也没有 MediaRecorder：browser-video 导出不可用（不影响渲染）。')
   }
   if (runtimePhase === 'error') {
     out.push(`Pyodide 运行时启动失败：${runtimeError ?? '原因未知'}。先确认 pyodideIndexURL 的地址真能打开、其下文件完整。`)

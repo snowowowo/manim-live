@@ -455,8 +455,24 @@ for (const name of domain.animations) {
   if (kindOf(name, 'anim') === 'mobject') put(name, 'class', 'ok', `manim.${name}`)
   else putAnimation(name)
 }
+/**
+ * 同名**不同东西**：名字在 manim-web 里存在，但形状 / 语义与 CE 不同。
+ *
+ * 函数这一组是按**名字**判的（速率那一组是按行为实测），于是撞名的会被误记成 ok：
+ * `always` 两边都有、都是「挂一个更新器」，但 CE 0.22 收的是**绑定方法**（`always(obj.rotate, …)`），
+ * manim-web 收的是 `(物体, 方法名)`——同一个名字、接不上，得如实记成 missing 并给出改法。
+ * 只登记**读两边源码核实过**的，逐条写清差异；别当黑名单用（名字对不上本来就判 missing）。
+ */
+const KNOWN_NAME_MISMATCH = {
+  always:
+    'manim-web 的 always(物体, 方法名, …) 与 CE 的 always(obj.方法, …) 收的形状不同，接不上——' +
+    '直接用 add_updater(lambda m, dt: …)',
+}
+
 for (const name of domain.functions) {
-  if (hasExport(name)) put(name, 'function', 'ok', `manim.${name}(...)`)
+  const mismatch = KNOWN_NAME_MISMATCH[name]
+  if (mismatch !== undefined) put(name, 'function', 'missing', undefined, mismatch)
+  else if (hasExport(name)) put(name, 'function', 'ok', `manim.${name}(...)`)
   else put(name, 'function', 'missing', undefined, KNOWN_MISSING[name] ?? 'manim-web 没有这个函数——用 add_updater() 自己写')
 }
 

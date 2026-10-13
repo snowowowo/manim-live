@@ -19,7 +19,7 @@ describe('environmentStatus（Node 侧）', () => {
     const status = environmentStatus()
     expect(status.capabilities.wasm).toBe(true)
     expect(status.capabilities.webgl).toBe(false)
-    expect(status.capabilities.mediaRecorder).toBe(false)
+    expect(status.capabilities.videoExport).toBe(false)
     expect(status.katex.phase).toBe('unconfigured')
     // 未配置 KaTeX 是配置选择、不是故障：不进全局 hints（它只在 check() 的 warnings 里出声）
     expect(status.hints).toEqual([])

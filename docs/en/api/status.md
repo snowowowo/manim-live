@@ -10,7 +10,7 @@ A snapshot of the current environment status. It initiates no loading and no pro
 function environmentStatus(): EnvironmentStatus
 
 interface EnvironmentStatus {
-  capabilities: { wasm: boolean; webgl: boolean; mediaRecorder: boolean }
+  capabilities: { wasm: boolean; webgl: boolean; videoExport: boolean }
   runtime: { phase: 'idle' | 'loading' | 'ready' | 'error'; error?: string; indexURL: string | null }
   katex: { baseURL: string | null; phase: 'unconfigured' | 'loading' | 'loaded' | 'error'; error?: string }
   packages: { fetching: string[]; lastError?: string }
@@ -24,7 +24,7 @@ interface EnvironmentStatus {
 | --- | --- |
 | `capabilities.wasm` | Whether the browser supports WebAssembly (precondition for Pyodide to start) |
 | `capabilities.webgl` | Whether a WebGL context can be obtained (precondition for manim-web to produce a picture) |
-| `capabilities.mediaRecorder` | Whether the browser-recorder export is available; missing it affects export only, not rendering |
+| `capabilities.videoExport` | Whether the browser frame-by-frame export (browser-video) is available — WebCodecs or MediaRecorder is enough; missing it affects export only, not rendering |
 | `runtime.phase` | Pyodide runtime lifecycle: not loaded / loading / ready / failed |
 | `runtime.error` | The original failure text when `phase` is `error` |
 | `runtime.indexURL` | The currently registered Pyodide fetch root; `null` when no loader was ever installed |

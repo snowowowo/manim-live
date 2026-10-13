@@ -68,7 +68,7 @@
     "prepublishOnly": "pnpm build && pnpm check:pkg"
   },
   "dependencies": {
-    "manim-web": "^0.3.24"
+    "manim-web": "^0.36.0"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",

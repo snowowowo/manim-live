@@ -9,6 +9,7 @@
  */
 import { ANIMATE_KIND, HANDLE_KEY, type AnimationSpec, type ManimBridge } from './bridge.ts'
 import {
+  INDEX_GETTERS,
   METHOD_RETURNS,
   planAnimate,
   planAnimation,
@@ -28,8 +29,26 @@ export function createDryRunBridge(): ManimBridge {
    * 为什么要记：真桥的 `m[i]` 越界返回 undefined（过桥是 None），适配层据此抛 IndexError，
    * `for m in group` 才收得了尾。预检桥若对任何下标都返句柄，那段代码在预检里会**永远取下去**
    * 直到把 Host 的内存吃满——用户写一个再普通不过的 `for m in group:` 就能把工具调用挂死。
+   *
+   * ⚠️ 2026-10-13 补：只给 VGroup 登记是一条**会挂死**的漏洞——`for part in MathTex("a","+","b")`
+   * 实测在预检里刹不住（跑到 501 还在取）。现在两条一起上：① 知道的种类都登记大小；
+   * ② **没登记的句柄一律当「取不到」**（返回 undefined → 适配层抛 IndexError → 迭代收尾）。
+   * 宁可让预检把「我们没建模的迭代」判成 0 个子物体（偏严），也不能让它无限取下去。
    */
   const sizes = new Map<number, number>()
+
+  /** 构造时的子物体个数：能给就给（给不出就不登记，见 sizes 的注释）。 */
+  function sizeOf(kind: string, args: unknown[], kwargs: Record<string, unknown>): number | null {
+    if (kind === 'VGroup' || kind === 'Group') return args.length
+    // MathTex / Tex 的 CTOR 是 pack 模式：位置参数打包进 latex；关键字也可写成列表。
+    if (kind === 'MathTex' || kind === 'Tex') {
+      if (args.length > 0) return args.length
+      const latex = kwargs.latex
+      if (Array.isArray(latex)) return latex.length
+      return typeof latex === 'string' ? 1 : null
+    }
+    return null
+  }
 
   return {
     create(kind, args, kwargs) {
@@ -40,16 +59,21 @@ export function createDryRunBridge(): ManimBridge {
       // 名字缺失、位置参数与构造规则对不上，都在这里当场拒——和真桥同一份判定
       planCreate(kind, args, kwargs)
       const handle = nextHandle++
-      if (kind === 'VGroup') sizes.set(handle, args.length)
+      const size = sizeOf(kind, args, kwargs)
+      if (size !== null) sizes.set(handle, size)
       return handle
     },
     method(handle, name, args, kwargs) {
       planMethod(name, args, kwargs)
-      // 取下标越界 → 与真桥同判「取不到」（见上面 sizes 的注释）；不越界照旧返占位句柄。
-      // 注意：只在**登记过大小的组**上判——别的种类的子物体数这里并不建模，保持原行为不动。
-      if ((name === 'get' || name === 'getPart') && sizes.has(handle)) {
+      // 取下标：登记过大小的按真实个数判越界；**没登记的也一律「取不到」**——不这么判，
+      // 迭代永远收不了尾（见 sizes 的注释）。
+      // 取法名单从 INDEX_GETTERS 派生（单一来源）：2026-10-13 加 getCurve 时就是漏在这里——
+      // 新取法落到下面的「一律返占位句柄」兜底，于是预检里的 `for part in MathTex(...)`
+      // 永远取得到东西、刹不住（真桥没事，只有预检挂）。
+      if (INDEX_GETTERS.includes(name)) {
         const index = args[0]
-        if (typeof index === 'number' && Number.isInteger(index) && index >= sizes.get(handle)!) {
+        const size = sizes.get(handle)
+        if (typeof index === 'number' && Number.isInteger(index) && index >= (size ?? 0)) {
           return undefined
         }
       }

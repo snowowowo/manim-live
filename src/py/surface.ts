@@ -46,7 +46,17 @@ type CtorSpec =
       /** 落参前的最后一道：形状对得上、但**内容** manim-web 不认时，当场给可读说法。 */
       guard?: (values: Record<string, unknown>) => void
     }
-  | { mode: 'leading'; keys: string[]; optKeys?: string[] }
+  | {
+      mode: 'leading'
+      keys: string[]
+      optKeys?: string[]
+      /**
+       * 「其余关键字折进一个子配置」的签名：CE 的 `Label(label, box_config=…, **kwargs)` 里
+       * 多出来的关键字是给**文字**的，而 manim-web 的 Label 只有三个配置键。`keep` 之外的关键字
+       * 整体落进 `into`——散在选项对象顶层既不生效、typia 也认不出来。
+       */
+      fold?: { into: string; keep: string[] }
+    }
   | { mode: 'variadic' }
   | { mode: 'pack'; key: string }
   | { mode: 'input'; keys: string[] }
@@ -100,6 +110,7 @@ export const ABSTRACT_CLASSES: Record<string, string> = {
 export const SCENE_FAMILY: Record<string, { js: string | null; note?: string }> = {
   Scene: { js: 'Scene' },
   ThreeDScene: { js: 'ThreeDScene' },
+  SpecialThreeDScene: { js: 'SpecialThreeDScene' },
   MovingCameraScene: { js: 'MovingCameraScene' },
   ZoomedScene: { js: 'ZoomedScene' },
   VectorScene: { js: 'VectorScene' },
@@ -289,6 +300,23 @@ const CTOR: Record<string, CtorSpec> = {
   VDict: { mode: 'leading', keys: ['items'] },
   // Polygram(vertex_groups=…) / ConvexHull 一族：都收选项对象，位置参数按 pack 打包。
   Polygram: { mode: 'pack', key: 'vertexGroups' },
+  // ——— 第六轮：升级 manim-web 0.36 后新可用的类（逐一实读 dist/*.d.ts）。
+  // CE 的 Typst(typst_code) / MathTypst(math_expression)：manim-web 这两类的键都叫 typst。
+  Typst: { mode: 'options', keys: ['typst'] },
+  MathTypst: { mode: 'options', keys: ['typst'] },
+  // CE 的 Label(label, …, **kwargs) 把多出来的关键字透给文字；manim-web 的标签文字是**位置**第一参，
+  // 选项只有 labelConfig / boxConfig / frameConfig 三个去处——多出来的折进 labelConfig。
+  Label: {
+    mode: 'leading',
+    keys: ['label'],
+    fold: { into: 'labelConfig', keep: ['labelConfig', 'boxConfig', 'frameConfig'] },
+  },
+  // CurvesAsSubmobjects(vmobject)：两边都把它收成位置参数。
+  CurvesAsSubmobjects: { mode: 'leading', keys: ['vmobject'] },
+  // ArcPolygonFromArcs(*arcs)：两边都是变长位置参数，原样透传。
+  ArcPolygonFromArcs: { mode: 'variadic' },
+  // Surface(func, u_range=…, v_range=…)：manim-web 的键是 uRange / vRange（func 同 ParametricFunction）。
+  Surface: { mode: 'options', keys: ['func'], rename: { u_range: 'uRange', v_range: 'vRange' } },
 }
 
 /**
@@ -529,10 +557,11 @@ export const PROP_READS: Record<string, { method?: string; attr?: string }> = {
 }
 
 /**
- * `m[i]` 取子物体：按顺序试这几种真取法（MathTex 是 `getPart(i)`、VGroup 是 `get(i)`）。
+ * `m[i]` 取子物体：按顺序试这几种真取法（MathTex 是 `getPart(i)`、VGroup 是 `get(i)`、
+ * CurvesAsSubmobjects 是 `getCurve(i)`——它继承的是 VMobject，没有 `get`，2026-10-13 升级后补上）。
  * 顺序由支持面定，适配层照此生成取法列表——别在 Python 里另写一份。
  */
-export const INDEX_GETTERS: string[] = ['getPart', 'get']
+export const INDEX_GETTERS: string[] = ['getPart', 'get', 'getCurve']
 
 /**
  * 取**值**的方法返回值是什么——预检桥照此返一个占位值（真桥返的是真值，不用这张表）。
@@ -647,6 +676,16 @@ export function planCreate(kind: string, args: unknown[], kwargs: Record<string,
     optKeys.forEach((key, index) => {
       if (index < rest.length) opts[key] = rest[index]
     })
+    if (spec.fold !== undefined) {
+      const { into, keep } = spec.fold
+      const folded: Record<string, unknown> = { ...(opts[into] as Record<string, unknown> | undefined) }
+      for (const key of Object.keys(opts)) {
+        if (key === into || keep.includes(key)) continue
+        folded[key] = opts[key]
+        delete opts[key]
+      }
+      if (Object.keys(folded).length > 0) opts[into] = folded
+    }
     return [...lead, ...(Object.keys(opts).length > 0 ? [opts] : [])]
   }
   if (args.length > spec.keys.length) {

@@ -112,7 +112,7 @@ const surface = await renderer.createSurface(document.querySelector('#stage')!, 
 
 ## renderer.exporters
 
-The list of available export providers. A property, not a method. The built-in browser recorder (`id: 'browser-recorder'`) is always first; providers passed at creation follow it.
+The list of available export providers. A property, not a method. The built-in browser frame-by-frame exporter (`id: 'browser-video'`) is always first; providers passed at creation follow it.
 
 ```ts
 readonly exporters: Exporter[]

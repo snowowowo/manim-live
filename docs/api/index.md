@@ -10,7 +10,7 @@
 | [时间轴回放](/api/playback) | `createPlayback` / `seek` / `play` / `pause` / `step`：整段代码收进一条可帧级定位的时间轴 |
 | [钩子](/api/hooks) | `onLoading` / `onProgress` / `signal` |
 | [环境状态](/api/status) | `environmentStatus` / `onEnvironmentStatus`：能力 / 运行时 / KaTeX / 取包四组条件 |
-| [导出](/api/export) | `Exporter` 契约与内置录屏；本机 CLI 导出 `createLocalExport` / `createExportClient` |
+| [导出](/api/export) | `Exporter` 契约与内置逐帧导出；本机 CLI 导出 `createLocalExport` / `createExportClient` |
 | [本机探测](/api/machine) | `probePlan` / `probeCheck`：这台机器有没有 manim / FFmpeg / LaTeX |
 | [包管理](/api/packages) | `createPackagesClient` / `createPyodideSupply`：按需包的清单 / 预缓存 / 供给线 |
 | [Node 入口](/api/node) | 不碰 DOM 的那一半：干跑预检与语料装载 |
@@ -80,7 +80,7 @@ function createManimRenderer(options?: ManimRendererOptions): ManimRenderer
 | `pyodideIndexURL` | `string` | 官方 CDN | Pyodide 本体与按需第三方包的取数根，两者共用这一个地址，按 `pyodide-lock.json` 的 sha256 校验 | 走公网 CDN；内网或离线环境取不到运行时 |
 | `katexBaseURL` | `string` | 不注入 | `katex.min.css` 与字体所在目录，给了就注入一个 `<link>`（按 URL 去重） | 完全不碰 DOM；`MathTex` 排出的公式没有样式 |
 | `onLoading` | `(names: string[]) => void` | 无 | 按 `import` 取包时的进展回调，见[钩子](/api/hooks) | 界面上没有「正在取包」提示 |
-| `exporters` | `Exporter[]` | 空 | 追加导出接入者，排在自带录屏之后，见[导出](/api/export) | 只有自带的浏览器录屏可用 |
+| `exporters` | `Exporter[]` | 空 | 追加导出接入者，排在自带逐帧导出之后，见[导出](/api/export) | 只有自带的浏览器逐帧导出可用 |
 
 **返回** `ManimRenderer`，六个成员的用法见[渲染器](/api/renderer)。
 

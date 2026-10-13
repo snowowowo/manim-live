@@ -112,7 +112,7 @@ const surface = await renderer.createSurface(document.querySelector('#stage')!, 
 
 ## renderer.exporters
 
-可用的导出接入者列表，属性而非方法。自带的浏览器录屏（`id: 'browser-recorder'`）始终在列表最前，创建渲染器时传入的接在它后面。
+可用的导出接入者列表，属性而非方法。自带的浏览器逐帧导出（`id: 'browser-video'`）始终在列表最前，创建渲染器时传入的接在它后面。
 
 ```ts
 readonly exporters: Exporter[]

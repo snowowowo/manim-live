@@ -609,10 +609,28 @@ def _vector_field(kind, args, kwargs):
     return Mobject(returned)
 
 
+# Surface 的 func 与向量场不同：收 (u, v) **两个**参数、返回**一个点**；实参常写成
+# axes.c2p(u, v, …)，返回值是 ndarray——过桥得先降成 list 再 _to_js 才是真数组。
+_SURFACE_KINDS = ("Surface",)
+
+
+def _surface(kind, args, kwargs):
+    func = kwargs.get("func", args[0] if len(args) > 0 else None)
+    if not callable(func):
+        raise TypeError("%s 要一个函数：收 (u, v)、返回一个点" % kind)
+    rest = dict(kwargs)
+    rest.pop("func", None)
+    wrapped = lambda u, v: _to_js(_tag(func(u, v)))
+    returned = _mb_create(kind, _tag_args(args[1:] if len(args) > 0 else ()), _tag_kwargs(dict(rest, func=wrapped)))
+    return Mobject(returned)
+
+
 def _shape(kind):
     def make(*args, **kwargs):
         if kind in _VECTOR_FIELD_KINDS:
             return _vector_field(kind, args, kwargs)
+        if kind in _SURFACE_KINDS:
+            return _surface(kind, args, kwargs)
         return Mobject(_mb_create(kind, _tag_args(args), _tag_kwargs(kwargs)))
 
     return make

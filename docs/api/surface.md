@@ -64,7 +64,7 @@ if (!result.ok) showError(result.error)
 - 多次 `run()` 按提交顺序排队，画布是单写入方。
 - 一段代码开始执行后不能中断。
 - 用户代码里的 `print` 没有回调，核心把它写到 `console.info`。需要接收输出时使用低层的 `runPython(code, bridge, { output })`。
-- 代码里写了 `class X(ThreeDScene)` 时，核心会在运行中把 2D 画布换成真 3D 画布，canvas 元素随之改变——正在录屏或持有旧元素引用时需重新调用 `canvas()`。
+- 代码里写了 `class X(ThreeDScene)` 时，核心会在运行中把 2D 画布换成真 3D 画布，canvas 元素随之改变——持有旧元素引用时需重新调用 `canvas()`（导出不受影响：导出器拿的是收集结束后的那块场景）。
 
 ## surface.replay()
 
@@ -88,7 +88,7 @@ await surface.replay()         // 画面回到起点重新播放
 **注意**
 
 - 没有可重播的代码时它抛错，不是返回失败结果。
-- **它会更换 canvas 元素**。在录屏开始后调用它，录制流会留在被丢弃的旧画布上，得到 0 字节文件，且整个过程不抛出任何错误，见[导出](/api/export)。
+- **它会更换 canvas 元素**，且会把上一段代码**从头真播一遍**（副作用：画面停在终态）。导出走的是另一条路（收集模式 + 逐帧出图），见[导出](/api/export)。
 - 沿用上一次的 `handlers`，也沿用建画布时的 `fast` 档位。
 
 ## surface.canvas()
@@ -112,7 +112,7 @@ if (element !== null && surface.isRendered()) {
 
 **注意**
 
-- `replay()` 之后返回的是**新元素**，旧的已被丢弃；2D 换 3D 场景时同样会换元素。持有它做录屏或截图，要在这两件事之后重新取。
+- `replay()` 之后返回的是**新元素**，旧的已被丢弃；2D 换 3D 场景时同样会换元素。持有它做截图之类的事，要在这两件事之后重新取。
 
 ## surface.isRendered()
 

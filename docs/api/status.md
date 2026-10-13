@@ -10,7 +10,7 @@
 function environmentStatus(): EnvironmentStatus
 
 interface EnvironmentStatus {
-  capabilities: { wasm: boolean; webgl: boolean; mediaRecorder: boolean }
+  capabilities: { wasm: boolean; webgl: boolean; videoExport: boolean }
   runtime: { phase: 'idle' | 'loading' | 'ready' | 'error'; error?: string; indexURL: string | null }
   katex: { baseURL: string | null; phase: 'unconfigured' | 'loading' | 'loaded' | 'error'; error?: string }
   packages: { fetching: string[]; lastError?: string }
@@ -24,7 +24,7 @@ interface EnvironmentStatus {
 | --- | --- |
 | `capabilities.wasm` | 浏览器是否支持 WebAssembly（Pyodide 启动的前提） |
 | `capabilities.webgl` | 能否取得 WebGL 上下文（manim-web 出画面的前提） |
-| `capabilities.mediaRecorder` | browser-recorder 导出是否可用；缺它只影响导出，不影响渲染 |
+| `capabilities.videoExport` | 浏览器逐帧导出（browser-video）是否可用——WebCodecs 或 MediaRecorder 有一个即可；缺它只影响导出，不影响渲染 |
 | `runtime.phase` | Pyodide 运行时生命周期：未加载 / 加载中 / 就绪 / 失败 |
 | `runtime.error` | `phase` 为 `error` 时的失败原文 |
 | `runtime.indexURL` | 当前登记的 Pyodide 取数根；从未安装加载器时为 `null` |

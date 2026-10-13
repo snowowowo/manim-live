@@ -69,30 +69,30 @@ await surface.replay()
 
 ## 导出视频
 
-渲染器的 `exporters` 自带浏览器录屏（`id: 'browser-recorder'`）。它拿不到源码，只能录制「存活的画布」，因此需要向它传递**渲染控制权**。正确做法是先创建一块新画布，让录屏在这块画布上从头播放：
+渲染器的 `exporters` 自带浏览器逐帧导出（`id: 'browser-video'`）：它把源码按收集模式跑一遍拿到时间轴，再交给 manim-web 自带的导出器逐帧出图。因为要执行一遍源码，所以需要向它传递**渲染控制权**，并在**一块新建的空白画布**上做这件事：
 
 ```ts
-const recorder = renderer.exporters.find((e) => e.id === 'browser-recorder')!
-if (!(await recorder.probe()).ready) throw new Error('当前浏览器不支持录屏')
+const exporter = renderer.exporters.find((e) => e.id === 'browser-video')!
+if (!(await exporter.probe()).ready) throw new Error('当前浏览器不支持逐帧导出')
 
-const fresh = await renderer.createSurface(container) // ← 录屏需要一块新建的画布
-const result = await recorder.run({
+const fresh = await renderer.createSurface(container) // ← 收集会真的跑一遍代码，放新画布上做
+const result = await exporter.run({
   python,
   controller: {
     canvas: () => fresh.canvas(),
     isRendered: () => fresh.isRendered(),
-    replay: async () => { await fresh.run(python) },
+    collect: (src) => fresh.collect(src),
   },
   onProgress: (note) => console.log(note),
 })
 if (result.ok && result.kind === 'blob') {
   const url = URL.createObjectURL(result.blob)
-  // <a download={result.name} href={url}> → 点击下载 .webm
+  // <a download={result.name} href={url}> → 点击下载；扩展名从 result.mime 推，别写死
 }
 ```
 
-::: warning 为什么不能直接录制旧画布
-录屏在开始播放**之前**就已绑定 canvas；此时若调用 `surface.replay()`（它会更换一块新 canvas），录制流会留在被丢弃的旧画布上——录制结果为空文件，且**整个过程不抛出任何错误**。因此上例先用 `createSurface` 创建新画布，再让它在这块画布上重播。详见[行为契约](/guide/contracts)。
+::: tip 为什么先在**新画布**上收集
+收集模式会真的执行一遍源码（物体建出来、动画排进时间轴），留在屏幕上的画面因此会停在「收集完」的样子。在新建的空白画布上做，等于把这次副作用关在一块马上要被丢弃的画布上，用户原本那块不受影响。详见[行为契约](/guide/contracts)。
 :::
 
 导出契约的完整定义见 [API 参考：导出](/api/export)。

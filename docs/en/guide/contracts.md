@@ -68,5 +68,5 @@ await surface.run(code)
 `surface.replay()` is the ready-made encapsulation of exactly this semantics: void the current canvas → create a new one → play the previous code segment from the beginning.
 
 ::: warning Ordering of recording and replay
-`replay()` swaps the canvas element. If you `captureStream()` first and then `replay()`, the recording stream stays on the discarded old canvas — the recording ends up as an empty file, and **no error is raised at any point**. Create the new canvas first and then start recording; the built-in `browserRecorder` already follows this order.
+The built-in `browserVideo` uses **collection mode**: it runs the source in full (objects are built, animations are queued on a timeline) and then renders frame by frame. The side effect is that the canvas ends up in its "collected" state — so run exports on a **fresh blank canvas** (`createSurface`) rather than the one the user is looking at. If the source declares a 3D scene, the canvas is swapped for the 3D one during collection, and the exporter receives the swapped-in canvas that is actually on screen.
 :::

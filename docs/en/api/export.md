@@ -11,7 +11,7 @@ The shape of one export provider. Implementing your own provider means implement
 
 ```ts
 interface Exporter {
-  id: string                                    // stable identifier, e.g. 'browser-recorder'
+  id: string                                    // stable identifier, e.g. 'browser-video'
   label: string                                 // name shown to users
   probe(): Promise<{ ready: boolean; missing?: Array<{ id: string; label: string }> }>
   run(request: ExportRequest, signal?: AbortSignal): Promise<ExportResult>
@@ -54,26 +54,26 @@ run(request: ExportRequest, signal?: AbortSignal): Promise<ExportResult>
 
 interface ExportRequest {
   python: string                 // source code: used by local-CLI implementations
-  controller: RenderController   // render control: used by the browser recorder
+  controller: RenderController   // render control: used by the browser exporter
   onProgress?: (note: string) => void
 }
 
 interface RenderController {
   canvas(): HTMLCanvasElement | null
   isRendered(): boolean
-  replay(): Promise<void>        // must keep the canvas element unchanged
+  collect(python: string): Promise<unknown | null>   // collect-run the source; hands back the scene with its timeline
 }
 
 type ExportResult =
-  | { ok: true; kind: 'blob'; blob: Blob; name: string; mime: string }   // browser recorder
+  | { ok: true; kind: 'blob'; blob: Blob; name: string; mime: string }   // browser frame-by-frame export
   | { ok: true; kind: 'file'; path: string }                            // local CLI
   | { ok: false; reason: 'environment' | 'error'; error?: string }
 ```
 
 **Parameters**
 
-- `request.python`: the source. Recorder implementations ignore it; local-CLI implementations use only this.
-- `request.controller`: render control. Recorder implementations use only this; its three methods are in the type definition above.
+- `request.python`: the source. Browser implementations hand it to `controller.collect`; local-CLI implementations consume it directly.
+- `request.controller`: render control. Browser implementations use only this; its three methods are in the type definition above.
 - `request.onProgress`: stage updates; see [Hooks](/en/api/hooks).
 - `signal`: cancellation; see [Hooks](/en/api/hooks).
 
@@ -82,7 +82,7 @@ type ExportResult =
 **Example**
 
 ```ts
-// Recording needs a freshly created canvas, played from the top on it
+// Collection really executes the code, so do it on a fresh blank canvas — the one the user was looking at stays untouched
 const fresh = await renderer.createSurface(exportContainer)
 const result = await recorder.run(
   {
@@ -90,9 +90,7 @@ const result = await recorder.run(
     controller: {
       canvas: () => fresh.canvas(),
       isRendered: () => fresh.isRendered(),
-      replay: async () => {
-        await fresh.run(python)
-      },
+      collect: (src) => fresh.collect(src),
     },
     onProgress: (note) => setStatus(note),
   },
@@ -109,17 +107,17 @@ fresh.dispose()
 
 **Notes**
 
-- `RenderController.replay()` has one hard requirement: **the canvas element itself must not change while it runs**, because the recorder already called `captureStream()` on whatever `controller.canvas()` returned before invoking it. [`surface.replay()`](/en/api/surface) does exactly that, so it cannot serve as the controller directly — create a fresh canvas first and let the controller's `replay` execute the source on it. Violating this requirement fails silently: a 0-byte file, with no error raised at any point.
+- `RenderController.collect()` **really executes the source** (animations are queued on the timeline rather than played live), so the on-screen picture ends up in its "collected" state. Do this on a fresh blank canvas so the picture the user was looking at stays untouched. If the source declares a 3D scene, the canvas is swapped for the 3D one and the returned scene is the swapped-in one — the canvas actually on screen.
 
-## browserRecorder (built-in provider)
+## browserVideo (built-in provider)
 
-The core's first provider, `id: 'browser-recorder'`: real-time recording via `canvas.captureStream()` plus `MediaRecorder`, with no external dependency at all.
+The core's first provider, `id: 'browser-video'`: it collect-runs the source to obtain a scene with a timeline, then hands that scene to manim-web's own exporters for **frame-by-frame** output (WebCodecs first, falling back to real-time MediaRecorder sampling). Strategy selection, encoding, per-frame seeking, and scene-audio mixing all happen upstream; this package only wires up options and progress.
 
 Three limits:
 
-1. Real time only. A 60-second animation records for 60 seconds — recording samples the live canvas stream. The library itself ships timeline control (`Scene.seek(t)` / `pause()` / `resume()`, plus `PlaybackControls`), but the recorder does not use it.
-2. The format depends on the browser. Usually `webm`, possibly `mp4` in Safari; the result carries `mime` and the extension is derived from it.
-3. No audio track.
+1. Frame-by-frame and reproducible: fixed at 30 fps (upstream defaults to 60, which doubles the payload and buys nothing for teaching animations) and unaffected by dropped frames during playback.
+2. The format depends on the browser and codec. The WebCodecs path can produce `mp4` / `webm` depending on the codec; the MediaRecorder path usually produces `webm`. The result carries `mime` and the extension is derived from it — never hard-code `.mp4`.
+3. Audio exists only when the scene itself has audio attached (Manim has no audio of its own).
 
 ## createLocalExport(options) (Node side)
 

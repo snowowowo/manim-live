@@ -11,7 +11,7 @@
 
 ```ts
 interface Exporter {
-  id: string                                    // 稳定标识，如 'browser-recorder'
+  id: string                                    // 稳定标识，如 'browser-video'
   label: string                                 // 给用户看的名字
   probe(): Promise<{ ready: boolean; missing?: Array<{ id: string; label: string }> }>
   run(request: ExportRequest, signal?: AbortSignal): Promise<ExportResult>
@@ -54,26 +54,26 @@ run(request: ExportRequest, signal?: AbortSignal): Promise<ExportResult>
 
 interface ExportRequest {
   python: string                 // 源码：本机 CLI 类实现用它
-  controller: RenderController   // 渲染控制权：浏览器录屏用它
+  controller: RenderController   // 渲染控制权：浏览器逐帧导出用它
   onProgress?: (note: string) => void
 }
 
 interface RenderController {
   canvas(): HTMLCanvasElement | null
   isRendered(): boolean
-  replay(): Promise<void>        // 必须保证 canvas 元素不变
+  collect(python: string): Promise<unknown | null>   // 收集模式跑一遍，交回带时间轴的场景
 }
 
 type ExportResult =
-  | { ok: true; kind: 'blob'; blob: Blob; name: string; mime: string }   // 浏览器录屏
+  | { ok: true; kind: 'blob'; blob: Blob; name: string; mime: string }   // 浏览器逐帧导出
   | { ok: true; kind: 'file'; path: string }                            // 本机 CLI
   | { ok: false; reason: 'environment' | 'error'; error?: string }
 ```
 
 **参数**
 
-- `request.python`：源码。录屏类实现不用它，本机 CLI 类实现只用它。
-- `request.controller`：渲染控制权。录屏类实现只用它，三个方法见上面的类型定义。
+- `request.python`：源码。浏览器类实现把它交给 `controller.collect` 跑一遍；本机 CLI 类实现直接吃它。
+- `request.controller`：渲染控制权。浏览器类实现只用它，三个方法见上面的类型定义。
 - `request.onProgress`：阶段播报，见[钩子](/api/hooks)。
 - `signal`：取消，见[钩子](/api/hooks)。
 
@@ -82,7 +82,7 @@ type ExportResult =
 **例子**
 
 ```ts
-// 录屏要一块新建的画布，并在它上面从头播一遍
+// 收集模式会真的跑一遍代码，所以在**新建的空白画布**上做，用户原来看的那块不受影响
 const fresh = await renderer.createSurface(exportContainer)
 const result = await recorder.run(
   {
@@ -90,9 +90,7 @@ const result = await recorder.run(
     controller: {
       canvas: () => fresh.canvas(),
       isRendered: () => fresh.isRendered(),
-      replay: async () => {
-        await fresh.run(python)
-      },
+      collect: (src) => fresh.collect(src),
     },
     onProgress: (note) => setStatus(note),
   },
@@ -109,17 +107,17 @@ fresh.dispose()
 
 **注意**
 
-- `RenderController.replay()` 有一个硬性要求：**执行期间 canvas 元素本身不能改变**，因为录屏在调用它之前就已对 `controller.canvas()` 返回的那一块执行了 `captureStream()`。[`surface.replay()`](/api/surface) 恰恰会更换元素，因此不能直接充当控制器——应先创建一块新画布，再让控制器的 `replay` 在这块画布上执行一遍源码。违反该要求的失败是静默的：得到 0 字节文件，过程中不抛出任何错误。
+- `RenderController.collect()` 会**真的把源码跑一遍**（动画不实时播、排进时间轴）：屏幕上的画面因此会停在「收集完」的样子。所以在新建的空白画布上做这件事——留在旧画布上的用户画面不受影响。若源码声明了 3D 场景，画布会被换成 3D 那一块，交回的是换过之后的场景（也就是当前真正在显示的那块）。
 
-## browserRecorder（内置接入者）
+## browserVideo（内置接入者）
 
-核心自带的第一个接入者，`id: 'browser-recorder'`，用 `canvas.captureStream()` 加 `MediaRecorder` 实时录屏，一件外部依赖都不需要。
+核心自带的第一个接入者，`id: 'browser-video'`：把源码按收集模式跑一遍拿到带时间轴的场景，再交给 manim-web 自带的导出器**逐帧**出图（WebCodecs 优先，退到 MediaRecorder 实时采样）。挑路、编码、逐帧 seek、场景音轨混合都由上游做，本包只接选项与进度。
 
 三条边界：
 
-1. 只做实时录制。60 秒的动画就录 60 秒——录制是对画布流的实时采样。库本身提供时间轴控制（`Scene.seek(t)` / `pause()` / `resume()` 与 `PlaybackControls` 控件，manim-web 公开 API），录制路径没有用它。
-2. 格式取决于浏览器。多数出 `webm`，Safari 可能出 `mp4`；结果里带 `mime`，扩展名由它推。
-3. 没有音轨。
+1. 逐帧、可复现：帧率固定 30（上游默认 60，产物翻倍，教学动画用不到），不受实时掉帧影响。
+2. 格式取决于浏览器与编解码器：WebCodecs 那条能给 `mp4` / `webm`（按编解码器），MediaRecorder 那条多数出 `webm`；结果里带 `mime`，扩展名由它推——不要写死 `.mp4`。
+3. 音轨只有场景自己挂了音频才有（Manim 本身没有音频）。
 
 ## createLocalExport(options)（Node 侧）
 
