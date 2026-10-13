@@ -63,6 +63,13 @@ export {
 // ---- 杂项 ----
 export { canonicalPackageName } from './py/pkg-names.ts'
 
+// ---- Pyodide 供给线（Host 半边）：lock 目录 / 清单 / 下载校验 / 缓存盘点 / Node 装载 ----
+//
+// 随包 Pyodide 目录与缓存目录都由调用方注入（那是插件自己的资产与落位策略）；
+// 浏览器侧配套（清单解析 / 依赖闭包 / 取数客户端）在浏览器入口的 createPackagesClient。
+export { createPyodideSupply } from './packages/supply.ts'
+export type { PyodideSupply, PyodideSupplyOptions, SupplyCatalogEntry, CacheResult } from './packages/supply.ts'
+
 // ---- 语料：装载 / 路径 / 分组表 ----
 export {
   collectCorpus,

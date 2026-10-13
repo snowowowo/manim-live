@@ -174,6 +174,28 @@ export type { Exporter, ExportRequest, ExportResult, RenderController } from './
 export { environmentStatus, onEnvironmentStatus } from './engine/environment.ts'
 export type { EnvironmentStatus, EnvironmentCapabilities, RuntimePhase, KatexPhase } from './engine/environment.ts'
 export type { Surface, SurfaceOptions, RunResult, RunHandlers } from './engine/renderer.ts'
+
+// ---- Pyodide 包缓存（客户端半边）：清单解析 / 依赖闭包 / 补全 / 取数客户端 ----
+//
+// 路由地址由调用方注入（那是它自己插件的 `/dsh-plugins/<id>/…` 命名空间）；
+// Host 半边（lock 目录 / 下载校验 / 缓存盘点）在 `manim-live/node` 的 createPyodideSupply。
+export {
+  createPackagesClient,
+  parseInventory,
+  findPackage,
+  completionFor,
+  prefetchPlan,
+  formatBytes,
+  COMMON_PACKAGES,
+} from './packages/client.ts'
+export type {
+  PackagesClient,
+  PackageEntry,
+  PackageInventory,
+  PackageState,
+  PrefetchOutcome,
+  Completion,
+} from './packages/client.ts'
 // ---- 场景会话（黑板步进）：持久命名空间 + 段提交协议（Surface.createSession 的本体）----
 export { createPySession } from './engine/session.ts'
 export type { Session, SessionVerdict, SessionAppend, PySessionOptions } from './engine/session.ts'
