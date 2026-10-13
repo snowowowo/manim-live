@@ -650,14 +650,11 @@ export function usePlayground() {
    * 极速只影响「实时播」的那条路，收集模式本来就不实时播。
    */
   const exportCurrent = useCallback(async (): Promise<void> => {
+    // 自由代码节：没渲过也能导——收集模式自己会跑一遍源码，画布只是它的副作用场。
+    // 语料节仍然只导**当前选中那条**（shown），不回退去导别的——否则会导出一段
+    // 跟眼前画面毫无关系的东西，比直接说「先渲染一次」更糟。
     const job = shown?.job ?? null
-    // 屏幕上还没有东西可录。**不回退去导自由代码那份**——在语料视图里那么做，
-    // 会录出一段跟眼前这块画布毫无关系的东西，比直接说「先渲染一次」更糟。
-    if (job === null) {
-      say(T.exportNoSurface, 'error')
-      return
-    }
-    const code = codeOf(job)
+    const code = view === 'free' ? source : job === null ? '' : codeOf(job)
     if (code.trim().length === 0) {
       say(T.exportNoSurface, 'error')
       return
@@ -714,7 +711,7 @@ export function usePlayground() {
     anchor.click()
     URL.revokeObjectURL(url)
     say(T.exportDone(result.name, result.mime), 'ok')
-  }, [codeOf, freshSurface, getRenderer, say, shown])
+  }, [codeOf, freshSurface, getRenderer, say, shown, source, view])
 
   /** 起手选一条（配置文件里那条最简单的）——预览面板立刻有东西可讲。 */
   useEffect(() => {

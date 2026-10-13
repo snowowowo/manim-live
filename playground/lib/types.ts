@@ -26,23 +26,24 @@ export type Overlay = { kind: 'skeleton' } | { kind: 'packages'; text: string }
 
 /** 看什么：语料清单，还是自己写一段。 */
 /**
- * 左边导航的分节——**与文档站 API 参考一一对应**（顺序也照它）：
- * playground 对文档里每一个 API 负责，每条一个可上手的分节。
- * 机器可读的清单与标签在 components/api-nav.tsx。
+ * 左边导航的分节。2026-10-14 重组：不与文档站一一对应，按「使用方式」分两组——
+ *
+ *   工作台（要画布的四件事）：
+ *   · corpus   语料——回归网本行（三版式）
+ *   · free     自由代码——写一段 → 预检（check）→ 渲染 → 导出（逐帧），一条完整工作流
+ *   · session  会话——黑板形态：分段追加 / 回滚
+ *   · playback 时间轴——收集成时间轴，帧级定位与走带
+ *
+ *   诊断（不要画布的读数台）：
+ *   · env      运行环境——浏览器能力 / Pyodide 运行时 / KaTeX / 取包（environmentStatus）
+ *               + 本机探测 + 包库存 + Node 干跑（经 dev-api 真跑核心包 Node 入口）
+ *
+ * 被收进别的节的旧分节：渲染器（check → 自由代码；warmup/indexURL → 运行环境，顶栏本就有就绪徽章）、
+ * 钩子（onLoading 在自由代码里写个 import pandas 就能看到；onProgress/signal 在导出按钮组）、
+ * 导出（→ 自由代码的动作组）、环境状态/本机探测/包管理/Node 入口（→ 运行环境）。
+ * 「低层导出与缺口表」整节删除：纯静态文字，证明不了任何东西；缺口表归文档站（API 参考 › 低层导出）。
  */
-export type GroundView =
-  | 'renderer'   // 渲染器：warmup / check / pyodideIndexURL / dispose
-  | 'surface'    // 画布：run / replay / canvas / isRendered
-  | 'session'    // 会话：check / append / count / source / dispose
-  | 'playback'   // 时间轴回放：createPlayback / seek / play / pause / step
-  | 'hooks'      // 钩子：onLoading / onProgress / signal
-  | 'status'     // 环境状态：environmentStatus / onEnvironmentStatus
-  | 'export'     // 导出：Exporter 契约 / browserRecorder
-  | 'machine'    // 本机探测（Node 侧，经 dev-api）
-  | 'packages'   // 包管理（Node 侧，经 dev-api）
-  | 'node'       // Node 入口：runPython + createDryRunBridge（经 dev-api）
-  | 'corpus'     // 语料与测试台：语料回归网 + 判定/统计
-  | 'internals'  // 低层导出与缺口表
+export type GroundView = 'corpus' | 'free' | 'session' | 'playback' | 'env'
 
 /**
  * 左侧怎么摆。**三种布局共用同一套数据与同一套交互**，换的只是版式——

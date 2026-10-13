@@ -221,19 +221,6 @@ export default defineConfig({
   root: here,
   // react 在 tailwind 之前：组件里写的类名要先辈出 JSX 来，Tailwind 才扫得到。
   plugins: [react(), tailwindcss(), assetRoutes(), devApi(pkgRoot)],
-  /**
-   * manim-web 0.36 的 dist 里有一处**裸动态 import**：讲义导出的可选依赖 pptxgenjs
-   * （上游自己用 try/catch 兜着，并标了 Vite 的 @vite-ignore 注释）。但**依赖预打包跑的
-   * 是 esbuild，不认那条注释**——它会硬解析这个裸名，包不在就整页红屏（2026-10-13 升级时踩到；
-   * 0.3.24 没有这处 import。同族的 jspdf 上游已打成自己的 chunk，不落进这条）。
-   *
-   * 标成 external：预打包产物里原样保留这条 import，浏览器只在真跑到讲义导出时才去取它，
-   * 取不到就走上游自己的兜底——playground 不导 PPTX，永远走不到那条分支。
-   * 将来若给 playground 做生产构建，build.rollupOptions.external 要带上同一个名字。
-   */
-  optimizeDeps: {
-    esbuildOptions: { external: ['pptxgenjs'] },
-  },
   server: {
     port: 5173,
     // 允许读到包根（核心包源码 + corpus 的语料与截图）
@@ -245,6 +232,12 @@ export default defineConfig({
       '@': here,
       // 裸 import 核心包**源码**：改一处立刻热更，不必先 pnpm build
       'manim-live': join(pkgRoot, 'src', 'index.ts'),
+      // manim-web 0.36 的 dist 里有一处裸动态 import（讲义导出的可选依赖 pptxgenjs，上游用
+      // try/catch 兜着）。依赖预打包（esbuild）不认源码里的 @vite-ignore 注释，会硬解析裸名——
+      // 包没装就整页红屏（2026-10-13 升级时踩到；同族的 jspdf 上游打成了自己的 chunk，不碍事）。
+      // alias 到占位桩：预打包解析得到东西，真取到时由桩抛错、上游 catch 转成它自己的提示。
+      // 想真导 PPTX：`pnpm add -D pptxgenjs` 后删掉这条 alias（桩文件头也写了）。
+      pptxgenjs: join(here, 'lib', 'optional-stub.ts'),
     },
   },
 })

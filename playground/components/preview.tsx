@@ -121,12 +121,12 @@ export function Preview({ pg, current, showShot = true }: PreviewProps) {
 
   // 自由代码视图里「渲染」还要求有代码可跑（DSH 那一侧的按钮也是 `disabled={running || emptySource}`）：
   // 空代码点下去什么都不发生，不如灰着。
-  const freeEmpty = pg.view === 'surface' && pg.source.trim().length === 0
+  const freeEmpty = pg.view === 'free' && pg.source.trim().length === 0
   const nothingSelected = pg.view === 'corpus' && pg.selected === null
-  const exportDisabled = pg.fast || pg.shown === null
-  const exportHint = pg.fast
-    ? '极速档没有过程可录——先关掉极速再导'
-    : pg.shown === null ? T.exportNoSurface : T.exportHint
+  // 逐帧导出走收集模式（不实时播），极速不再是障碍；语料节要求先渲过（导当前那条），
+  // 自由代码节没渲过也能导（collect 自己会跑一遍编辑器里的代码）。
+  const exportDisabled = pg.view === 'corpus' && (pg.shown === null || pg.source.trim().length === 0)
+  const exportHint = pg.view === 'corpus' && pg.shown === null ? T.exportNoSurface : T.exportHint
 
   return (
     <section className="flex min-w-0 flex-col gap-3">
@@ -154,7 +154,7 @@ export function Preview({ pg, current, showShot = true }: PreviewProps) {
           variant="primary"
           disabled={pg.running || pg.warm !== 'ready' || freeEmpty || nothingSelected}
           onClick={() => {
-            if (pg.view === 'surface') pg.renderFree()
+            if (pg.view === 'free') pg.renderFree()
             else if (pg.selected !== null) pg.openExample(pg.selected)
           }}
         >

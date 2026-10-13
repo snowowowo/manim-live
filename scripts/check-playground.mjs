@@ -7,7 +7,7 @@
 // 它认的 DOM 有四个：`#status`（等预热、等这一轮出结果）、`#render`（触发一次）、
 // `#stage canvas`（量墨迹）、`.stage-skel`（极速档盖在画布上的骨架层）。
 // **改版式不能丢这几个**——它们就是这条断言的全部抓手。另外还按无障碍名点了两个控件：
-// 「极速」（两个同名的，取第一个）与左侧竖导航的分节名（「画布」「语料与测试台」，见 components/api-nav.tsx）。名字改了这里也要跟着改。
+// 「极速」（两个同名的，取第一个）与左侧竖导航的分节名（「自由代码」「语料」，见 components/api-nav.tsx）。名字改了这里也要跟着改。
 // 页面是 React 写的，但这一条与框架无关：换任何前端框架，只要这几个抓手还在、行为还对，它照样过。
 //
 // 运行：node scripts/check-playground.mjs [--keep] [--shot 路径]
@@ -257,7 +257,7 @@ try {
   //
   // 口径来自 DSH：那边「未通过预检」的卡片根本没有画布（头 + 说明就完了）。
   // 这里原来写反了顺序——先建画布再预检，于是台上留着一块不明所以的黑。
-  await page.getByRole('tab', { name: '画布', exact: true }).click()
+  await page.getByRole('tab', { name: '自由代码', exact: true }).click()
   // 代码框已换成 CodeMirror（见 components/code-editor.tsx 文件头契约）：往可编辑区里填。
   await page.locator('[aria-label="自定义代码"] .cm-content').fill('这是语法错(((  # 预检就该当场拒掉')
   // 序号**必须在点之前**读：点下去 `#status` 会先翻成「渲染中」并 +1，
@@ -289,7 +289,7 @@ try {
   //   ① 结构上——第二次渲染后 canvas 不是同一个 DOM 节点（复用 = 必然叠加）；
   //   ② 行为上——先渲一幅密的（坐标系 + 曲线）、再渲一幅疏的（一个圆）。若是复用旧画布往上加，
   //      疏的那幅画完，墨迹不会比密的少。
-  await page.getByRole('tab', { name: '语料与测试台', exact: true }).click()
+  await page.getByRole('tab', { name: '语料', exact: true }).click()
   await setFast(false) // 真时序下量墨迹：极速会把中间态压掉，画面反而更难比
   await playExample('坐标系 + 函数曲线')
   const denseInk = await inkRatio(640)
@@ -307,16 +307,13 @@ try {
   }
   console.log('✓ 不叠加：第二次渲染换了新画布，上一幅的墨一点没留')
 
-  // ⑧ 导出（录屏）产出**非空**文件。
+  // ⑧ 导出（逐帧）产出**非空**文件。
   //
-  // 这条是冲着一个「不报错的错」立的：原来录出来的 `manim.webm` 是 **110 字节**，
-  // 而全程没有一个异常——因为 `Surface.replay()` 会重建场景、**连带换掉 canvas 元素**，
-  // 而录制流是在 `replay()` **之前**就 `captureStream()` 抓住旧 canvas 的。
-  // 现在改成「先建一块新画布，再在这块上跑一遍」，录制期间 canvas 元素不变。
-  //
-  // 阈值 2 KB：正常 30 KB 上下，空文件是 110 字节——中间隔了三个数量级，不会误判。
+  // 旧录屏版这条是冲着一个「不报错的错」立的（110 字节空文件）。2026-10-13 起换成逐帧导出：
+  // 收集模式拿时间轴 → 上游导出器逐帧出图；断言照旧：产物非空（阈值 2 KB）+ 状态行「已导出」。
+  // 阈值 2 KB：空文件是 110 字节量级——隔着三个数量级，不会误判。
   const downloadPromise = page.waitForEvent('download', { timeout: 180_000 })
-  await page.getByRole('button', { name: '导出（录屏）' }).click()
+  await page.getByRole('button', { name: '导出（逐帧）' }).click()
   const download = await downloadPromise
   const exportFile = join(PKG_ROOT, '_tmp', 'check-export.webm')
   mkdirSync(join(PKG_ROOT, '_tmp'), { recursive: true })
@@ -324,7 +321,7 @@ try {
   const { size } = statSync(exportFile)
   console.log(`  导出：${download.suggestedFilename()}，${(size / 1024).toFixed(0)} KB`)
   if (size < 2048) throw new Error(`导出的文件太小，像没录上：${size} 字节`)
-  console.log('✓ 导出（录屏）产出可下载的非空文件')
+  console.log('✓ 导出（逐帧）产出可下载的非空文件')
   await page.waitForFunction(
     () => (document.getElementById('status')?.textContent ?? '').includes('已导出'),
     undefined,
@@ -368,7 +365,7 @@ try {
   console.log('✓ 会话分节：开会话 → 追加入档')
 
   // ⑪ 时间轴回放分节（createPlayback）：收集 → 播放推进 → 逐帧读数。
-  await page.getByRole('tab', { name: '时间轴回放', exact: true }).click()
+  await page.getByRole('tab', { name: '时间轴', exact: true }).click()
   // 用**真机炸过的那段原样代码**（Axes + Create×2 + MathTex Write）：
   // 当时的报错是 `VGroup.setPoints: expected 443…got 886`（收集分支提前跑了「play 之后」的补丁）。
   // 完整文件形态（默认该给人看的形态）；MathTex 那一发是原样保留的事故用例。

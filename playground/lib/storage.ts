@@ -38,13 +38,26 @@ const oneOf = <Value extends string>(
   allowed: readonly Value[],
 ): Value | undefined => (allowed.includes(value as Value) ? value as Value : undefined)
 
-const VIEWS = [
-  'renderer', 'surface', 'session', 'playback', 'hooks', 'status',
-  'export', 'machine', 'packages', 'node', 'corpus', 'internals',
-] as const
+const VIEWS = ['corpus', 'free', 'session', 'playback', 'env'] as const
 
-/** 旧值别名：分节重构前存下的 `examples` / `free` 照旧读得回来。 */
-const VIEW_ALIAS: Record<string, GroundView> = { examples: 'corpus', free: 'surface' }
+/**
+ * 旧值别名：历代分节重构前存下的 view 照旧读得回来——
+ * 十二节时代（2026-10-13 前）的 renderer/surface/hooks/status/export/machine/packages/node/internals
+ * 按各自归宿映射：surface→free、status/machine/packages/node→env，纯展示型旧节（renderer 的读数已进
+ * 运行环境、hooks/internals 已删）落到最接近的节，别让老 localStorage 把页面带到不存在的分节上。
+ */
+const VIEW_ALIAS: Record<string, GroundView> = {
+  examples: 'corpus',
+  surface: 'free',
+  renderer: 'free',
+  export: 'free',
+  hooks: 'free',
+  status: 'env',
+  machine: 'env',
+  packages: 'env',
+  node: 'env',
+  internals: 'env',
+}
 const LAYOUTS = ['list', 'gallery', 'docs'] as const
 const THEMES = ['dark', 'light'] as const
 const FILTERS = ['all', 'pending', 'failed', 'passed'] as const

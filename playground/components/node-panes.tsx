@@ -204,7 +204,7 @@ export function NodePane() {
     setNote(T.commonRunning)
     try {
       const payload = (await postJson('/__pg/node/check', { code })) as { ok: boolean; error?: string }
-      setNote(payload.ok ? T.renderCheckOk : T.renderCheckFail(payload.error ?? ''))
+      setNote(payload.ok ? T.freeCheckOk : T.freeCheckFail(payload.error ?? ''))
     } catch (error) {
       setNote(T.commonFailed(message(error)))
     } finally {
