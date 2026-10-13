@@ -117,7 +117,7 @@ fresh.dispose()
 
 三条边界：
 
-1. 只做实时录制。60 秒的动画就录 60 秒，不能快进——manim-web 的动画由 rAF 时间驱动，没有公开的离线逐帧 API。
+1. 只做实时录制。60 秒的动画就录 60 秒——录制是对画布流的实时采样。库本身提供时间轴控制（`Scene.seek(t)` / `pause()` / `resume()` 与 `PlaybackControls` 控件，manim-web 公开 API），录制路径没有用它。
 2. 格式取决于浏览器。多数出 `webm`，Safari 可能出 `mp4`；结果里带 `mime`，扩展名由它推。
 3. 没有音轨。
 

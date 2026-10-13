@@ -117,7 +117,7 @@ The core's first provider, `id: 'browser-recorder'`: real-time recording via `ca
 
 Three limits:
 
-1. Real time only. A 60-second animation records for 60 seconds, with no fast-forward — manim-web animations are driven by rAF time and expose no offline frame-by-frame API.
+1. Real time only. A 60-second animation records for 60 seconds — recording samples the live canvas stream. The library itself ships timeline control (`Scene.seek(t)` / `pause()` / `resume()`, plus `PlaybackControls`), but the recorder does not use it.
 2. The format depends on the browser. Usually `webm`, possibly `mp4` in Safari; the result carries `mime` and the extension is derived from it.
 3. No audio track.
 
