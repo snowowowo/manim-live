@@ -19,7 +19,9 @@ function Pane({ children }: { children: React.ReactNode }) {
 }
 
 export function RenderPane({ pg }: { pg: Playground }) {
-  const [code, setCode] = useState('def helper():\n    return 5\nhelper() + 1')
+  const [code, setCode] = useState(
+    'from manim import *\n\nclass Demo(Scene):\n    def construct(self):\n        def helper():\n            return 5\n        value = helper() + 1\n        self.add(Dot())',
+  )
   const [verdict, setVerdict] = useState<string | null>(null)
 
   const runCheck = async (): Promise<void> => {

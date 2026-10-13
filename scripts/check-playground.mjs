@@ -371,15 +371,20 @@ try {
   await page.getByRole('tab', { name: '时间轴回放', exact: true }).click()
   // 用**真机炸过的那段原样代码**（Axes + Create×2 + MathTex Write）：
   // 当时的报错是 `VGroup.setPoints: expected 443…got 886`（收集分支提前跑了「play 之后」的补丁）。
+  // 完整文件形态（默认该给人看的形态）；MathTex 那一发是原样保留的事故用例。
   const tlSample = [
-    'ax = Axes(x_range=[-2, 2, 1], y_range=[-2, 2, 1])',
-    'circle = Circle(radius=1)',
-    'circle.move_to(ax.c2p(0, 0, 0))',
-    'self.add(ax, circle)',
-    'self.play(Create(ax), Create(circle))',
-    'eq = MathTex(latex=["x^2", "+", "y^2", "=", "1"], font_size=34)',
-    'eq.move_to(ax.c2p(0, 1.5, 0))',
-    'self.play(Write(eq))',
+    'from manim import *',
+    '',
+    'class TimelineSample(Scene):',
+    '    def construct(self):',
+    '        ax = Axes(x_range=[-2, 2, 1], y_range=[-2, 2, 1])',
+    '        circle = Circle(radius=1)',
+    '        circle.move_to(ax.c2p(0, 0, 0))',
+    '        self.add(ax, circle)',
+    '        self.play(Create(ax), Create(circle))',
+    '        eq = MathTex(latex=["x^2", "+", "y^2", "=", "1"], font_size=34)',
+    '        eq.move_to(ax.c2p(0, 1.5, 0))',
+    '        self.play(Write(eq))',
   ].join('\n')
   await page.locator('[aria-label="时间轴 · 整段收集"] .cm-content').fill(tlSample)
   await page.getByRole('button', { name: '收集时间轴', exact: true }).click()

@@ -76,7 +76,7 @@ helper() + 1`,
     '三个可挂的回调/信号：onLoading（取包进展，createManimRenderer / createSurface / run 三处就近覆盖）、' +
     'onProgress（导出阶段播报，见「导出」节）、signal（取消导出，AbortSignal，见「导出」节）。',
   hooksOnLoadingDemo: '跑一段要取包的代码（看 onLoading 触发遮罩）',
-  hooksDemoCode: 'import numpy as np\nax = Axes(x_range=[-2, 2, 1], y_range=[-1, 3, 1])\nself.add(ax)\nself.play(Write(ax))',
+  hooksDemoCode: 'from manim import *\n\nclass NeedsNumpy(Scene):\n    def construct(self):\n        import numpy as np\n        ax = Axes(x_range=[-2, 2, 1], y_range=[-1, 3, 1])\n        self.add(ax)\n        self.play(Write(ax))',
   hooksSignalsInExport: 'onProgress 与 signal 的活演示在「导出」节：导出时逐条播报，右键旁取消即 abort。',
 
   // ---- 导出 ----

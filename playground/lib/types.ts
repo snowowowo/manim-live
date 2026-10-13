@@ -71,17 +71,26 @@ export type GroundFilter = 'all' | 'pending' | 'failed' | 'passed'
  */
 export const TIMEOUT_MS = 60_000
 
-/** 自由编辑的起手样本：坐标系 + 圆 + 公式，顺带验证 KaTeX 字体路由真的接上了。 */
-export const FREE_SAMPLE = `ax = Axes(x_range=[-2, 2, 1], y_range=[-2, 2, 1])
-circle = Circle(radius=1)
-circle.move_to(ax.c2p(0, 0, 0))
-circle.set_color("#247bbf")
-self.add(ax, circle)
-self.play(Create(ax), Create(circle))
+/**
+ * 起手样本：**完整 Manim 文件形态**（import + class + construct）——这是默认该给人看的形态。
+ * 「裸 construct 体」是允许的简写（runtime 的 prepareSource 自动套壳），但简写不该当门面；
+ * 分段形态只属于会话（「会话」分节的起手段才是顶层语句）。
+ * 内容：坐标系 + 圆 + 公式，顺带验证 KaTeX 字体路由真的接上了。
+ */
+export const FREE_SAMPLE = `from manim import *
 
-eq = MathTex(latex=["x^2", "+", "y^2", "=", "1"], font_size=34)
-eq.move_to(ax.c2p(0, 1.5, 0))
-self.play(Write(eq))
+class CircleAndFormula(Scene):
+    def construct(self):
+        ax = Axes(x_range=[-2, 2, 1], y_range=[-2, 2, 1])
+        circle = Circle(radius=1)
+        circle.move_to(ax.c2p(0, 0, 0))
+        circle.set_color("#247bbf")
+        self.add(ax, circle)
+        self.play(Create(ax), Create(circle))
+
+        eq = MathTex(latex=["x^2", "+", "y^2", "=", "1"], font_size=34)
+        eq.move_to(ax.c2p(0, 1.5, 0))
+        self.play(Write(eq))
 `
 
 /** 会话视图的起手段：写成两步，天然的「第一段建物体、第二段引用它」演示。 */

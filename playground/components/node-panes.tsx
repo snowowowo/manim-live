@@ -193,7 +193,9 @@ export function PackagesPane() {
 }
 
 export function NodePane() {
-  const [code, setCode] = useState('def helper():\n    return 5\nhelper() + missing_name')
+  const [code, setCode] = useState(
+    'from manim import *\n\nclass Demo(Scene):\n    def construct(self):\n        def helper():\n            return 5\n        total = helper() + missing_name\n        self.add(Dot())',
+  )
   const [note, setNote] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
