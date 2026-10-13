@@ -211,6 +211,8 @@ export type { ExportMissing, ExportReadiness, LocalExportResult, RevealCode, Rev
 // ---- 场景会话（黑板步进）：持久命名空间 + 段提交协议（Surface.createSession 的本体）----
 export { createPySession } from './engine/session.ts'
 export type { Session, SessionVerdict, SessionAppend, PySessionOptions } from './engine/session.ts'
+// ---- 时间轴回放（实验场形态）：整段代码 → 一条可任意定位的时间轴（`surface.createPlayback`）----
+export type { Playback, PlaybackState, PlaybackSegment } from './engine/playback.ts'
 export { DEFAULT_PYODIDE_INDEX_URL } from './engine/pyodide.ts'
 
 // ---- 语料的**形状**：类型 + 边界校验（`parseCorpus`）----

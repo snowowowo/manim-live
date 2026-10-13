@@ -11,6 +11,7 @@ import { PyRunCancelled, PyRuntimeError, runPython } from '../py/runtime.ts'
 import { createManimWebBridge, type ManimNamespace } from '../py/manim-bridge.ts'
 import { createSceneSlot } from './canvas.ts'
 import { loadManim } from './library.ts'
+import { collectPlayback, type Playback } from './playback.ts'
 import { createPySession, type Session } from './session.ts'
 
 const WIDTH = 1280
@@ -39,6 +40,12 @@ export interface RunHandlers {
 export interface Surface {
   /** 执行一段 Manim Python（内部交给 Pyodide 执行并驱动画布）。 */
   run(code: string, handlers?: RunHandlers): Promise<RunResult>
+  /**
+   * 时间轴回放（实验场形态）：整段代码收集成一条可任意定位的时间轴，不实时播。
+   * 返回的控制器支持 seek（帧级）/ play / pause / step，见 engine/playback.ts。
+   * 同时至多一个「活形态」——开回放会先收掉活会话与旧回放；随 `dispose()` 级联销毁。
+   */
+  createPlayback(python: string, handlers?: RunHandlers): Promise<Playback>
   /**
    * 场景会话（黑板步进）：持久命名空间 + 段提交协议（见 engine/session.ts）。
    * 同时至多一个活会话——开新的会先收旧的；随 `dispose()` 级联销毁。
@@ -87,6 +94,7 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
   let lastHandlers: RunHandlers = {}
   let rendered = false
   let endSession: (() => void) | null = null
+  let endPlayback: (() => void) | null = null
 
   /** 跑一段（在 tail 排队内调用）。 */
   const execute = async (code: string, handlers: RunHandlers): Promise<void> => {
@@ -118,6 +126,9 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
         // 销毁之后全部作废（不是「失败」）：cancelled 不向用户显示、也不作为错误上报——
         // 调用方自己销毁的画布无法执行，不算渲染失败。
         if (disposed) throw new PyRunCancelled()
+        // 一块画布一次只有一个「活形态」：跑新代码就收掉旧回放（时间轴）。
+        endPlayback?.()
+        endPlayback = null
         await execute(code, handlers)
         lastCode = code
         lastHandlers = handlers
@@ -135,9 +146,44 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
       )
     },
 
+    async createPlayback(python: string, handlers: RunHandlers = {}): Promise<Playback> {
+      const job = tail.then(async () => {
+        if (disposed) throw new PyRunCancelled()
+        // 「至多一个活形态」：新回放收掉旧会话与旧回放。
+        endSession?.()
+        endSession = null
+        endPlayback?.()
+        endPlayback = null
+        const { collector, finish } = collectPlayback(manim as unknown as ManimNamespace, slot.scene())
+        const bridge = createManimWebBridge({
+          manim: manim as unknown as ManimNamespace,
+          scene: slot.scene(),
+          sceneFor: slot.sceneFor,
+          collect: collector,
+        })
+        await runPython(python, bridge, {
+          output: (text) => console.info('[manim-live] print:', text.trimEnd()),
+          onLoading: handlers.onLoading ?? options.onLoading,
+          active: () => !disposed,
+        })
+        const playback = finish()
+        endPlayback = () => playback.dispose()
+        // 记下这段，replay() 依旧可从头真播一遍（走实时路径）。
+        lastCode = python
+        lastHandlers = handlers
+        rendered = true
+        return playback
+      })
+      tail = job.catch(() => {})
+      return job
+    },
+
     async createSession(): Promise<Session> {
       if (disposed) throw new Error('manim-live：画布已销毁，不能再开会话')
-      // 同一块画布同时至多一个活会话：开新的先收旧的（旧句柄表随之作废）。
+      // 同一块画布同时至多一个活会话（回放同理，先收掉）。
+      endPlayback?.()
+      endPlayback = null
+      // 开新的先收旧的（旧句柄表随之作废）。
       endSession?.()
       const session = await createPySession({
         manim: manim as unknown as ManimNamespace,
@@ -162,6 +208,8 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
         if (disposed) throw new PyRunCancelled()
         // 作废当前场景并建一块新的（**同一场景种类**）：这条就是「从头真播」——不复用旧场景，
         // 免得上一次留下的物体、追踪器、相机姿态串到这一遍里。
+        endPlayback?.()
+        endPlayback = null
         slot.reset()
         rendered = false
         await execute(code, lastHandlers)
@@ -182,7 +230,9 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
 
     dispose(): void {
       disposed = true
-      // 会话先于画布收掉：名字空间与排队中的段随之作废。
+      // 回放先收（停表 + 摘时间轴），会话次之（名字空间与排队中的段随之作废），最后才是画布。
+      endPlayback?.()
+      endPlayback = null
       endSession?.()
       endSession = null
       // slot.dispose() 里就是 scene.dispose()：释放 mobject、WebGL 上下文与 resize 观察者，

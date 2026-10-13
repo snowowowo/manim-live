@@ -35,6 +35,8 @@ These are public exports too, but they are implementation parts: a normal integr
 
 Listed item by item so you can judge whether a given UI is buildable. These are known gaps in the current version, not design intent:
 
+The table covers the live `run` / **session** paths — "pause / position / frame-step mid-playback" already exists on a separate path: hand a whole block to [timeline playback](/en/api/playback) (`surface.createPlayback`) for frame-level positioning, play/pause, and frame stepping.
+
 | Requirement | Today's workaround |
 | --- | --- |
 | A "playing / paused" state and a subscription | Track a boolean at the call site: set it before `run()`, clear it after the `await` |

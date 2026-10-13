@@ -57,10 +57,26 @@ export interface ManimWebBridgeOptions {
    */
   sceneFor?: (kind: string) => object
   /**
-   * 极速：不等时间，直接落到终态。playground 的「全部渲染」要跑上百条语料，
+   * 极速：不等时间，直接落到终态。playground 的「全部渲染」要跑上百个语料，
    * 按 `run_time` / `wait` 真等一遍要几分钟（一条 `wait(4.4)` 就 4.4 秒）。
    */
   fast?: boolean
+  /**
+   * 时间轴收集模式：`play` / `wait` 不再实时执行，改为把动画排进这条 master timeline
+   * （协议与 manim-web 官方 Player 的录制门面一致，见 engine/playback.ts 的注释）。
+   * 给了它 = 这段代码只「搭时间轴」、不占真实时间；搭完由调用方统一播放/定位。
+   */
+  collect?: TimelineCollector
+}
+
+/**
+ * 收集模式的落点：一条 master timeline 的两个入账口（结构类型，不依赖 manim-web 的公开类型名）。
+ * 其余画布操作（建物体 / 加物体 / 改属性）在收集模式里**照常立即执行**——它们没有时长，
+ * 是「时间轴之外」的状态改动（与官方录制门面同一取舍）。
+ */
+export interface TimelineCollector {
+  addSegment(animations: unknown[]): unknown
+  addWaitSegment(duration: number): unknown
 }
 
 /** 是不是「场景基类」而非「要 new 的物体」——表在 surface.ts（SCENE_FAMILY）。 */
@@ -118,6 +134,12 @@ const FAST_MAX_STEPS = 900
 interface FastForwardScene {
   mobjects?: Iterable<{ hasUpdaters?: () => boolean; update?: (dt: number) => void }>
   render?: () => void
+}
+
+/** 收集模式要碰的一点上游内部状态：脏标记与「同步到 three」的私有方法（协议抄自官方录制门面）。 */
+interface DirtyMobject {
+  _dirty?: boolean
+  _syncToThree?: () => void
 }
 
 /**
@@ -464,7 +486,7 @@ function recoverBoundsFailure(
 }
 
 export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridge {
-  const { manim, scene } = options
+  const { manim, scene, collect } = options
   // let 而非常量：场景会话的回滚重演要在同一块桥上临时切极速（见 ManimBridge.setFast）。
   let fast = options.fast === true
   const objects = new Map<number, unknown>()
@@ -801,6 +823,50 @@ export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridg
       }
 
       const built = animations.map(build)
+
+      // 收集模式（时间轴，见 engine/playback.ts）：不实时播，把这一段排进 master timeline。
+      // 协议与 manim-web 官方 Player 的录制门面一致：展平嵌套组 → 同步脏对象 → addSegment →
+      // 逐个 begin()（begin 负责抓「动画前快照」，将来往回拖靠它还原）→ 把还没在场的物体加进
+      // 场景并标记 createdAtBeginning=false（MasterTimeline 据此在 seek 早于该段时把它藏起来）。
+      if (collect !== undefined) {
+        const flat: AnimationLike[] = []
+        const flatten = (list: readonly AnimationLike[]): void => {
+          for (const animation of list) {
+            const nested = (animation as { animations?: unknown }).animations
+            if (Array.isArray(nested) && nested.length > 0) flatten(nested as AnimationLike[])
+            else flat.push(animation)
+          }
+        }
+        flatten(built)
+        for (const animation of flat) {
+          const mobject = (animation as { mobject?: DirtyMobject }).mobject
+          if (mobject !== undefined && mobject._dirty === true) {
+            mobject._syncToThree?.()
+            mobject._dirty = false
+          }
+        }
+        collect.addSegment(flat)
+        for (const animation of flat) (animation as { begin?: () => void }).begin?.()
+        const host = target as unknown as { mobjects: ReadonlySet<unknown>; add: (...m: unknown[]) => void }
+        for (const animation of flat) {
+          const mobject = (animation as { mobject?: { createdAtBeginning?: boolean } }).mobject
+          if (mobject === undefined || host.mobjects.has(mobject)) continue
+          host.add(mobject)
+          mobject.createdAtBeginning = false
+        }
+        // 上游补丁照跑（它们修的是动画对象本身，与播没播过无关）；唯独**不补渲染**——
+        // 收集完由时间轴统一渲染（seek(0) 一帧）。
+        for (const [source, target_] of morphPairs) {
+          healSubpathBookkeeping(source)
+          healSubpathBookkeeping(target_)
+        }
+        for (const animation of flat) {
+          settleRateTerminal(animation)
+          adoptOrphanFadeIns(animation, target)
+        }
+        return
+      }
+
       await target.play(...built)
       // 极速模式补末帧 updater（见 runUpdatersAfterFastPlay 的注释）；实时 play 自带每帧 update
       if (fast) runUpdatersAfterFastPlay(target, playPlan.duration ?? 0)
@@ -824,6 +890,11 @@ export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridg
       const target = deref(handle) as FastForwardScene & { wait?: (d?: number) => Promise<void> }
       if (typeof target.wait !== 'function') throw new Error('wait 只能用于场景')
       await flushRenders()
+      // 收集模式：等待不占时间，记成一段空段排进时间轴。
+      if (collect !== undefined) {
+        collect.addWaitSegment(duration)
+        return
+      }
       if (fast) {
         fastForward(target, duration)
         return

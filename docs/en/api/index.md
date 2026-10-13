@@ -1,12 +1,13 @@
 # API Reference: Overview and Entry
 
-The public interface of `manim-live` is split across eleven pages by object: this page covers the object map and the entry factories; each other page covers every member of one object. Each member gets a type definition, parameter notes, return value, and an example you can copy as-is. The browser entry is `manim-live`; the entry that never touches the DOM is `manim-live/node`. For a first run see [Quick Start](/en/guide/quick-start); for the behavioural contracts you must know before integrating see [Behavioural Contracts](/en/guide/contracts).
+The public interface of `manim-live` is split across twelve pages by object: this page covers the object map and the entry factories; each other page covers every member of one object. Each member gets a type definition, parameter notes, return value, and an example you can copy as-is. The browser entry is `manim-live`; the entry that never touches the DOM is `manim-live/node`. For a first run see [Quick Start](/en/guide/quick-start); for the behavioural contracts you must know before integrating see [Behavioural Contracts](/en/guide/contracts).
 
 | Page | Contents |
 | --- | --- |
 | [Renderer](/en/api/renderer) | `warmup` / `check` / `createSurface` / `exporters` / `pyodideIndexURL` / `dispose` |
-| [Canvas](/en/api/surface) | `run` / `replay` / `createSession` / `canvas` / `isRendered` / `dispose` |
+| [Canvas](/en/api/surface) | `run` / `replay` / `createPlayback` / `createSession` / `canvas` / `isRendered` / `dispose` |
 | [Session](/en/api/session) | `check` / `append` / `count` / `source` / `dispose`: the persistent context for step-by-step execution |
+| [Timeline Playback](/en/api/playback) | `createPlayback` / `seek` / `play` / `pause` / `step`: a whole block folded into one frame-addressable timeline |
 | [Hooks](/en/api/hooks) | `onLoading` / `onProgress` / `signal` |
 | [Environment Status](/en/api/status) | `environmentStatus` / `onEnvironmentStatus`: capabilities / runtime / KaTeX / package fetching |
 | [Export](/en/api/export) | The `Exporter` contract and the built-in recorder; local CLI export via `createLocalExport` / `createExportClient` |
@@ -32,6 +33,10 @@ createManimRenderer(options)          → ManimRenderer        usually one per p
 │  │  ├─ count                        → number               property
 │  │  ├─ source()                     → string
 │  │  └─ dispose()                    → void
+│  ├─ createPlayback(python)          → Promise<Playback>    whole block into a timeline (see Playback)
+│  │  ├─ seek(t) / play() / pause()   → void
+│  │  ├─ step(frames?)                → void
+│  │  └─ duration() / time() / state() / segments() / dispose()
 │  ├─ replay()                        → Promise<void>
 │  ├─ canvas()                        → HTMLCanvasElement | null
 │  ├─ isRendered()                    → boolean

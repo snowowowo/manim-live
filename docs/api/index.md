@@ -1,12 +1,13 @@
 # API 参考：总览与入口
 
-`manim-live` 的全部公开接口按对象分成十一页：本页讲对象关系与入口工厂，其余各页讲一个对象的全部成员。每个成员给出类型定义、参数说明、返回值与可直接抄的例子。浏览器入口是 `manim-live`，不碰 DOM 的入口是 `manim-live/node`。第一次上手看[快速开始](/guide/quick-start)，集成前必须知道的行为约定看[行为契约](/guide/contracts)。
+`manim-live` 的全部公开接口按对象分成十二页：本页讲对象关系与入口工厂，其余各页讲一个对象的全部成员。每个成员给出类型定义、参数说明、返回值与可直接抄的例子。浏览器入口是 `manim-live`，不碰 DOM 的入口是 `manim-live/node`。第一次上手看[快速开始](/guide/quick-start)，集成前必须知道的行为约定看[行为契约](/guide/contracts)。
 
 | 页 | 内容 |
 | --- | --- |
 | [渲染器](/api/renderer) | `warmup` / `check` / `createSurface` / `exporters` / `pyodideIndexURL` / `dispose` |
-| [画布](/api/surface) | `run` / `replay` / `createSession` / `canvas` / `isRendered` / `dispose` |
+| [画布](/api/surface) | `run` / `replay` / `createPlayback` / `createSession` / `canvas` / `isRendered` / `dispose` |
 | [会话](/api/session) | `check` / `append` / `count` / `source` / `dispose`：分步执行的持久上下文与段提交协议 |
+| [时间轴回放](/api/playback) | `createPlayback` / `seek` / `play` / `pause` / `step`：整段代码收进一条可帧级定位的时间轴 |
 | [钩子](/api/hooks) | `onLoading` / `onProgress` / `signal` |
 | [环境状态](/api/status) | `environmentStatus` / `onEnvironmentStatus`：能力 / 运行时 / KaTeX / 取包四组条件 |
 | [导出](/api/export) | `Exporter` 契约与内置录屏；本机 CLI 导出 `createLocalExport` / `createExportClient` |
@@ -32,6 +33,10 @@ createManimRenderer(options)          → ManimRenderer        一个页面通�
 │  │  ├─ count                        → number               属性
 │  │  ├─ source()                     → string
 │  │  └─ dispose()                    → void
+│  ├─ createPlayback(python)          → Promise<Playback>    整段收进时间轴（详见回放页）
+│  │  ├─ seek(t) / play() / pause()   → void
+│  │  ├─ step(frames?)                → void
+│  │  └─ duration() / time() / state() / segments() / dispose()
 │  ├─ replay()                        → Promise<void>
 │  ├─ canvas()                        → HTMLCanvasElement | null
 │  ├─ isRendered()                    → boolean
