@@ -39,7 +39,12 @@ import {
   type CheckResult,
   type ManimExample,
   type ManimRenderer,
+  type Playback,
+  type PlaybackSegment,
   type RenderController,
+  type Session,
+  type SessionAppend,
+  type SessionVerdict,
   type Surface,
 } from 'manim-live'
 import { loadPlaygroundCorpus } from './corpus.ts'
@@ -48,7 +53,7 @@ import {
   clearGround, clearMarks, loadGround, loadMarks, saveGround, saveMarks,
 } from './storage.ts'
 import {
-  FREE_SAMPLE, TIMEOUT_MS,
+  FREE_SAMPLE, SEGMENT_SAMPLE, TIMEOUT_MS,
   type CardResult, type GroundFilter, type GroundView, type Job, type LayoutMode,
   type ManualMark, type Overlay, type ThemeMode,
 } from './types.ts'
@@ -120,6 +125,11 @@ export function usePlayground() {
   const [status, setStatus] = useState<Status>({ text: T.warmup, kind: 'running', seq: 0 })
   const [warm, setWarm] = useState<'loading' | 'ready' | 'failed'>('loading')
   const [note, setNote] = useState<string | null>(null)
+  // 会话视图：当前段的代码（不落盘——会话本身是临时的）与投影读数。
+  const [sessionCode, setSessionCode] = useState(SEGMENT_SAMPLE)
+  const [sessionInfo, setSessionInfo] = useState<{ count: number; source: string } | null>(null)
+  // 时间轴视图：收好之后的静态读数（控制器本体在 playbackRef，时刻由面板自己轮询）。
+  const [playbackInfo, setPlaybackInfo] = useState<{ duration: number; segments: PlaybackSegment[] } | null>(null)
 
   const statusSeq = useRef(0)
   const runSeed = useRef(0)
@@ -131,6 +141,9 @@ export function usePlayground() {
   const stageRef = useRef<HTMLDivElement | null>(null)
   const surfaceRef = useRef<Surface | null>(null)
   const rendererRef = useRef<ManimRenderer | null>(null)
+  // 会话与时间轴的当前控制器（核心包的「活形态」：同画布至多一个，切换视图时收掉）。
+  const sessionRef = useRef<Session | null>(null)
+  const playbackRef = useRef<Playback | null>(null)
 
   const say = useCallback((text: string, kind: StatusKind = 'idle'): void => {
     statusSeq.current += 1
@@ -443,6 +456,90 @@ export function usePlayground() {
     say(T.stopped)
   }, [say, settle])
 
+  // ---- 会话与时间轴（核心包的另两个「活形态」；与 run 共用同一块 #stage）----
+  // 都走 freshSurface()：一块新画布一个形态，符合契约 ①（不复用画布会叠画面）。
+
+  const endSession = useCallback((): void => {
+    sessionRef.current?.dispose()
+    sessionRef.current = null
+    setSessionInfo(null)
+  }, [])
+
+  const dropPlayback = useCallback((): void => {
+    playbackRef.current?.dispose()
+    playbackRef.current = null
+    setPlaybackInfo(null)
+  }, [])
+
+  const newSession = useCallback(async (): Promise<void> => {
+    if (running || warm !== 'ready') return
+    dropPlayback()
+    const surface = await freshSurface()
+    if (surface === null) return
+    try {
+      sessionRef.current = await surface.createSession()
+      setSessionInfo({ count: 0, source: '' })
+      say(T.sessionReady, 'ok')
+    } catch (error) {
+      say(`${T.sessionOpenFail}：${error instanceof Error ? error.message : String(error)}`, 'error')
+    }
+  }, [dropPlayback, freshSurface, running, say, warm])
+
+  const sessionCheck = useCallback(async (code: string): Promise<SessionVerdict | null> => {
+    const session = sessionRef.current
+    if (session === null) {
+      say(T.sessionNone, 'error')
+      return null
+    }
+    say(T.sessionChecking, 'running')
+    const verdict = await session.check(code)
+    say(verdict.ok ? T.sessionCheckOk : `${T.sessionCheckFail}：${verdict.error ?? ''}`, verdict.ok ? 'ok' : 'error')
+    return verdict
+  }, [say])
+
+  const sessionAppend = useCallback(async (code: string): Promise<SessionAppend | null> => {
+    const session = sessionRef.current
+    if (session === null) {
+      say(T.sessionNone, 'error')
+      return null
+    }
+    if (code.trim().length === 0) return null
+    say(T.sessionAppending, 'running')
+    const verdict = await session.append(code)
+    if (verdict.ok) {
+      setSessionInfo({ count: session.count, source: session.source() })
+      say(T.sessionAppended(session.count), 'ok')
+    } else if (!verdict.cancelled) {
+      say(`${T.sessionAppendFail}：${verdict.error ?? ''}`, 'error')
+    }
+    return verdict
+  }, [say])
+
+  const buildTimeline = useCallback(async (code: string): Promise<void> => {
+    if (running || warm !== 'ready' || code.trim().length === 0) return
+    endSession()
+    dropPlayback()
+    const surface = await freshSurface()
+    if (surface === null) return
+    say(T.timelineBuilding, 'running')
+    try {
+      playbackRef.current = await surface.createPlayback(code)
+      setPlaybackInfo({ duration: playbackRef.current.duration(), segments: [...playbackRef.current.segments()] })
+      say(T.timelineBuilt(playbackRef.current.duration()), 'ok')
+    } catch (error) {
+      say(`${T.timelineBuildFail}：${error instanceof Error ? error.message : String(error)}`, 'error')
+    }
+  }, [dropPlayback, endSession, freshSurface, running, say, warm])
+
+  /** 换视图先把手上的活形态收掉：会话/时间轴不跟着人走，留在原视图里只会变成幽灵状态。 */
+  const switchView = useCallback((next: GroundView): void => {
+    if (next === view) return
+    if (running) stop()
+    endSession()
+    dropPlayback()
+    setView(next)
+  }, [dropPlayback, endSession, running, stop, view])
+
   const clearRecord = useCallback((): void => {
     if (running) return
     clearGround()
@@ -577,7 +674,7 @@ export function usePlayground() {
     corpus, examples: corpus.examples, groups: corpus.groups,
     loadError: loaded.error, shots: loaded.shots,
     // 视图状态
-    view, setView, layout, setLayout, theme, setTheme, filter, setFilter, query, setQuery,
+    view, setView: switchView, layout, setLayout, theme, setTheme, filter, setFilter, query, setQuery,
     collapsed, setCollapsed,
     // 渲染状态
     results, fast, setFast, shown, selected, running, batch, status, overlay, warm, note, setNote,
@@ -586,6 +683,10 @@ export function usePlayground() {
     // 动作
     stageRef, openExample, renderFree, runBatch, stop, clearRecord, exportCurrent,
     source, setSource,
+    // 会话与时间轴
+    sessionCode, setSessionCode, sessionInfo, sessionRef,
+    newSession, sessionCheck, sessionAppend, endSession,
+    playbackInfo, playbackRef, buildTimeline, dropPlayback,
   }
 }
 

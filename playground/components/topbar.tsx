@@ -53,6 +53,8 @@ export function Topbar({ pg }: { pg: Playground }) {
           options={[
             { value: 'examples', label: T.viewExamples },
             { value: 'free', label: T.viewFree },
+            { value: 'session', label: T.viewSession },
+            { value: 'timeline', label: T.viewTimeline },
           ]}
         />
 
@@ -60,7 +62,7 @@ export function Topbar({ pg }: { pg: Playground }) {
           label={T.layoutLabel}
           value={pg.layout}
           onChange={pg.setLayout}
-          disabled={pg.view === 'free'}
+          disabled={pg.view !== 'examples'}
           options={[
             { value: 'list', label: T.layoutList, hint: T.layoutListHint },
             { value: 'gallery', label: T.layoutGallery, hint: T.layoutGalleryHint },

@@ -38,7 +38,7 @@ const oneOf = <Value extends string>(
   allowed: readonly Value[],
 ): Value | undefined => (allowed.includes(value as Value) ? value as Value : undefined)
 
-const VIEWS = ['examples', 'free'] as const
+const VIEWS = ['examples', 'free', 'session', 'timeline'] as const
 const LAYOUTS = ['list', 'gallery', 'docs'] as const
 const THEMES = ['dark', 'light'] as const
 const FILTERS = ['all', 'pending', 'failed', 'passed'] as const

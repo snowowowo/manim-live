@@ -25,7 +25,7 @@ export interface CardResult {
 export type Overlay = { kind: 'skeleton' } | { kind: 'packages'; text: string }
 
 /** 看什么：语料清单，还是自己写一段。 */
-export type GroundView = 'examples' | 'free'
+export type GroundView = 'examples' | 'free' | 'session' | 'timeline'
 
 /**
  * 左侧怎么摆。**三种布局共用同一套数据与同一套交互**，换的只是版式——
@@ -66,3 +66,8 @@ eq = MathTex(latex=["x^2", "+", "y^2", "=", "1"], font_size=34)
 eq.move_to(ax.c2p(0, 1.5, 0))
 self.play(Write(eq))
 `
+
+/** 会话视图的起手段：写成两步，天然的「第一段建物体、第二段引用它」演示。 */
+export const SEGMENT_SAMPLE = `dot = Dot(point=[-2, 0, 0], color=RED)
+self.add(dot)
+self.play(dot.animate.shift(RIGHT * 4))`

@@ -21,7 +21,10 @@ import { DocBody } from './doc-body.tsx'
 import { FreeCode } from './free-code.tsx'
 import { Gallery } from './gallery.tsx'
 import { Preview } from './preview.tsx'
+import { SessionPane } from './session-pane.tsx'
 import { Sidebar } from './sidebar.tsx'
+import { StagePanel } from './stage-panel.tsx'
+import { TimelinePane } from './timeline-pane.tsx'
 import { Topbar } from './topbar.tsx'
 import { cn } from '@/ui/cn.ts'
 import { usePlayground } from '@/lib/use-playground.ts'
@@ -36,7 +39,9 @@ export function App() {
   const current = pg.examples.find((item) => item.id === pg.selected)
 
   const free = pg.view === 'free'
-  const columns = free
+  // 会话 / 时间轴是「单栏控制 + 舞台」的两栏版式（与自定义代码同宽），不吃语料那三种版式。
+  const single = free || pg.view === 'session' || pg.view === 'timeline'
+  const columns = single
     ? 'grid-cols-[minmax(320px,420px)_minmax(0,1fr)]'
     : pg.layout === 'gallery'
       ? 'grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]'
@@ -51,6 +56,10 @@ export function App() {
       <div className={cn('grid min-h-0 flex-1 gap-3 p-4', columns)}>
         {free ? (
           <FreeCode key="left" pg={pg} />
+        ) : pg.view === 'session' ? (
+          <SessionPane key="left" pg={pg} />
+        ) : pg.view === 'timeline' ? (
+          <TimelinePane key="left" pg={pg} />
         ) : pg.layout === 'gallery' ? (
           <Gallery key="left" pg={pg} />
         ) : (
@@ -61,10 +70,14 @@ export function App() {
 
         {/* 只有文档版式有中栏；另外两版留空，但**槽位要在**（见文件头关于 key 的说明）。
             空的时候给 `null` 而不是 `false`——`false` 不是 React 显式认的「空」，走的是兜底分支。 */}
-        {!free && pg.layout === 'docs' ? <DocBody key="mid" pg={pg} item={current} /> : null}
+        {pg.view === 'examples' && pg.layout === 'docs' ? <DocBody key="mid" pg={pg} item={current} /> : null}
 
         <RightPane key="right">
-          <Preview pg={pg} current={free ? undefined : current} showShot={!free && pg.layout !== 'docs'} />
+          {single
+            ? (free
+                ? <Preview pg={pg} current={undefined} />
+                : <StagePanel pg={pg} />)
+            : <Preview pg={pg} current={current} showShot={pg.layout !== 'docs'} />}
         </RightPane>
       </div>
     </div>

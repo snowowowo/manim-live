@@ -29,6 +29,49 @@ export const T = {
   viewLabel: '视图',
   viewExamples: '语料',
   viewFree: '自定义代码',
+  viewSession: '会话',
+  viewTimeline: '时间轴',
+
+  // ---- 会话视图（surface.createSession：黑板的「边讲边加」用的这一层）----
+  sessionTitle: '会话 · 分步追加',
+  sessionHint:
+    '对应 surface.createSession()：顶层语句一段一段追加，变量跨段保留、失败自动回滚。' +
+    '开会话 = 建会话（画布复位）；预检 = check()（毫秒级干跑，不碰画布）；追加 = append()（上画布，失败回滚）；结束 = dispose()。',
+  segmentLabel: '这一段（顶层语句）',
+  sessionOpen: '开会话',
+  sessionOpenAgain: '重开会话',
+  sessionCheckBtn: '预检',
+  sessionAppendBtn: '追加',
+  sessionEndBtn: '结束会话',
+  sessionReady: '会话已开，写一段追加试试（变量跨段保留）',
+  sessionOpenFail: '开会话失败',
+  sessionNone: '还没有会话——先点「开会话」',
+  sessionChecking: '预检中…',
+  sessionCheckOk: '预检通过',
+  sessionCheckFail: '预检未过',
+  sessionAppending: '追加执行中…',
+  sessionAppended: (n: number) => `已入档，共 ${n} 步`,
+  sessionAppendFail: '追加失败（已自动回滚）',
+  sessionEnded: '会话已结束',
+  sessionCount: (n: number) => `已提交 ${n} 段`,
+  sessionSourceLabel: 'source() 投影（已提交段的文件形态）',
+  sessionEmptyStage: '开会话后，画布在这里一步步长出来',
+
+  // ---- 时间轴视图（surface.createPlayback：整段收集、帧级回看）----
+  timelineTitle: '时间轴 · 整段收集',
+  timelineHint:
+    '对应 surface.createPlayback()：整段代码收进一条时间轴（不实时播），收完可拖到任意时刻、逐帧步进。' +
+    '回看是按时刻重算，不是录像；没有动画的语句（set_color 这类）在收集时立即生效，往回拖跨过它们不还原。',
+  timelineBuild: '收集时间轴',
+  timelineBuilding: '正在收集时间轴…',
+  timelineBuilt: (d: number) => `时间轴就绪：共 ${d.toFixed(1)} 秒`,
+  timelineBuildFail: '收集失败',
+  timelinePlay: '播放',
+  timelinePause: '暂停',
+  timelinePrev: '上一帧',
+  timelineNext: '下一帧',
+  timelineSeek: '定位时刻',
+  timelineEmptyStage: '点「收集时间轴」，然后拖动、逐帧回看',
 
   searchPlaceholder: '搜标题 / id / 文件名…',
   searchClear: '清空搜索',
