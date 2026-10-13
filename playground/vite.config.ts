@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig, type Plugin } from 'vite'
+import { devApi } from './dev-api.ts'
 import { createPyodideMirror, readDigests, readVersion, type PyodideMirrorOptions } from './pyodide-mirror.ts'
 
 const here = fileURLToPath(new URL('.', import.meta.url))
@@ -219,7 +220,7 @@ function assetRoutes(): Plugin {
 export default defineConfig({
   root: here,
   // react 在 tailwind 之前：组件里写的类名要先辈出 JSX 来，Tailwind 才扫得到。
-  plugins: [react(), tailwindcss(), assetRoutes()],
+  plugins: [react(), tailwindcss(), assetRoutes(), devApi(pkgRoot)],
   server: {
     port: 5173,
     // 允许读到包根（核心包源码 + corpus 的语料与截图）

@@ -38,7 +38,13 @@ const oneOf = <Value extends string>(
   allowed: readonly Value[],
 ): Value | undefined => (allowed.includes(value as Value) ? value as Value : undefined)
 
-const VIEWS = ['examples', 'free', 'session', 'timeline'] as const
+const VIEWS = [
+  'renderer', 'surface', 'session', 'playback', 'hooks', 'status',
+  'export', 'machine', 'packages', 'node', 'corpus', 'internals',
+] as const
+
+/** 旧值别名：分节重构前存下的 `examples` / `free` 照旧读得回来。 */
+const VIEW_ALIAS: Record<string, GroundView> = { examples: 'corpus', free: 'surface' }
 const LAYOUTS = ['list', 'gallery', 'docs'] as const
 const THEMES = ['dark', 'light'] as const
 const FILTERS = ['all', 'pending', 'failed', 'passed'] as const
@@ -62,7 +68,7 @@ export function loadGround(): Partial<GroundState> {
     }
     if (typeof bag.fast === 'boolean') out.fast = bag.fast
     if (typeof bag.source === 'string') out.source = bag.source
-    const view = oneOf(bag.view, VIEWS)
+    const view = oneOf(bag.view, VIEWS) ?? VIEW_ALIAS[String(bag.view)]
     if (view !== undefined) out.view = view
     const layout = oneOf(bag.layout, LAYOUTS)
     if (layout !== undefined) out.layout = layout

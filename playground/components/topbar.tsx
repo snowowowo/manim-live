@@ -9,7 +9,7 @@
  */
 import { Info, Moon, Sun } from 'lucide-react'
 import { T } from '@/lib/i18n.ts'
-import type { GroundView, LayoutMode } from '@/lib/types.ts'
+import type { LayoutMode } from '@/lib/types.ts'
 import type { Playground } from '@/lib/use-playground.ts'
 import { Badge } from '@/ui/badge.tsx'
 import { Button } from '@/ui/button.tsx'
@@ -45,24 +45,13 @@ export function Topbar({ pg }: { pg: Playground }) {
           )}
         </span>
 
-        <Segmented<GroundView>
-          label={T.viewLabel}
-          value={pg.view}
-          onChange={pg.setView}
-          disabled={pg.running}
-          options={[
-            { value: 'examples', label: T.viewExamples },
-            { value: 'free', label: T.viewFree },
-            { value: 'session', label: T.viewSession },
-            { value: 'timeline', label: T.viewTimeline },
-          ]}
-        />
-
+        {/* 视图切换已挪进左侧竖导航（components/api-nav.tsx）——分节只会越来越多，
+            横着放迟早摆不下。这里只留「语料」分节用的版式切换。 */}
         <Segmented<LayoutMode>
           label={T.layoutLabel}
           value={pg.layout}
           onChange={pg.setLayout}
-          disabled={pg.view !== 'examples'}
+          disabled={pg.view !== 'corpus'}
           options={[
             { value: 'list', label: T.layoutList, hint: T.layoutListHint },
             { value: 'gallery', label: T.layoutGallery, hint: T.layoutGalleryHint },

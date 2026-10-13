@@ -11,8 +11,14 @@ import { LiveStage } from './live-stage.tsx'
 import { Transport } from './timeline-pane.tsx'
 
 export function StagePanel({ pg }: { pg: Playground }) {
-  const live = pg.view === 'session' ? pg.sessionInfo !== null : pg.playbackInfo !== null
-  const label = pg.view === 'session' ? T.sessionEmptyStage : T.timelineEmptyStage
+  const live = pg.view === 'session'
+    ? pg.sessionInfo !== null
+    : pg.view === 'playback'
+      ? pg.playbackInfo !== null
+      : pg.shown !== null
+  const label = pg.view === 'session'
+    ? T.sessionEmptyStage
+    : pg.view === 'playback' ? T.timelineEmptyStage : T.previewEmpty
   return (
     <section className="flex min-w-0 flex-col gap-3">
       <LiveStage
@@ -22,7 +28,7 @@ export function StagePanel({ pg }: { pg: Playground }) {
         label={label}
         overlay={pg.overlay}
       />
-      {pg.view === 'timeline' && <Transport pg={pg} />}
+      {pg.view === 'playback' && <Transport pg={pg} />}
     </section>
   )
 }

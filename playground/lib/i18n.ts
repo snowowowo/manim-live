@@ -26,11 +26,112 @@ export const T = {
   themeDark: '暗',
   themeLight: '亮',
 
-  viewLabel: '视图',
-  viewExamples: '语料',
-  viewFree: '自定义代码',
+  navLabel: 'API 分节',
+  navHint:
+    '左边按文档站的 API 参考分节——playground 对文档里每一个 API 负责：每条都在这里能上手验证。',
+  viewRenderer: '渲染器',
+  viewSurface: '画布',
   viewSession: '会话',
-  viewTimeline: '时间轴',
+  viewPlayback: '时间轴回放',
+  viewHooks: '钩子',
+  viewStatus: '环境状态',
+  viewExport: '导出',
+  viewMachine: '本机探测',
+  viewPackages: '包管理',
+  viewNode: 'Node 入口',
+  viewCorpus: '语料与测试台',
+  viewInternals: '低层导出',
+
+  // ---- 渲染器 ----
+  renderTitle: '渲染器 · 入口工厂',
+  renderSectionHint:
+    'createManimRenderer() 是包唯一的入口工厂：warmup() 预热运行时、check() 干跑预检、pyodideIndexURL() 报取数根。' +
+    'createSurface() / dispose() 在每个分节里都在用——「画布」节每次渲染建一块新的，就是它们的活演示。',
+  renderWarm: '运行时',
+  renderWarmupNow: '重新预热',
+  renderIndexUrl: 'pyodideIndexURL()',
+  renderCheckTitle: 'check() · 干跑预检（不碰画布）',
+  renderCheckPlaceholder: `def helper():
+    return 5
+helper() + 1`,
+  renderCheckBtn: '预检',
+  renderCheckOk: '预检通过',
+  renderCheckFail: (message: string) => `预检未过：${message}`,
+  renderCheckEmpty: '写一段代码再预检',
+
+  // ---- 环境状态 ----
+  statusTitle: '环境状态 · 四组条件',
+  statusHint:
+    'environmentStatus() 给快照、onEnvironmentStatus() 订阅变化——与「本机探测」是两件事：' +
+    '这里报的是浏览器里 Pyodide / WASM 运行时的状态（读页面内的事实，不跑命令）。',
+  statusRefresh: '重新读一遍',
+  statusBrowser: '浏览器能力',
+  statusRuntime: 'Pyodide 运行时',
+  statusKatex: 'KaTeX 样式',
+  statusFetch: '按需取包',
+
+  // ---- 钩子 ----
+  hooksTitle: '钩子 · 挂在调用上，不是对象上',
+  hooksHint:
+    '三个可挂的回调/信号：onLoading（取包进展，createManimRenderer / createSurface / run 三处就近覆盖）、' +
+    'onProgress（导出阶段播报，见「导出」节）、signal（取消导出，AbortSignal，见「导出」节）。',
+  hooksOnLoadingDemo: '跑一段要取包的代码（看 onLoading 触发遮罩）',
+  hooksDemoCode: 'import numpy as np\nax = Axes(x_range=[-2, 2, 1], y_range=[-1, 3, 1])\nself.add(ax)\nself.play(Write(ax))',
+  hooksSignalsInExport: 'onProgress 与 signal 的活演示在「导出」节：导出时逐条播报，右键旁取消即 abort。',
+
+  // ---- 导出 ----
+  exportTitle: '导出 · Exporter 契约与内置录屏',
+  exportSectionHint:
+    '渲染器自带一个录制接入者（browserRecorder）：probe() 问能不能录，run() 录一段真播过程出 Blob。' +
+    '录制要一块全新的空白画布（函数头有原因），所以在任意分节渲过一幅之后再回来录。',
+  exportProbeBtn: '探测录屏器 probe()',
+  exportProbeReady: (note: string) => `可用：${note}`,
+  exportRunBtn: '录制导出（run + onProgress）',
+  exportCancelBtn: '取消（signal.abort）',
+  exportNeedRender: '先渲染一次（任意分节），画布上有东西才值得录',
+  exportLogTitle: '过程播报（onProgress）',
+  exportCancelled: '已取消导出',
+  exportDemo: '先渲染一段（供录制）',
+
+  // ---- Node 侧三节（经 vite 开发中间件真跑 Node 入口）----
+  machineTitle: '本机探测 · probePlan / probeCheck',
+  machineHint:
+    '跑真命令问这台机器装了没有：计划秒回（只列要测什么），每项一条探测。经 playground 的 vite 中间件调核心包 Node 入口——与 DSH 插件里的那条路由同一份实现。',
+  machinePlanBtn: '取探测计划',
+  machineProbeAll: '逐项跑一遍',
+  machineRunning: '探测中…',
+
+  packagesTitle: '包管理 · createPyodideSupply',
+  packagesHint:
+    '按需包的供给线（清单 / 预缓存 / 清缓存）的 Node 侧——经 vite 中间件挂在开发机上：随包目录 + corpus/pyodide-cache 就是它的两个目录。',
+  packagesInventoryBtn: '读包清单',
+  packagesCacheBtn: '取这个包',
+  packagesStateBundled: '随包',
+  packagesStateCached: '已缓存',
+  packagesStateAbsent: '缺（要用得联网）',
+
+  nodeTitle: 'Node 入口 · 干跑预检',
+  nodeHint:
+    'manim-live/node 的 runPython + createDryRunBridge：不开画布、不碰 DOM，直接在 Node 里把代码干跑一遍——DSH 插件里工具预检用的就是这条。',
+  nodeCheckBtn: '在 Node 里干跑',
+
+  internalsTitle: '低层导出与缺口表',
+  internalsHint:
+    '实现零件（planMethod / verdict / tally…）不单独演示——它们已被「画布」「语料」两节按真实路径用着；' +
+    '本节列出当前版本不提供的能力与相应替代。完整表见文档站 API 参考「低层导出」。',
+  internalsGapsTitle: '当前版本不提供的能力',
+  internalsGaps: [
+    '「播放中 / 已暂停」状态与订阅（run / 会话的实时路径）——调用侧自己维护 boolean；整段回放请用「时间轴回放」',
+    '进度：第几步、共几步、已播时长——无替代；整段回放有 duration/time 读数',
+    '跳到第 N 步、上一步、下一步（会话段级）——无替代；时间轴回放可帧级定位',
+    '取消正在执行的那段并保留画布——无替代（dispose 连画布一起销毁）；导出可取消（AbortSignal）',
+    '队列深度、自己排在第几——无替代；多画布场景由调用方自行调度',
+    '接收用户代码的 print——用低层 runPython(code, bridge, { output })',
+    '在 Node 里做预检——用 manim-live/node 的 runPython 与 createDryRunBridge（见「Node 入口」节）',
+  ],
+
+  commonRunning: '执行中…',
+  commonFailed: (message: string) => `失败：${message}`,
 
   // ---- 会话视图（surface.createSession：黑板的「边讲边加」用的这一层）----
   sessionTitle: '会话 · 分步追加',

@@ -97,7 +97,7 @@ export function usePlayground() {
   const loaded = useRef(loadPlaygroundCorpus()).current
   const { corpus } = loaded
 
-  const [view, setView] = useState<GroundView>(restored.view ?? 'examples')
+  const [view, setView] = useState<GroundView>(restored.view ?? 'corpus')
   const [layout, setLayout] = useState<LayoutMode>(restored.layout ?? 'list')
   const [theme, setTheme] = useState<ThemeMode>(restored.theme ?? 'dark')
   const [filter, setFilter] = useState<GroundFilter>(restored.filter ?? 'all')
@@ -130,6 +130,9 @@ export function usePlayground() {
   const [sessionInfo, setSessionInfo] = useState<{ count: number; source: string } | null>(null)
   // 时间轴视图：收好之后的静态读数（控制器本体在 playbackRef，时刻由面板自己轮询）。
   const [playbackInfo, setPlaybackInfo] = useState<{ duration: number; segments: PlaybackSegment[] } | null>(null)
+  // 「导出」分节：onProgress 的过程播报与进行中那次导出的取消把手。
+  const [exportLog, setExportLog] = useState<string[]>([])
+  const exportAbort = useRef<AbortController | null>(null)
 
   const statusSeq = useRef(0)
   const runSeed = useRef(0)
@@ -540,6 +543,35 @@ export function usePlayground() {
     setView(next)
   }, [dropPlayback, endSession, running, stop, view])
 
+  /** 取消进行中的那次导出（AbortSignal）：录屏停表，回一句「已取消」。 */
+  const cancelExport = useCallback((): void => {
+    if (exportAbort.current === null) return
+    exportAbort.current.abort()
+    say(T.exportCancelled)
+  }, [say])
+
+  /** 「钩子」「导出」等分节用：把一段代码当一次渲染跑（走与自由代码同一条路，onLoading 遮罩照常）。 */
+  const runSnippet = useCallback((code: string): void => {
+    if (running || code.trim().length === 0) return
+    void runJob({ kind: 'free', code }, fastRef.current)
+  }, [runJob, running])
+
+  /** 「渲染器」分节用：重新预热（warmup()）。 */
+  const warmupNow = useCallback((): void => {
+    setWarm('loading')
+    say(T.warmup, 'running')
+    getRenderer()
+      .warmup()
+      .then(() => {
+        setWarm('ready')
+        say(`${T.ready}${T.readyHint}`, 'ok')
+      })
+      .catch((error: unknown) => {
+        setWarm('failed')
+        say(`${T.warmupFailed}：${error instanceof Error ? error.message : String(error)}`, 'error')
+      })
+  }, [getRenderer, say])
+
   const clearRecord = useCallback((): void => {
     if (running) return
     clearGround()
@@ -601,6 +633,7 @@ export function usePlayground() {
       return
     }
     say(T.exportProbing, 'running')
+    setExportLog([])
     const probe = await recorder.probe()
     if (!probe.ready) {
       say(T.exportMissing(probe.missing?.map((item) => item.label).join('、') ?? ''), 'error')
@@ -617,7 +650,20 @@ export function usePlayground() {
       // 在这块**已经新建好的空画布**上跑一遍 = 从头真播。不用 surface.replay()（见函数头 ①）。
       replay: async () => { await target.run(code) },
     }
-    const result = await recorder.run({ python: code, controller, onProgress: (text) => say(text, 'running') })
+    // 取消把手：ExportRequest 的第二个参数就是 AbortSignal（「导出」分节里那个取消按钮）。
+    const abort = new AbortController()
+    exportAbort.current = abort
+    const result = await recorder.run(
+      {
+        python: code,
+        controller,
+        onProgress: (text) => {
+          setExportLog((prev) => [...prev, text])
+          say(text, 'running')
+        },
+      },
+      abort.signal,
+    ).finally(() => { exportAbort.current = null })
     if (!result.ok) {
       say(T.exportFailed(result.error ?? result.reason ?? ''), 'error')
       return
@@ -687,6 +733,9 @@ export function usePlayground() {
     sessionCode, setSessionCode, sessionInfo, sessionRef,
     newSession, sessionCheck, sessionAppend, endSession,
     playbackInfo, playbackRef, buildTimeline, dropPlayback,
+    // 渲染器 / 钩子 / 导出分节
+    getRenderer, warmupNow, runSnippet,
+    exportLog, cancelExport,
   }
 }
 

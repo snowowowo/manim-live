@@ -7,7 +7,7 @@
 // 它认的 DOM 有四个：`#status`（等预热、等这一轮出结果）、`#render`（触发一次）、
 // `#stage canvas`（量墨迹）、`.stage-skel`（极速档盖在画布上的骨架层）。
 // **改版式不能丢这几个**——它们就是这条断言的全部抓手。另外还按无障碍名点了两个控件：
-// 「极速」（两个同名的，取第一个）与「自定义代码」（视图切换）。名字改了这里也要跟着改。
+// 「极速」（两个同名的，取第一个）与左侧竖导航的分节名（「画布」「语料与测试台」，见 components/api-nav.tsx）。名字改了这里也要跟着改。
 // 页面是 React 写的，但这一条与框架无关：换任何前端框架，只要这几个抓手还在、行为还对，它照样过。
 //
 // 运行：node scripts/check-playground.mjs [--keep] [--shot 路径]
@@ -257,7 +257,7 @@ try {
   //
   // 口径来自 DSH：那边「未通过预检」的卡片根本没有画布（头 + 说明就完了）。
   // 这里原来写反了顺序——先建画布再预检，于是台上留着一块不明所以的黑。
-  await page.getByRole('tab', { name: '自定义代码', exact: true }).click()
+  await page.getByRole('tab', { name: '画布', exact: true }).click()
   await page.locator('textarea').fill('这是语法错(((  # 预检就该当场拒掉\n')
   // 序号**必须在点之前**读：点下去 `#status` 会先翻成「渲染中」并 +1，
   // 之后再读就成了一条永远够不到的门槛。
@@ -288,7 +288,7 @@ try {
   //   ① 结构上——第二次渲染后 canvas 不是同一个 DOM 节点（复用 = 必然叠加）；
   //   ② 行为上——先渲一幅密的（坐标系 + 曲线）、再渲一幅疏的（一个圆）。若是复用旧画布往上加，
   //      疏的那幅画完，墨迹不会比密的少。
-  await page.getByRole('tab', { name: '语料', exact: true }).click()
+  await page.getByRole('tab', { name: '语料与测试台', exact: true }).click()
   await setFast(false) // 真时序下量墨迹：极速会把中间态压掉，画面反而更难比
   await playExample('坐标系 + 函数曲线')
   const denseInk = await inkRatio(640)
@@ -348,6 +348,39 @@ try {
   console.log(`  批量（语法综合 6 条）：${batchSecs.toFixed(1)}s，工具条「${counter?.trim()}」`)
   if (batchSecs > 90) throw new Error(`一组 6 条跑了 ${batchSecs.toFixed(1)}s，像还在等超时兜底`)
   console.log('✓ 批量一组跑完，没卡在超时兜底上')
+
+  // ⑩ 左侧竖导航的新分节：会话（createSession）端到端。
+  //
+  // 为什么纳入烟测：这两个分节是 playground「对文档里每个 API 负责」的落点，
+  // 而单元回归只到核心包一层——页面接线（竖导航 → 面板 → pg 动作 → 状态行）是另一段会断的路。
+  const waitStatusText = (needle, timeout = 120_000) => page.waitForFunction(
+    (text) => (document.getElementById('status')?.textContent ?? '').includes(text),
+    needle,
+    { timeout },
+  )
+  await page.getByRole('tab', { name: '会话', exact: true }).click()
+  await page.getByRole('button', { name: '开会话', exact: true }).click()
+  await waitStatusText('会话已开')
+  await page.locator('textarea[aria-label="这一段（顶层语句）"]').fill('dot = Dot(point=[-2, 0, 0], color=RED)\nself.add(dot)')
+  await page.getByRole('button', { name: '追加', exact: true }).click()
+  await waitStatusText('已入档')
+  console.log('✓ 会话分节：开会话 → 追加入档')
+
+  // ⑪ 时间轴回放分节（createPlayback）：收集 → 播放推进 → 逐帧读数。
+  await page.getByRole('tab', { name: '时间轴回放', exact: true }).click()
+  await page.locator('textarea[aria-label="时间轴 · 整段收集"]').fill('d = Dot(color=BLUE)\nself.play(FadeIn(d), run_time=1.0)')
+  await page.getByRole('button', { name: '收集时间轴', exact: true }).click()
+  await waitStatusText('时间轴就绪')
+  await page.getByRole('button', { name: '播放', exact: true }).click()
+  // 等时刻真的走起来（读数到 0.3 秒以上；toFixed(1) 粒度足够）
+  await page.waitForFunction(() => {
+    const text = document.getElementById('tl-time')?.textContent ?? ''
+    return Number(text.split('/')[0]?.trim() ?? '0') > 0.3
+  }, undefined, { timeout: 30_000 })
+  const seeked = await page.textContent('#tl-time')
+  console.log(`  时间轴：播放推进到 ${seeked?.trim()}`)
+  if (!/\/\s*1\.0s/.test(seeked ?? '')) throw new Error(`总时长不是 1.0s，拿到：${seeked}`)
+  console.log('✓ 时间轴回放分节：收集 → 播放推进（帧级读数在动）')
 
   if (consoleErrors.length > 0) {
     console.log(`⚠ 控制台有 ${consoleErrors.length} 条 error（下面列前 5 条）`)

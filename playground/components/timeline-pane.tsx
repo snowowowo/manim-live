@@ -165,7 +165,8 @@ export function Transport({ pg }: { pg: Playground }) {
         </div>
       </div>
 
-      <span className="shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">
+      {/* id 是给 check-playground.mjs 读的（同 #status / #stage 的约定），页面自己不用 */}
+      <span id="tl-time" className="shrink-0 font-mono text-[11px] tabular-nums text-muted-foreground">
         {time.toFixed(1)} / {info.duration.toFixed(1)}s
       </span>
     </div>

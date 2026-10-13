@@ -25,7 +25,24 @@ export interface CardResult {
 export type Overlay = { kind: 'skeleton' } | { kind: 'packages'; text: string }
 
 /** 看什么：语料清单，还是自己写一段。 */
-export type GroundView = 'examples' | 'free' | 'session' | 'timeline'
+/**
+ * 左边导航的分节——**与文档站 API 参考一一对应**（顺序也照它）：
+ * playground 对文档里每一个 API 负责，每条一个可上手的分节。
+ * 机器可读的清单与标签在 components/api-nav.tsx。
+ */
+export type GroundView =
+  | 'renderer'   // 渲染器：warmup / check / pyodideIndexURL / dispose
+  | 'surface'    // 画布：run / replay / canvas / isRendered
+  | 'session'    // 会话：check / append / count / source / dispose
+  | 'playback'   // 时间轴回放：createPlayback / seek / play / pause / step
+  | 'hooks'      // 钩子：onLoading / onProgress / signal
+  | 'status'     // 环境状态：environmentStatus / onEnvironmentStatus
+  | 'export'     // 导出：Exporter 契约 / browserRecorder
+  | 'machine'    // 本机探测（Node 侧，经 dev-api）
+  | 'packages'   // 包管理（Node 侧，经 dev-api）
+  | 'node'       // Node 入口：runPython + createDryRunBridge（经 dev-api）
+  | 'corpus'     // 语料与测试台：语料回归网 + 判定/统计
+  | 'internals'  // 低层导出与缺口表
 
 /**
  * 左侧怎么摆。**三种布局共用同一套数据与同一套交互**，换的只是版式——
