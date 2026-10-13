@@ -2,7 +2,7 @@
 
 会话（Session）是一块画布上的**持久执行上下文**，给「一步一步往上加」的场景用：分步讲课、逐段搭建。从 [`surface.createSession()`](/api/surface) 创建；同一块画布同时至多一个活会话，开新的会先收旧的。
 
-与 [`surface.run()`](/api/surface) 的区别：`run` 每次都是独立的一段，变量不跨次保留；会话把命名空间、桥与画布全程复用——第 2 段直接引用第 1 段建的 `circle`，`self` 绑定常驻场景，顶层 `play` / `wait` 自动补 await。
+与 [`surface.run()`](/api/surface) 的区别：`run` 每次都是独立的一段，变量不跨次保留；会话把命名空间、桥与画布全程复用（**形态口径**：`run` / `createPlayback` 收完整 Manim 文件或裸 construct 体，分段这种形态只属于会话——见[行为契约](/guide/contracts)）——第 2 段直接引用第 1 段建的 `circle`，`self` 绑定常驻场景，顶层 `play` / `wait` 自动补 await。
 
 ```
 surface.createSession()   → Promise<Session>

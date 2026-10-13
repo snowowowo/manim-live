@@ -23,7 +23,7 @@ interface RunResult {
 
 **参数**
 
-- `code`：Manim Python 源码，收两种形态，报错行号都会还原成你传入源码的行号：
+- `code`：Manim Python 源码，收两种形态（**默认写完整文件**；形态口径见[行为契约](/guide/contracts)），报错行号都会还原成你传入源码的行号：
 
 ```python
 # 形态一：完整 class 外壳。漏写 from manim import * 时核心自动补一行。

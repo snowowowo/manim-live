@@ -1,6 +1,6 @@
 # 行为契约
 
-本页列出集成前必须知道的三条行为约定与一个已知问题，四者都直接决定 SPA 里的生命周期写法。前两条同样写在源码 `src/index.ts` 的文件头；各方法的参数与例子见 [API 参考](/api/)。
+本页列出集成前必须知道的四条行为约定与一个已知问题，五者都直接决定集成写法。前两条同样写在源码 `src/index.ts` 的文件头；各方法的参数与例子见 [API 参考](/api/)。
 
 ## 页面级单例
 
@@ -32,6 +32,23 @@ interface RunResult {
 ```
 
 `cancelled === true` 时**不要**向用户展示 `error`——那不是错误，而是该段代码尚未轮到执行、其所属画布已被销毁（快速连续点击、切换页面均属此场景）。
+
+## 代码形态：完整文件、裸 construct 体、会话分段
+
+传给核心的 Python 有三种形态，落在**两个入口**上——先记住这张表：
+
+| 形态 | 长什么样 | 传给谁 | 核心怎么处理 |
+| --- | --- | --- | --- |
+| **完整 Manim 文件**（默认） | `from manim import *` + `class X(Scene): def construct(self): …` | `surface.run(code)`、`surface.createPlayback(code)`、`runPython(code, bridge)`（含 Node 干跑预检） | 原样执行；漏了 `from manim import *` 会自动补一行 |
+| **裸 construct 体**（简写） | 直接写构造体里的语句：`ax = Axes(…)`、`self.play(…)` | 同上——**同一个参数、同一个入口** | 自动缩进并套进 `class _ManimScene(Scene): def construct(self):` 外壳；报错行号按外壳行数还原 |
+| **分段（一段一段）** | 顶层语句，一段一次调用 | **只有会话**：`session.append(code)` / `session.check(code)` | 不套 class 外壳：命名空间跨段保留、`self` 绑定常驻场景、顶层 `play` 自动补 await；每段必须**语法完整** |
+
+两条口径，记住就够：
+
+1. **默认写完整文件。** 裸 construct 体是合法简写（核心按「源码里有没有 `class X(` 定义」自动分辨；只认有没有类定义，不猜基类名），但公开示例、文档、给别人看的代码一律用完整文件。
+2. **一段一段只属于会话。** 会话是黑板那种「边讲边加」的形态（见[会话](/api/session)）；`run` / `createPlayback` 每次都收**一整段**、一次跑完。不用会话却要跨段共享变量，就得自己拼成一整段再传（见[单段独立执行](#单段独立执行)）。
+
+纯 Python 片段（不驱动场景，例如只做一次干跑校验）另有一条窄路：`runPython(code, bridge, { drive: false })`——不做上面那套包装。
 
 ## 复用画布的已知问题
 

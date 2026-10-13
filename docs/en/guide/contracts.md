@@ -1,6 +1,6 @@
 # Behavioural Contracts
 
-This page lists three behavioural contracts and one known issue you must know before integrating; all four determine how lifecycle code is written in an SPA. The first two are also written in the header of `src/index.ts`. Parameters and examples for each method are in the [API Reference](/en/api/).
+This page lists four behavioural contracts and one known issue you must know before integrating; all five determine how integration code is written. The first two are also written in the header of `src/index.ts`. Parameters and examples for each method are in the [API Reference](/en/api/).
 
 ## Page-level singleton
 
@@ -32,6 +32,23 @@ interface RunResult {
 ```
 
 When `cancelled === true`, **do not** show `error` to the user — that is not an error; it means the segment had not reached the front of the queue when its canvas was destroyed (rapid consecutive clicks and page switches both produce this).
+
+## Code shape: complete file, bare construct body, session segments
+
+Python reaches the core in three shapes, across **two entry points** — start with the table:
+
+| Shape | What it looks like | Passed to | What the core does |
+| --- | --- | --- | --- |
+| **Complete Manim file** (default) | `from manim import *` + `class X(Scene): def construct(self): …` | `surface.run(code)`, `surface.createPlayback(code)`, `runPython(code, bridge)` (including the Node dry-run precheck) | Used as-is; a missing `from manim import *` is added for you |
+| **Bare construct body** (shorthand) | The statements of a construct body directly: `ax = Axes(…)`, `self.play(…)` | The same methods — **one parameter, one entry** | Indented and wrapped into a `class _ManimScene(Scene): def construct(self):` shell; error line numbers map back through the shell |
+| **Segments (piece by piece)** | Top-level statements, one call per piece | **Session only**: `session.append(code)` / `session.check(code)` | No class shell: the namespace persists across segments, `self` is bound to the resident scene, top-level `play` is auto-awaited; each segment must be a complete statement sequence |
+
+Two rules cover it:
+
+1. **Write a complete file by default.** The bare construct body is legal shorthand (the core detects it by "does the source define a class" — it only checks for a class definition, never guesses base names), but public examples, docs, and code shown to others always use the complete file.
+2. **Piece-by-piece belongs to sessions only.** A session is the lecture-style "add while explaining" shape (see [Session](/en/api/session)); `run` / `createPlayback` always take **one whole block** and run it in one go. To share variables across blocks without a session, stitch them into one block first (see [One segment per run](#one-segment-per-run)).
+
+Pure Python fragments (no scene driving, e.g. a plain precheck) have one narrow path: `runPython(code, bridge, { drive: false })` — none of the wrapping above applies.
 
 ## Known issues with reusing a canvas
 

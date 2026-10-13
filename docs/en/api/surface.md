@@ -23,7 +23,7 @@ interface RunResult {
 
 **Parameters**
 
-- `code`: Manim Python source. Two shapes are accepted, and error line numbers map back to the source you passed in:
+- `code`: Manim Python source. Two shapes are accepted (**write a complete file by default**; see [Behavioural Contracts](/en/guide/contracts) for the rule), and error line numbers map back to the source you passed in:
 
 ```python
 # Shape one: a full class shell. If `from manim import *` is missing the core adds it.

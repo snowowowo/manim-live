@@ -2,7 +2,7 @@
 
 A session is a **persistent execution context** on one canvas, for scenes that grow step by step: incremental lecturing, piece-by-piece construction. Create it with [`surface.createSession()`](/en/api/surface); at most one live session per canvas — starting a new one ends the old.
 
-Difference from [`surface.run()`](/en/api/surface): `run` executes each segment in isolation, variables do not survive between calls; a session reuses one namespace, one bridge, and one canvas throughout — segment 2 can reference `circle` created in segment 1, `self` is bound to the resident scene, and top-level `play` / `wait` are auto-awaited.
+Difference from [`surface.run()`](/en/api/surface): `run` executes each segment in isolation, variables do not survive between calls; a session reuses one namespace, one bridge, and one canvas throughout (**shape note**: `run` / `createPlayback` take a complete Manim file or a bare construct body; the piece-by-piece shape belongs to sessions only — see [Behavioural Contracts](/en/guide/contracts)) — segment 2 can reference `circle` created in segment 1, `self` is bound to the resident scene, and top-level `play` / `wait` are auto-awaited.
 
 ```
 surface.createSession()   → Promise<Session>
