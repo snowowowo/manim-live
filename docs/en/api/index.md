@@ -1,21 +1,24 @@
 # API Reference: Overview and Entry
 
-The public interface of `manim-live` is split across nine pages by object: this page covers the object map and the entry factory; each other page covers every member of one object. Each member gets a type definition, parameter notes, return value, and an example you can copy as-is. The browser entry is `manim-live`; the entry that never touches the DOM is `manim-live/node`. For a first run see [Quick Start](/en/guide/quick-start); for the behavioural contracts you must know before integrating see [Behavioural Contracts](/en/guide/contracts).
+The public interface of `manim-live` is split across eleven pages by object: this page covers the object map and the entry factories; each other page covers every member of one object. Each member gets a type definition, parameter notes, return value, and an example you can copy as-is. The browser entry is `manim-live`; the entry that never touches the DOM is `manim-live/node`. For a first run see [Quick Start](/en/guide/quick-start); for the behavioural contracts you must know before integrating see [Behavioural Contracts](/en/guide/contracts).
 
 | Page | Contents |
 | --- | --- |
 | [Renderer](/en/api/renderer) | `warmup` / `check` / `createSurface` / `exporters` / `pyodideIndexURL` / `dispose` |
-| [Canvas](/en/api/surface) | `run` / `replay` / `canvas` / `isRendered` / `dispose`, plus how to redraw new content |
+| [Canvas](/en/api/surface) | `run` / `replay` / `createSession` / `canvas` / `isRendered` / `dispose` |
+| [Session](/en/api/session) | `check` / `append` / `count` / `source` / `dispose`: the persistent context for step-by-step execution |
 | [Hooks](/en/api/hooks) | `onLoading` / `onProgress` / `signal` |
 | [Environment Status](/en/api/status) | `environmentStatus` / `onEnvironmentStatus`: capabilities / runtime / KaTeX / package fetching |
-| [Export](/en/api/export) | The `Exporter` contract, `probe` / `run`, and the three limits of the built-in recorder |
+| [Export](/en/api/export) | The `Exporter` contract and the built-in recorder; local CLI export via `createLocalExport` / `createExportClient` |
+| [Machine Probe](/en/api/machine) | `probePlan` / `probeCheck`: whether this machine has manim / FFmpeg / LaTeX |
+| [Packages](/en/api/packages) | `createPackagesClient` / `createPyodideSupply`: inventory / prefetch / supply line for on-demand packages |
 | [Node Entry](/en/api/node) | The half that never touches the DOM: dry-run precheck and corpus loading |
 | [Corpus and Test Bench](/en/api/corpus) | Corpus format functions, verdict / tally / report |
 | [Low-Level Exports](/en/api/internals) | Implementation parts, and what this version does not provide |
 
 ## Object Map
 
-Everything starts at `createManimRenderer()`. It is the package's only entry factory, and the tree below is the whole of what a consumer can hold:
+Three groups of entries: one tree under the renderer (in-page execution), and two groups of **independent factories** (each owns a concern; none depends on the others).
 
 ```
 createManimRenderer(options)          → ManimRenderer        usually one per page
@@ -23,6 +26,12 @@ createManimRenderer(options)          → ManimRenderer        usually one per p
 ├─ check(python)                      → Promise<CheckResult>
 ├─ createSurface(container, options)  → Promise<Surface>     one per canvas
 │  ├─ run(code, handlers)             → Promise<RunResult>
+│  ├─ createSession()                 → Promise<Session>     step-by-step (see the Session page)
+│  │  ├─ check(code)                  → Promise<SessionVerdict>
+│  │  ├─ append(code)                 → Promise<SessionAppend>
+│  │  ├─ count                        → number               property
+│  │  ├─ source()                     → string
+│  │  └─ dispose()                    → void
 │  ├─ replay()                        → Promise<void>
 │  ├─ canvas()                        → HTMLCanvasElement | null
 │  ├─ isRendered()                    → boolean
@@ -35,13 +44,20 @@ createManimRenderer(options)          → ManimRenderer        usually one per p
 │     └─ run(request, signal)         → Promise<ExportResult>
 ├─ pyodideIndexURL()                  → string
 └─ dispose()                          → void
+
+createPackagesClient({ packagesUrl, cacheUrl })  → PackagesClient   inventory / prefetch / clear (browser)
+createMachineClient({ environmentUrl })          → MachineClient    asks the machine item by item (browser)
+
+createPyodideSupply({ pyodideDir })              → PyodideSupply    the supply line (Node)
+createLocalExport({ outputDir?, probe? })        → LocalExport      local CLI export to mp4 (Node)
 ```
 
-Three notes on reading the map:
+Four notes on reading the map:
 
 - A `Surface` can only be obtained from the renderer (`createSurface()`); it cannot be constructed on its own. Exporters come from `renderer.exporters`, where the built-in one is always first in the list.
-- On the renderer everything is a method except `exporters`, which is an array property. All five members of `Surface` are methods; it has no properties.
+- On the renderer everything is a method except `exporters`, which is an array property. All members of `Surface` are methods; only the session's `count` is a property.
 - State is not exposed as object properties: the outcome of a run lives in the return value of `run()`, whether the canvas holds a picture is queried with `isRendered()`, and progress information has two outlets — the per-call `onLoading`, and the module-level [Environment Status](/en/api/status).
+- The other three factory groups are independent of each other and of the renderer: their arguments are all **injected** (route URLs, directories, probe functions); they read no page state and work apart from the renderer.
 
 ## createManimRenderer(options?)
 

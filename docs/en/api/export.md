@@ -1,10 +1,13 @@
 # API Reference: Export
 
-Export follows a provider model: the core defines the contract, and there can be several implementations. The provider list lives on [`renderer.exporters`](/en/api/renderer), with the built-in browser recorder always first.
+Export has two independent paths:
+
+- **Browser recording** (first half of this page): a provider model where the core defines the contract and there can be several implementations, listed on [`renderer.exporters`](/en/api/renderer) with the built-in recorder always first. It needs a **live canvas**.
+- **Local CLI export** (end of this page): really runs the manim command installed on the user's machine and produces an mp4 file. It needs no live canvas (source only), so it does not go through the provider interface — it is a pair of factories instead: `createLocalExport` on the Node side and `createExportClient` on the browser side.
 
 ## Exporter (type)
 
-The shape of one export provider. Implementing your own provider (e.g. a local manim CLI rendering mp4) means implementing this interface.
+The shape of one export provider. Implementing your own provider means implementing this interface.
 
 ```ts
 interface Exporter {
@@ -117,3 +120,109 @@ Three limits:
 1. Real time only. A 60-second animation records for 60 seconds, with no fast-forward — manim-web animations are driven by rAF time and expose no offline frame-by-frame API.
 2. The format depends on the browser. Usually `webm`, possibly `mp4` in Safari; the result carries `mime` and the extension is derived from it.
 3. No audio track.
+
+## createLocalExport(options) (Node side)
+
+Hands a segment of Manim Python to the local CLI and renders it to an mp4 file. It passes the [Machine Probe](/en/api/machine) gate first: when a required item (python3 / manim / manimModule / ffmpeg) is absent, it returns what is missing instead of proceeding to render.
+
+```ts
+function createLocalExport(options?: LocalExportOptions): LocalExport
+
+interface LocalExportOptions {
+  outputDir?: string        // where the mp4 lands; default ~/Downloads (created if absent)
+  probe?: ProbeFn           // probe used by the readiness gate; default: real machine probe
+  resolve?: (tool: string) => string | null   // finds an executable on PATH; default: real addressing
+  readinessTtlMs?: number   // readiness cache lifetime; default 30 seconds
+}
+
+interface LocalExport {
+  exportReadiness(options?: { maxAgeMs?: number }): Promise<ExportReadiness>
+  invalidateReadiness(): void
+  exportVideo(options?: { python?: string; quality?: string; timeoutMs?: number; workRoot?: string }): Promise<LocalExportResult>
+  revealExportedFile(target: string, options?: { run?: CommandRunner; checkOnly?: boolean }): Promise<RevealResult>
+  outputDir(): string
+}
+```
+
+**Parameters** (`createLocalExport` options)
+
+| Field | Type | Default | Purpose | Consequence if omitted |
+| --- | --- | --- | --- | --- |
+| `outputDir` | `string` | `~/Downloads` | Where the mp4 lands (also the boundary of reveal checks) | writes into the user's Downloads folder |
+| `probe` | `(id) => Promise<EnvResult \| null>` | real machine probe | How the readiness gate asks "is it installed" | runs real commands (first call may take seconds) |
+| `resolve` | `(tool) => string \| null` | real addressing | Finds the manim command | searches the augmented PATH |
+| `readinessTtlMs` | `number` | `30000` | Readiness cache lifetime | every call re-probes |
+
+**`exportVideo` options**: `python` (source; a full file or a bare construct body), `quality` (`l`/`m`/`h`/`p`/`k`, default `h`), `timeoutMs` (default 10 minutes), `workRoot` (staging root, default the system temp directory).
+
+**Returns**
+
+```ts
+type LocalExportResult =
+  | { ok: true; file: string; quality: string }
+  | { ok: false; reason: 'input' | 'environment' | 'render'; error?: string; missing?: ExportMissing[] }
+
+interface ExportReadiness { ready: boolean; missing: ExportMissing[] }   // missing: { id, detail }[]
+interface RevealResult { ok: boolean; code: '' | 'missing' | 'outside' | 'failed'; error: string }
+```
+
+The `missing` list of `ready:false` is directly usable for hints (grey out the button, explain what is missing on hover). LaTeX / dvisvgm are **not required items**: only formula-heavy code needs them, plain animations render without; to hint "formulas also need LaTeX", read the full readiness result.
+
+**Example**
+
+```ts
+import { createLocalExport } from 'manim-live/node'
+
+const local = createLocalExport()   // defaults: ~/Downloads, real machine probe
+
+const result = await local.exportVideo({ python, quality: 'h' })
+if (result.ok) {
+  console.log('exported to', result.file)
+} else if (result.reason === 'environment') {
+  console.log('missing locally:', result.missing?.map((item) => item.detail).join(', '))
+} else {
+  console.log('render failed:', result.error)
+}
+```
+
+**Notes**
+
+- `exportVideo` deletes its temporary work directory when done; the final cut is **copied** out, and partial fragments (manim's `partial_movie_files`) are never passed off as the video.
+- `revealExportedFile` only accepts files inside `outputDir` (it acts on the OS on the user's behalf with a path coming from the UI; anything beyond the boundary is refused); with `checkOnly: true` it merely answers whether the file is still there — not a single system command runs.
+- Readiness results are TTL-cached: many cards asking the same question do not each run `manim --version`.
+
+## createExportClient(options) (browser side)
+
+The fetch client for the above: in the browser no commands run; the host routes are asked instead.
+
+```ts
+function createExportClient(options: { exportUrl: string }): ExportClient
+
+interface ExportClient {
+  loadExportReadiness(): Promise<ExportReadiness>              // GET  exportUrl/ready
+  requestExport(python: string): Promise<LocalExportResult>    // POST exportUrl
+  revealExport(path: string, options?: { checkOnly?: boolean }): Promise<RevealResult>   // POST exportUrl/reveal
+}
+```
+
+**Parameters** `exportUrl`: the export route (the caller plugin's own namespace). The three endpoints share the shapes above — `LocalExportResult` / `ExportReadiness` / `RevealResult` — between host and browser.
+
+**Returns** `ExportClient`. `requestExport` throws on transport failures and reports business failures as `ok:false`; `loadExportReadiness` and `revealExport` fall to the conservative side when unreadable (readiness = unusable, reveal = failed): a greyed-out button or an honest "cannot open" beats letting an unclear action through.
+
+**Example**
+
+```ts
+import { createExportClient } from 'manim-live'
+
+const client = createExportClient({ exportUrl: '/dsh-plugins/example/export' })
+
+const readiness = await client.loadExportReadiness()
+if (readiness.ready) {
+  const result = await client.requestExport(python)
+  if (result.ok) await client.revealExport(result.file)
+}
+```
+
+**Notes**
+
+- The `parseReadiness` / `parseReveal` parsers are exported too: responses are untrusted input (version skew, error pages from a middle layer); every field is checked and bad entries are dropped.

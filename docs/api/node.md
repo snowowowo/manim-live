@@ -83,3 +83,13 @@ if (!corpusAvailable()) {
   console.log(`${groups.length} 组 / ${examples.length} 条`)
 }
 ```
+
+## 其余导出
+
+`manim-live/node` 还导出下面几组，各自的完整参考见对应页：
+
+| 导出 | 参考页 |
+| --- | --- |
+| `probePlan` / `probeCheck` / `resolveExecutable` / `pythonBesideExecutable` | [本机探测](/api/machine) |
+| `createPyodideSupply` | [包管理](/api/packages) |
+| `createLocalExport` / `sceneClassName` / `wrapConstructBody` / `buildRenderArgs` | [导出](/api/export) |

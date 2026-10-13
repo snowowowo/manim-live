@@ -1,21 +1,24 @@
 # API 参考：总览与入口
 
-`manim-live` 的全部公开接口按对象分成九页：本页讲对象关系与入口工厂，其余各页讲一个对象的全部成员。每个成员给出类型定义、参数说明、返回值与可直接抄的例子。浏览器入口是 `manim-live`，不碰 DOM 的入口是 `manim-live/node`。第一次上手看[快速开始](/guide/quick-start)，集成前必须知道的行为约定看[行为契约](/guide/contracts)。
+`manim-live` 的全部公开接口按对象分成十一页：本页讲对象关系与入口工厂，其余各页讲一个对象的全部成员。每个成员给出类型定义、参数说明、返回值与可直接抄的例子。浏览器入口是 `manim-live`，不碰 DOM 的入口是 `manim-live/node`。第一次上手看[快速开始](/guide/quick-start)，集成前必须知道的行为约定看[行为契约](/guide/contracts)。
 
 | 页 | 内容 |
 | --- | --- |
 | [渲染器](/api/renderer) | `warmup` / `check` / `createSurface` / `exporters` / `pyodideIndexURL` / `dispose` |
-| [画布](/api/surface) | `run` / `replay` / `canvas` / `isRendered` / `dispose`，以及重画一幅新内容的正确做法 |
+| [画布](/api/surface) | `run` / `replay` / `createSession` / `canvas` / `isRendered` / `dispose` |
+| [会话](/api/session) | `check` / `append` / `count` / `source` / `dispose`：分步执行的持久上下文与段提交协议 |
 | [钩子](/api/hooks) | `onLoading` / `onProgress` / `signal` |
 | [环境状态](/api/status) | `environmentStatus` / `onEnvironmentStatus`：能力 / 运行时 / KaTeX / 取包四组条件 |
-| [导出](/api/export) | `Exporter` 契约、`probe` / `run`、内置录屏的三条边界 |
+| [导出](/api/export) | `Exporter` 契约与内置录屏；本机 CLI 导出 `createLocalExport` / `createExportClient` |
+| [本机探测](/api/machine) | `probePlan` / `probeCheck`：这台机器有没有 manim / FFmpeg / LaTeX |
+| [包管理](/api/packages) | `createPackagesClient` / `createPyodideSupply`：按需包的清单 / 预缓存 / 供给线 |
 | [Node 入口](/api/node) | 不碰 DOM 的那一半：干跑预检与语料装载 |
 | [语料与测试台](/api/corpus) | 语料格式函数与判定 / 统计 / 报告 |
 | [低层导出](/api/internals) | 实现零件，以及当前版本不提供的能力 |
 
 ## 对象关系
 
-一切从 `createManimRenderer()` 开始。它是包唯一的入口工厂，下面这棵树就是使用者能拿到的全部：
+三组入口：渲染器一棵树（页面内执行），其余两组是**独立的工厂**（各管一摊，互不依赖）。
 
 ```
 createManimRenderer(options)          → ManimRenderer        一个页面通常一个
@@ -23,6 +26,12 @@ createManimRenderer(options)          → ManimRenderer        一个页面通�
 ├─ check(python)                      → Promise<CheckResult>
 ├─ createSurface(container, options)  → Promise<Surface>     一块画布一个
 │  ├─ run(code, handlers)             → Promise<RunResult>
+│  ├─ createSession()                 → Promise<Session>     分步执行（详见会话页）
+│  │  ├─ check(code)                  → Promise<SessionVerdict>
+│  │  ├─ append(code)                 → Promise<SessionAppend>
+│  │  ├─ count                        → number               属性
+│  │  ├─ source()                     → string
+│  │  └─ dispose()                    → void
 │  ├─ replay()                        → Promise<void>
 │  ├─ canvas()                        → HTMLCanvasElement | null
 │  ├─ isRendered()                    → boolean
@@ -35,13 +44,21 @@ createManimRenderer(options)          → ManimRenderer        一个页面通�
 │     └─ run(request, signal)         → Promise<ExportResult>
 ├─ pyodideIndexURL()                  → string
 └─ dispose()                          → void
+
+createPackagesClient({ packagesUrl, cacheUrl })  → PackagesClient   包清单 / 预缓存 / 清缓存（浏览器侧）
+createMachineClient({ environmentUrl })          → MachineClient   逐项问本机装没装（浏览器侧）
+
+createPyodideSupply({ pyodideDir })              → PyodideSupply    供给线（Node 侧）
+createLocalExport({ outputDir?, probe? })        → LocalExport      本机 CLI 导出 mp4（Node 侧）
 ```
 
-三点读图说明：
+四点读图说明：
 
 - `Surface` 只能从渲染器上拿到（`createSurface()`），不能单独构造；`Exporter` 从 `renderer.exporters` 上取，自带的那个始终在列表最前。
-- 渲染器上除 `exporters` 是数组属性，其余都是方法；`Surface` 的五个成员全是方法，没有属性。
+- 渲染器上除 `exporters` 是数组属性，其余都是方法；`Surface` 的成员全是方法，只有会话的 `count` 是属性。
 - 状态不挂在对象属性上：一次运行的结论在 `run()` 的返回值里，画布有没有画面靠 `isRendered()` 查；过程信息有两个出口——per-call 的 `onLoading`，与模块级的[环境状态](/api/status)。
+- 其余三组工厂彼此独立也独立于渲染器：它们的参数全是**注入**（路由地址、目录、探测函数），不读页面状态、可与渲染器分开使用。
+
 
 ## createManimRenderer(options?)
 

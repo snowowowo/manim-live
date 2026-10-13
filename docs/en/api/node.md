@@ -83,3 +83,13 @@ if (!corpusAvailable()) {
   console.log(`${groups.length} groups / ${examples.length} entries`)
 }
 ```
+
+## Other exports
+
+`manim-live/node` also exports the following groups; full references live on their own pages:
+
+| Exports | Page |
+| --- | --- |
+| `probePlan` / `probeCheck` / `resolveExecutable` / `pythonBesideExecutable` | [Machine Probe](/en/api/machine) |
+| `createPyodideSupply` | [Packages](/en/api/packages) |
+| `createLocalExport` / `sceneClassName` / `wrapConstructBody` / `buildRenderArgs` | [Export](/en/api/export) |
