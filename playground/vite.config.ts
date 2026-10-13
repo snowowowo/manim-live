@@ -221,6 +221,19 @@ export default defineConfig({
   root: here,
   // react 在 tailwind 之前：组件里写的类名要先辈出 JSX 来，Tailwind 才扫得到。
   plugins: [react(), tailwindcss(), assetRoutes(), devApi(pkgRoot)],
+  /**
+   * manim-web 0.36 的 dist 里有一处**裸动态 import**：讲义导出的可选依赖 pptxgenjs
+   * （上游自己用 try/catch 兜着，并标了 Vite 的 @vite-ignore 注释）。但**依赖预打包跑的
+   * 是 esbuild，不认那条注释**——它会硬解析这个裸名，包不在就整页红屏（2026-10-13 升级时踩到；
+   * 0.3.24 没有这处 import。同族的 jspdf 上游已打成自己的 chunk，不落进这条）。
+   *
+   * 标成 external：预打包产物里原样保留这条 import，浏览器只在真跑到讲义导出时才去取它，
+   * 取不到就走上游自己的兜底——playground 不导 PPTX，永远走不到那条分支。
+   * 将来若给 playground 做生产构建，build.rollupOptions.external 要带上同一个名字。
+   */
+  optimizeDeps: {
+    esbuildOptions: { external: ['pptxgenjs'] },
+  },
   server: {
     port: 5173,
     // 允许读到包根（核心包源码 + corpus 的语料与截图）
