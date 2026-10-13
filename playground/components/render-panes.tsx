@@ -5,29 +5,17 @@
  * 共同口径：本节负责把文档里这一页的 API **就地可验证**——按钮、读数、结论都在明面上。
  */
 import { useEffect, useState } from 'react'
-import { Info, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { environmentStatus, onEnvironmentStatus, type EnvironmentStatus } from 'manim-live'
 import { T } from '@/lib/i18n.ts'
 import type { Playground } from '@/lib/use-playground.ts'
 import { Badge } from '@/ui/badge.tsx'
 import { Button } from '@/ui/button.tsx'
-import { Tip } from '@/ui/tip.tsx'
+import { CodeEditor } from './code-editor.tsx'
 
-/** 分节左栏的通用壳：标题 + 提示 + 内容栈。 */
-function PaneShell({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
-  return (
-    <aside className="flex min-h-0 flex-col gap-2 border-r border-border pr-3">
-      <div className="flex items-center gap-1.5">
-        <span className="text-[11.5px] font-medium">{title}</span>
-        <Tip label={hint} align="start" wide>
-          <Button size="iconSm" className="size-5" aria-label={hint}>
-            <Info size={12} strokeWidth={1.8} />
-          </Button>
-        </Tip>
-      </div>
-      {children}
-    </aside>
-  )
+/** 分节左栏的通用壳：只有内容栈（标题、提示与「对应文档」都在节头，见 section-header.tsx）。 */
+function Pane({ children }: { children: React.ReactNode }) {
+  return <aside className="flex min-h-0 flex-col gap-2 border-r border-border pr-3">{children}</aside>
 }
 
 export function RenderPane({ pg }: { pg: Playground }) {
@@ -45,7 +33,7 @@ export function RenderPane({ pg }: { pg: Playground }) {
   }
 
   return (
-    <PaneShell title={T.renderTitle} hint={T.renderSectionHint}>
+    <Pane>
       <div className="flex items-center gap-2 rounded-md border border-border bg-card px-2.5 py-2">
         <span className="text-[11px] text-muted-foreground">{T.renderWarm}</span>
         <Badge tone={pg.warm === 'ready' ? 'ok' : pg.warm === 'failed' ? 'fail' : 'neutral'}>
@@ -66,20 +54,13 @@ export function RenderPane({ pg }: { pg: Playground }) {
 
       <div className="flex min-h-0 flex-1 flex-col gap-1.5">
         <span className="text-[11px] text-muted-foreground">{T.renderCheckTitle}</span>
-        <textarea
-          className="scroll-thin min-h-0 flex-1 resize-none rounded-md border border-input bg-card p-3 font-mono text-[11.5px] leading-[1.55] text-foreground"
-          spellCheck={false}
-          aria-label={T.renderCheckTitle}
-          placeholder={T.renderCheckPlaceholder}
-          value={code}
-          onChange={(event) => setCode(event.target.value)}
-        />
+        <CodeEditor label={T.renderCheckTitle} value={code} onChange={setCode} />
         <div className="flex items-center gap-2">
           <Button size="sm" variant="primary" onClick={() => void runCheck()}>{T.renderCheckBtn}</Button>
           {verdict !== null && <span className="truncate text-[11px] text-muted-foreground">{verdict}</span>}
         </div>
       </div>
-    </PaneShell>
+    </Pane>
   )
 }
 
@@ -119,7 +100,7 @@ export function StatusPane({ pg }: { pg: Playground }) {
   ]
 
   return (
-    <PaneShell title={T.statusTitle} hint={T.statusHint}>
+    <Pane>
       <div className="flex items-center gap-2">
         <Button size="sm" onClick={() => setStatus(environmentStatus())}>
           <RefreshCw size={12} strokeWidth={1.8} aria-hidden="true" />
@@ -145,13 +126,13 @@ export function StatusPane({ pg }: { pg: Playground }) {
           </div>
         )}
       </div>
-    </PaneShell>
+    </Pane>
   )
 }
 
 export function HooksPane({ pg }: { pg: Playground }) {
   return (
-    <PaneShell title={T.hooksTitle} hint={T.hooksHint}>
+    <Pane>
       <div className="flex flex-col gap-2">
         <Button size="sm" variant="primary" onClick={() => pg.runSnippet(T.hooksDemoCode)}>
           {T.hooksOnLoadingDemo}
@@ -162,13 +143,13 @@ export function HooksPane({ pg }: { pg: Playground }) {
         </p>
         <p className="text-[11px] leading-[1.6] text-muted-foreground">{T.hooksSignalsInExport}</p>
       </div>
-    </PaneShell>
+    </Pane>
   )
 }
 
 export function InternalsPane({ pg }: { pg: Playground }) {
   return (
-    <PaneShell title={T.internalsTitle} hint={T.internalsHint}>
+    <Pane>
       <div className="scroll-thin flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
         <div className="rounded-md border border-border bg-card px-2.5 py-2">
           <div className="text-[11px] font-medium">{T.internalsGapsTitle}</div>
@@ -181,6 +162,6 @@ export function InternalsPane({ pg }: { pg: Playground }) {
           其中失败 {Object.values(pg.results).filter((r) => !r.ok).length} 条（isPassed / stateOf / tally 的真实输出）。
         </div>
       </div>
-    </PaneShell>
+    </Pane>
   )
 }

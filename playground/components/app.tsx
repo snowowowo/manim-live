@@ -25,13 +25,33 @@ import { Gallery } from './gallery.tsx'
 import { MachinePane, NodePane, PackagesPane } from './node-panes.tsx'
 import { Preview } from './preview.tsx'
 import { HooksPane, InternalsPane, RenderPane, StatusPane } from './render-panes.tsx'
+import { SectionHeader } from './section-header.tsx'
 import { SessionPane } from './session-pane.tsx'
 import { Sidebar } from './sidebar.tsx'
 import { StagePanel } from './stage-panel.tsx'
 import { TimelinePane } from './timeline-pane.tsx'
 import { Topbar } from './topbar.tsx'
 import { cn } from '@/ui/cn.ts'
+import { T } from '@/lib/i18n.ts'
+import type { GroundView, LayoutMode } from '@/lib/types.ts'
 import { usePlayground } from '@/lib/use-playground.ts'
+import { Segmented } from '@/ui/segmented.tsx'
+
+/** 每节的提示（节头那枚 ⓘ 的悬浮内容）——与各面板旧标题行里的说明同一批键。 */
+const SECTION_HINTS: Record<GroundView, string> = {
+  renderer: T.renderSectionHint,
+  surface: T.sourceHint,
+  session: T.sessionHint,
+  playback: T.timelineHint,
+  hooks: T.hooksHint,
+  status: T.statusHint,
+  export: T.exportSectionHint,
+  machine: T.machineHint,
+  packages: T.packagesHint,
+  node: T.nodeHint,
+  corpus: T.lead,
+  internals: T.internalsHint,
+}
 
 /** 右栏外壳：内容超长时自己滚（画布固定 16:9，不会撑破）。 */
 function RightPane({ children }: { children: ReactNode }) {
@@ -47,16 +67,16 @@ export function App() {
   //   · 画布 / 渲染器 / 会话 / 时间轴回放 / 钩子 / 环境状态 / 导出——左控件 + 右活画布；
   //   · Node 侧三节与低层导出——单栏长页（没有画布；数据来自 dev-api 或静态清单）。
   const stagePane = pg.view === 'renderer'
-    ? <RenderPane pg={pg} />
+    ? <RenderPane key="left" pg={pg} />
     : pg.view === 'session'
-      ? <SessionPane pg={pg} />
+      ? <SessionPane key="left" pg={pg} />
       : pg.view === 'playback'
-        ? <TimelinePane pg={pg} />
+        ? <TimelinePane key="left" pg={pg} />
         : pg.view === 'hooks'
-          ? <HooksPane pg={pg} />
+          ? <HooksPane key="left" pg={pg} />
           : pg.view === 'status'
-            ? <StatusPane pg={pg} />
-            : <ExportPane pg={pg} />
+            ? <StatusPane key="left" pg={pg} />
+            : <ExportPane key="left" pg={pg} />
 
   const stageSection = ['renderer', 'session', 'playback', 'hooks', 'status', 'export'].includes(pg.view)
   const singleColumn = ['machine', 'packages', 'node', 'internals'].includes(pg.view)
@@ -75,6 +95,26 @@ export function App() {
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Topbar pg={pg} />
+        <SectionHeader
+          id={pg.view}
+          hint={SECTION_HINTS[pg.view]}
+          /* 版式切换是**语料节自己的**工具（原来挂顶栏，用户说像「余料一直放在那里」） */
+          right={pg.view === 'corpus'
+            ? (
+              <Segmented<LayoutMode>
+                label={T.layoutLabel}
+                value={pg.layout}
+                onChange={pg.setLayout}
+                disabled={pg.running}
+                options={[
+                  { value: 'list', label: T.layoutList, hint: T.layoutListHint },
+                  { value: 'gallery', label: T.layoutGallery, hint: T.layoutGalleryHint },
+                  { value: 'docs', label: T.layoutDocs, hint: T.layoutDocsHint },
+                ]}
+              />
+            )
+            : undefined}
+        />
 
         {singleColumn ? (
           <div className="scroll-thin min-h-0 flex-1 overflow-y-auto p-4">
@@ -96,7 +136,7 @@ export function App() {
             ) : pg.view === 'surface' ? (
               <FreeCode key="left" pg={pg} />
             ) : (
-              <div key="left" className="flex min-h-0 flex-col">{stagePane}</div>
+              stagePane
             )}
 
             {/* 只有文档版式有中栏；另外两版留空，但**槽位要在**（见文件头关于 key 的说明）。

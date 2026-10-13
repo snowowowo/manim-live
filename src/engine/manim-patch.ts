@@ -1,4 +1,4 @@
-// manim-web 0.3.24 的上游缺陷：本包在拿到库之后打一层**最小**补丁。只有一处。
+// manim-web 0.3.24 的上游缺陷：本包在拿到库之后打一层**最小**补丁。现有两处（Camera3D.orbit / MathTex 的渲染落位）。
 //
 // `Camera3D.orbit(phi, theta, distance, gamma)` 里，「相机朝上方向」被**锁死在第一次调用**上：
 //
@@ -33,6 +33,8 @@ const patched = new WeakSet<object>()
 
 /** 给 manim-web 打上游补丁。幂等；拿不到目标时静默跳过（换了库版本不该把页面搞挂）。 */
 export function patchManimWeb(manim: ManimRuntime): void {
+  // MathTex 的补丁独立守卫、先打（别被相机那段的早退挡掉——第二个场景进来时相机已打过）。
+  patchMathtexCopy(manim)
   const ctor = (manim as unknown as Record<string, unknown>).Camera3D as
     | { prototype?: Record<string, unknown> }
     | undefined
@@ -52,4 +54,56 @@ export function patchManimWeb(manim: ManimRuntime): void {
     return (original as (...rest: unknown[]) => unknown).call(this, phi, theta, distance, gamma)
   }
   patched.add(proto)
+}
+
+/**
+ * 第二处：`MathTex.copy()` 的副本会「旧子物 + 自己那条异步渲染」叠成双份；时间轴 seek 一 reset 就炸。
+ *
+ * 上游（0.3.24）的三段事实叠在一起：
+ *   ① MonoPart 的构造器原地**启动异步渲染**（`this._renderPromise = this._renderMultiPart(latex)` 或 `_startRender()`）；
+ *   ② `copy()` 又是同步的：`new MathTex(...)` 之后紧跟 `_copyBaseAttributesInto(clone, { copyChildren: true })`，
+ *      把原件的子物拷进这个**渲染还在飞**的副本；
+ *   ③ 两条渲染路径收尾都是 `this.add(...)` **追加**而不是替换。
+ * 于是副本的渲染一落地就叠在拷来的子物上（实测 5 个部件 → 10 个 children，点数 443 → 886）。
+ *
+ * 为什么平时看不见、时间轴上必炸：副本被 `Animation.begin()` 当「动画前快照」收着，live 路径从不 reset
+ * 它；时间轴（MasterTimeline）的 `seek` 会 `reset()` 每个动画——reset 拿快照的 `getLocalPoints()` 去
+ * `setPoints()`，对着「子物 443、数组 886」当场抛错（真机首屏 MathTex 样例）。
+ *
+ * 修法只碰副本：copy 出来的那一刻把「拷进来的那批子物」记下，等**副本自己的渲染**落地后把它们摘掉——
+ * 留下的正是这次渲染的产出，与正常渲染出的实例同构。渲染失败（`_renderError`）时一个都不摘，
+ * 保持原件语义（宁可留旧子物，不做盲裁）。原件与普通实例完全不经过这里，行为零变化。
+ */
+function patchMathtexCopy(manim: ManimRuntime): void {
+  const ctor = (manim as unknown as Record<string, unknown>).MathTex as
+    | { prototype?: object }
+    | undefined
+  let proto = ctor?.prototype
+  while (proto !== undefined && proto !== null && !Object.prototype.hasOwnProperty.call(proto, 'copy')) {
+    proto = Object.getPrototypeOf(proto) as object | undefined
+  }
+  const owner = proto as Record<string, unknown> | undefined
+  if (owner === undefined || owner === null || patched.has(owner)) return
+  const original = owner.copy
+  if (typeof original !== 'function') return
+  owner.copy = function patchedMathtexCopy(this: unknown): unknown {
+    const clone = (original as () => {
+      children?: unknown[]
+      _renderPromise?: Promise<unknown> | null
+      remove?: (child: unknown) => void
+    }).call(this)
+    const copied = Array.isArray(clone?.children) ? [...clone.children] : []
+    const pending = clone?._renderPromise
+    if (copied.length > 0 && pending !== undefined && pending !== null && typeof pending.then === 'function') {
+      void pending
+        .then(() => {
+          for (const child of copied) {
+            if (Array.isArray(clone.children) && clone.children.includes(child)) clone.remove?.(child)
+          }
+        })
+        .catch(() => { /* 渲染失败：保持原件语义，不动 */ })
+    }
+    return clone
+  }
+  patched.add(owner)
 }

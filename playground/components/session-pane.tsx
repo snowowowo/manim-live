@@ -7,11 +7,12 @@
  *
  * 代码不落盘：会话是临时形态，刷新即散（与「验收跑一半不能丢」的语料结果是两回事）。
  */
-import { Info, Play, Plus, Square, ShieldQuestion } from 'lucide-react'
+import { Play, Plus, ShieldQuestion, Square } from 'lucide-react'
 import { T } from '@/lib/i18n.ts'
 import type { Playground } from '@/lib/use-playground.ts'
 import { Button } from '@/ui/button.tsx'
 import { Tip } from '@/ui/tip.tsx'
+import { CodeEditor } from './code-editor.tsx'
 
 export function SessionPane({ pg }: { pg: Playground }) {
   const empty = pg.sessionCode.trim().length === 0
@@ -21,27 +22,11 @@ export function SessionPane({ pg }: { pg: Playground }) {
 
   return (
     <aside className="flex min-h-0 flex-col gap-2 border-r border-border pr-3">
-      <div className="flex items-center gap-1.5">
-        <span className="text-[11.5px] font-medium">{T.sessionTitle}</span>
-        <Tip label={T.sessionHint} align="start" wide>
-          <Button size="iconSm" className="size-5" aria-label={T.sessionHint}>
-            <Info size={12} strokeWidth={1.8} />
-          </Button>
-        </Tip>
-        {live && (
-          <span className="ml-auto font-mono text-[11px] text-muted-foreground">
-            {T.sessionCount(info.count)}
-          </span>
-        )}
+      <div className="flex min-h-5 items-center gap-2 text-[11px] text-muted-foreground">
+        {live && <span className="font-mono">{T.sessionCount(info.count)}</span>}
       </div>
 
-      <textarea
-        className="scroll-thin min-h-0 flex-1 resize-none rounded-md border border-input bg-card p-3 font-mono text-[11.5px] leading-[1.55] text-foreground"
-        spellCheck={false}
-        aria-label={T.segmentLabel}
-        value={pg.sessionCode}
-        onChange={(event) => pg.setSessionCode(event.target.value)}
-      />
+      <CodeEditor label={T.segmentLabel} value={pg.sessionCode} onChange={pg.setSessionCode} />
 
       <div className="flex items-center gap-1.5">
         <Button

@@ -25,6 +25,31 @@ const SECTIONS: ReadonlyArray<{ id: GroundView; label: string }> = [
   { id: 'internals', label: T.viewInternals },
 ]
 
+/**
+ * 每节与文档站的对应关系（节头用，见 section-header.tsx）：
+ * `doc` = API 参考里的页名；`members` = 那一页覆盖的成员、以及本节能直接跑哪几个。
+ * 改文档站 API 页时要回来看这里——两边对不上就是这页失职的地方。
+ */
+export const SECTION_META: Record<GroundView, { doc: string; members: string }> = {
+  renderer: { doc: '渲染器', members: 'createManimRenderer · warmup · check · pyodideIndexURL（createSurface / dispose → 「画布」节每次渲染的活演示）' },
+  surface: { doc: '画布', members: 'run · replay · canvas · isRendered（读在代码框下方）· dispose' },
+  session: { doc: '会话', members: 'createSession · check · append · count · source · dispose' },
+  playback: { doc: '时间轴回放', members: 'createPlayback · duration · time · seek · play · pause · step · segments · dispose' },
+  hooks: { doc: '钩子', members: 'onLoading（本节按钮触发）· onProgress / signal（→ 「导出」节）' },
+  status: { doc: '环境状态', members: 'environmentStatus · onEnvironmentStatus（订阅已在运行）' },
+  export: { doc: '导出', members: 'Exporter · browserRecorder.probe / run · onProgress · signal（取消按钮）' },
+  machine: { doc: '本机探测', members: 'probePlan · probeCheck（resolveExecutable / pythonBesideExecutable 由它内部使用）' },
+  packages: { doc: '包管理', members: 'createPyodideSupply.inventory / cachePackages；浏览器侧纯函数由核心包单测覆盖' },
+  node: { doc: 'Node 入口', members: 'runPython + createDryRunBridge（语料装载 → 「语料与测试台」节）' },
+  corpus: { doc: '语料与测试台', members: '语料回归网 + isPassed / stateOf / tally（工具条计数即其输出）' },
+  internals: { doc: '低层导出', members: '实现零件（被上面各节按真实路径使用）· 缺口表' },
+}
+
+/** 分节标题（节头与导航同一份来源）。 */
+export function sectionLabel(id: GroundView): string {
+  return SECTIONS.find((section) => section.id === id)?.label ?? id
+}
+
 export function ApiNav({ pg }: { pg: Playground }) {
   return (
     <nav

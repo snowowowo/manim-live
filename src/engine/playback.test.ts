@@ -133,6 +133,30 @@ describe('时间轴回放：收集与定位', () => {
     playback.dispose()
   }, 120_000)
 
+  it('整段样例（Axes + Create×2 + MathTex Write）能收进时间轴——回归「VGroup.setPoints: expected 443…got 886」', async () => {
+    // 真机事故：收集分支里把「play 之后的补丁」放到了 play 之前跑，补丁动了点集分区，
+    // 866=2×443 的报错就在首屏那段起手样例上炸的。这里把原样代码钉住：收得上、拖得动。
+    const sample = [
+      'ax = Axes(x_range=[-2, 2, 1], y_range=[-2, 2, 1])',
+      'circle = Circle(radius=1)',
+      'circle.move_to(ax.c2p(0, 0, 0))',
+      'circle.set_color("#247bbf")',
+      'self.add(ax, circle)',
+      'self.play(Create(ax), Create(circle))',
+      // 真机样例这里是一枚 MathTex；无头场景渲染不了它（异步走 SVG，headless 没有 tagName），
+      // 换成一个等价的多子物 VGroup——回归目标是 VGroup 的点集分区，与公式无关。
+      'group = VGroup(Circle(radius=0.3), Square(side_length=0.5))',
+      'group.move_to(ax.c2p(0, 1.5, 0))',
+      'self.play(Write(group))',
+    ].join('\n')
+    const { playback } = await buildPlayback(sample)
+    expect(playback.duration()).toBeGreaterThan(0)
+    expect(playback.segments()).toHaveLength(2)
+    playback.seek(playback.duration())
+    playback.seek(0)
+    playback.dispose()
+  }, 120_000)
+
   it('dispose 把时间轴摘掉', async () => {
     const { playback, scene } = await buildPlayback('d = Dot()\nself.play(FadeIn(d), run_time=0.5)\n')
     playback.dispose()

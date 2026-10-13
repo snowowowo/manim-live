@@ -5,11 +5,10 @@
  * 三节都是「取数 → 显示」的小组件：状态是各节自己的，不占 use-playground（那一位管的是画布）。
  */
 import { useState } from 'react'
-import { Info } from 'lucide-react'
 import { T } from '@/lib/i18n.ts'
 import { Badge } from '@/ui/badge.tsx'
 import { Button } from '@/ui/button.tsx'
-import { Tip } from '@/ui/tip.tsx'
+import { CodeEditor } from './code-editor.tsx'
 
 const message = (error: unknown): string => (error instanceof Error ? error.message : String(error))
 
@@ -29,23 +28,10 @@ async function getJson(url: string): Promise<unknown> {
   return response.json()
 }
 
-/** 分节外壳：标题 + 提示 + 一条状态行。 */
-function SectionShell({ title, hint, note, children }: {
-  title: string
-  hint: string
-  note: string | null
-  children: React.ReactNode
-}) {
+/** 分节外壳：只有一条状态行 + 内容（标题、提示、「对应文档」都在节头，见 section-header.tsx）。 */
+function SectionShell({ note, children }: { note: string | null; children: React.ReactNode }) {
   return (
     <section className="mx-auto flex w-full max-w-[860px] flex-col gap-3">
-      <div className="flex items-center gap-1.5">
-        <span className="text-sm font-semibold">{title}</span>
-        <Tip label={hint} align="start" wide>
-          <Button size="iconSm" className="size-5" aria-label={hint}>
-            <Info size={12} strokeWidth={1.8} />
-          </Button>
-        </Tip>
-      </div>
       {note !== null && (
         <p className="rounded-md border border-border bg-card px-3 py-2 font-mono text-[11px] text-muted-foreground">{note}</p>
       )}
@@ -93,7 +79,7 @@ export function MachinePane() {
   }
 
   return (
-    <SectionShell title={T.machineTitle} hint={T.machineHint} note={note}>
+    <SectionShell note={note}>
       <div className="flex items-center gap-2">
         <Button size="sm" disabled={busy} onClick={() => void loadPlan()}>{T.machinePlanBtn}</Button>
         <Button size="sm" variant="primary" disabled={busy || plan === null} onClick={() => void probeAll()}>
@@ -171,7 +157,7 @@ export function PackagesPane() {
   const pick = (name: string): PackageEntry | undefined => inventory?.entries.find((entry) => entry.name === name)
 
   return (
-    <SectionShell title={T.packagesTitle} hint={T.packagesHint} note={note}>
+    <SectionShell note={note}>
       <Button size="sm" variant="primary" disabled={busy !== null} onClick={() => void load()}>{T.packagesInventoryBtn}</Button>
       {inventory !== null && (
         <div className="flex flex-col gap-1.5">
@@ -225,14 +211,8 @@ export function NodePane() {
   }
 
   return (
-    <SectionShell title={T.nodeTitle} hint={T.nodeHint} note={note}>
-      <textarea
-        className="scroll-thin min-h-40 resize-none rounded-md border border-input bg-card p-3 font-mono text-[11.5px] leading-[1.55] text-foreground"
-        spellCheck={false}
-        aria-label={T.nodeTitle}
-        value={code}
-        onChange={(event) => setCode(event.target.value)}
-      />
+    <SectionShell note={note}>
+      <CodeEditor label={T.nodeTitle} value={code} onChange={setCode} minHeight="10rem" />
       <div>
         <Button size="sm" variant="primary" disabled={busy} onClick={() => void runCheck()}>{T.nodeCheckBtn}</Button>
       </div>

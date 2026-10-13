@@ -8,12 +8,13 @@
  * 会把「核心包零依赖」这件事说得含糊（虽然依赖装了也只在 playground 里），
  * 而收益只有语法高亮——不值。真要写代码的人会去编辑器里写，这里只负责跑。
  */
-import { Download, Info, Play, RotateCcw, Zap } from 'lucide-react'
+import { Download, Info, Play, Redo2, RotateCcw, Zap } from 'lucide-react'
 import { T } from '@/lib/i18n.ts'
 import { FREE_SAMPLE } from '@/lib/types.ts'
 import type { Playground } from '@/lib/use-playground.ts'
 import { Button } from '@/ui/button.tsx'
 import { Tip } from '@/ui/tip.tsx'
+import { CodeEditor } from './code-editor.tsx'
 
 export function FreeCode({ pg }: { pg: Playground }) {
   const empty = pg.source.trim().length === 0
@@ -49,13 +50,7 @@ export function FreeCode({ pg }: { pg: Playground }) {
         </Tip>
       </div>
 
-      <textarea
-        className="scroll-thin min-h-0 flex-1 resize-none rounded-md border border-input bg-card p-3 font-mono text-[11.5px] leading-[1.55] text-foreground"
-        spellCheck={false}
-        aria-label={T.sourceTitle}
-        value={pg.source}
-        onChange={(event) => pg.setSource(event.target.value)}
-      />
+      <CodeEditor label={T.sourceTitle} value={pg.source} onChange={pg.setSource} />
 
       <div className="flex items-center gap-1.5">
         <Button variant="primary" disabled={pg.running || empty || pg.warm !== 'ready'} onClick={pg.renderFree}>
@@ -73,6 +68,11 @@ export function FreeCode({ pg }: { pg: Playground }) {
             <Zap size={14} strokeWidth={1.7} />
           </Button>
         </Tip>
+        <Tip label={T.replayHint} align="start" wide>
+          <Button size="icon" aria-label={T.replay} disabled={pg.shown === null || pg.running} onClick={() => void pg.replayCurrent()}>
+            <Redo2 size={14} strokeWidth={1.7} />
+          </Button>
+        </Tip>
         <Tip label={pg.fast ? '极速档没有过程可录——先关掉极速再导' : T.exportHint} align="start" wide>
           <Button
             size="icon"
@@ -83,6 +83,11 @@ export function FreeCode({ pg }: { pg: Playground }) {
             <Download size={14} strokeWidth={1.7} />
           </Button>
         </Tip>
+      </div>
+
+      {/* surface 读数：isRendered() / canvas()（文档「画布」页里那两个成员的就地验证） */}
+      <div className="font-mono text-[10.5px] text-muted-foreground">
+        isRendered(): {String(pg.surfaceInfo().rendered)} · canvas(): {pg.surfaceInfo().size ?? '—'}
       </div>
     </aside>
   )

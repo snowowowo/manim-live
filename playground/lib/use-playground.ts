@@ -530,18 +530,53 @@ export function usePlayground() {
       setPlaybackInfo({ duration: playbackRef.current.duration(), segments: [...playbackRef.current.segments()] })
       say(T.timelineBuilt(playbackRef.current.duration()), 'ok')
     } catch (error) {
+      // catch 必报原始 error（仓规）：栈比消息值钱得多。
+      console.error('[playground] 时间轴收集失败:', error)
       say(`${T.timelineBuildFail}：${error instanceof Error ? error.message : String(error)}`, 'error')
     }
   }, [dropPlayback, endSession, freshSurface, running, say, warm])
 
-  /** 换视图先把手上的活形态收掉：会话/时间轴不跟着人走，留在原视图里只会变成幽灵状态。 */
+  /**
+   * 换分节先把手上的东西全收掉：会话/时间轴不跟着人走；**画布与状态行也一并清**——
+   * 上一节的画面、尤其上一节的红字错误，绝不该出现在下一节里（真机反馈过这一点）。
+   */
   const switchView = useCallback((next: GroundView): void => {
     if (next === view) return
     if (running) stop()
     endSession()
     dropPlayback()
+    dropSurface()
+    setExportLog([])
+    setShown(null)
+    say(T.switchedSection)
     setView(next)
-  }, [dropPlayback, endSession, running, stop, view])
+  }, [dropPlayback, dropSurface, endSession, running, say, setShown, stop, view])
+
+  /** 「画布」分节：surface.replay()（作废画布、新建一块、同一段代码从头真播）。 */
+  const replayCurrent = useCallback(async (): Promise<void> => {
+    const target = surfaceRef.current
+    if (target === null || shown === null) {
+      say(T.replayNone, 'error')
+      return
+    }
+    say(T.replayRunning, 'running')
+    try {
+      await target.replay()
+      say(T.replayDone, 'ok')
+    } catch (error) {
+      say(`${T.replayFailed}：${error instanceof Error ? error.message : String(error)}`, 'error')
+    }
+  }, [say, shown])
+
+  /** 「画布」分节：surface 的读数（isRendered / canvas 尺寸）。 */
+  const surfaceInfo = useCallback((): { rendered: boolean; size: string | null } => {
+    const target = surfaceRef.current
+    const canvas = target?.canvas() ?? null
+    return {
+      rendered: target?.isRendered() ?? false,
+      size: canvas === null ? null : `${canvas.width}×${canvas.height}`,
+    }
+  }, [])
 
   /** 取消进行中的那次导出（AbortSignal）：录屏停表，回一句「已取消」。 */
   const cancelExport = useCallback((): void => {
@@ -736,6 +771,8 @@ export function usePlayground() {
     // 渲染器 / 钩子 / 导出分节
     getRenderer, warmupNow, runSnippet,
     exportLog, cancelExport,
+    // 画布分节：重播与 surface 读数
+    replayCurrent, surfaceInfo,
   }
 }
 

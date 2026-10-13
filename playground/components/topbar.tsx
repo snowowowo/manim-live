@@ -9,11 +9,9 @@
  */
 import { Info, Moon, Sun } from 'lucide-react'
 import { T } from '@/lib/i18n.ts'
-import type { LayoutMode } from '@/lib/types.ts'
 import type { Playground } from '@/lib/use-playground.ts'
 import { Badge } from '@/ui/badge.tsx'
 import { Button } from '@/ui/button.tsx'
-import { Segmented } from '@/ui/segmented.tsx'
 import { Tip } from '@/ui/tip.tsx'
 
 export function Topbar({ pg }: { pg: Playground }) {
@@ -44,20 +42,6 @@ export function Topbar({ pg }: { pg: Playground }) {
             </Tip>
           )}
         </span>
-
-        {/* 视图切换已挪进左侧竖导航（components/api-nav.tsx）——分节只会越来越多，
-            横着放迟早摆不下。这里只留「语料」分节用的版式切换。 */}
-        <Segmented<LayoutMode>
-          label={T.layoutLabel}
-          value={pg.layout}
-          onChange={pg.setLayout}
-          disabled={pg.view !== 'corpus'}
-          options={[
-            { value: 'list', label: T.layoutList, hint: T.layoutListHint },
-            { value: 'gallery', label: T.layoutGallery, hint: T.layoutGalleryHint },
-            { value: 'docs', label: T.layoutDocs, hint: T.layoutDocsHint },
-          ]}
-        />
 
         <Tip label={pg.theme === 'dark' ? '换成亮色' : '换成暗色'} align="end">
           <Button

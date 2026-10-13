@@ -838,6 +838,34 @@ export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridg
           }
         }
         flatten(built)
+        // 先把**异步渲染**等干净再做别的：MathTex 的部件是 KaTeX→SVG 异步长出来的，
+        // live 路径的 _runAnimations 在 begin 之前就 await 了所有 waitForRender；
+        // 漏掉这一步会拿到「半成品点集」，真机表现为 `VGroup.setPoints: expected 443…got 886`
+        // （异步渲染完成后又把点集分了一次区）。
+        const awaitRenders = async (target: unknown): Promise<void> => {
+          const mobject = target as {
+            waitForRender?: () => Promise<unknown>
+            isRendering?: () => boolean
+            children?: unknown[]
+          }
+          if (
+            typeof mobject.waitForRender === 'function'
+            && (typeof mobject.isRendering !== 'function' || mobject.isRendering())
+          ) {
+            try {
+              await mobject.waitForRender()
+            } catch (error) {
+              console.error('[manim-live] collect: waitForRender failed:', error)
+            }
+          }
+          if (Array.isArray(mobject.children)) {
+            for (const child of mobject.children) await awaitRenders(child)
+          }
+        }
+        for (const animation of flat) {
+          const mobject = (animation as { mobject?: unknown }).mobject
+          if (mobject !== undefined) await awaitRenders(mobject)
+        }
         for (const animation of flat) {
           const mobject = (animation as { mobject?: DirtyMobject }).mobject
           if (mobject !== undefined && mobject._dirty === true) {
@@ -845,8 +873,12 @@ export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridg
             mobject._dirty = false
           }
         }
-        collect.addSegment(flat)
-        for (const animation of flat) (animation as { begin?: () => void }).begin?.()
+        // ⚠️ 三个入账口用的表**不一样**（协议逐条抄官方 Player 的录制门面，别"统一"）：
+        //   · addSegment / begin → **原样动画数组**（含嵌套组）：组自己管自己的子动画，
+        //     拆开喂进去会各 reset 各分一次区，真机表现为 `VGroup.setPoints: expected 443…got 886`；
+        //   · 脏同步 / 递归 await / scene.add → **展平表**（嵌套里的 mobject 也要入场景）。
+        collect.addSegment(built)
+        for (const animation of built) (animation as { begin?: () => void }).begin?.()
         const host = target as unknown as { mobjects: ReadonlySet<unknown>; add: (...m: unknown[]) => void }
         for (const animation of flat) {
           const mobject = (animation as { mobject?: { createdAtBeginning?: boolean } }).mobject
@@ -854,16 +886,11 @@ export function createManimWebBridge(options: ManimWebBridgeOptions): ManimBridg
           host.add(mobject)
           mobject.createdAtBeginning = false
         }
-        // 上游补丁照跑（它们修的是动画对象本身，与播没播过无关）；唯独**不补渲染**——
-        // 收集完由时间轴统一渲染（seek(0) 一帧）。
-        for (const [source, target_] of morphPairs) {
-          healSubpathBookkeeping(source)
-          healSubpathBookkeeping(target_)
-        }
-        for (const animation of flat) {
-          settleRateTerminal(animation)
-          adoptOrphanFadeIns(animation, target)
-        }
+        // 注意：**不跑那一组「play 之后」的上游补丁**（settleRateTerminal / adoptOrphanFadeIns /
+        // healSubpathBookkeeping）。它们修的是「播完之后」的状态，在收集模式里动画一帧都还没跑——
+        // 提前跑会动点集/子物分区，真机上表现为 `VGroup.setPoints: expected 443 points…, got 886`
+        // （878=2×443，正是分区被算了两遍）。官方 Player 的录制门面同样没有这一步；收集完由
+        // 时间轴统一渲染（seek(0) 一帧）。
         return
       }
 

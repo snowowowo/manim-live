@@ -9,38 +9,24 @@
  * 时间归核心，界面只是读表。
  */
 import { useEffect, useRef, useState } from 'react'
-import { Info, Pause, Play, StepBack, StepForward } from 'lucide-react'
+import { Pause, Play, StepBack, StepForward } from 'lucide-react'
 import { T } from '@/lib/i18n.ts'
 import type { Playground } from '@/lib/use-playground.ts'
 import { Button } from '@/ui/button.tsx'
-import { Tip } from '@/ui/tip.tsx'
+import { CodeEditor } from './code-editor.tsx'
 
 export function TimelinePane({ pg }: { pg: Playground }) {
   const empty = pg.source.trim().length === 0
   return (
     <aside className="flex min-h-0 flex-col gap-2 border-r border-border pr-3">
-      <div className="flex items-center gap-1.5">
-        <span className="text-[11.5px] font-medium">{T.timelineTitle}</span>
-        <Tip label={T.timelineHint} align="start" wide>
-          <Button size="iconSm" className="size-5" aria-label={T.timelineHint}>
-            <Info size={12} strokeWidth={1.8} />
-          </Button>
-        </Tip>
+      <div className="flex min-h-5 items-center gap-2 text-[11px] text-muted-foreground">
         {pg.playbackInfo !== null && (
-          <span className="ml-auto font-mono text-[11px] text-muted-foreground">
-            {pg.playbackInfo.duration.toFixed(1)}s · {pg.playbackInfo.segments.length} 段
-          </span>
+          <span className="font-mono">{pg.playbackInfo.duration.toFixed(1)}s · {pg.playbackInfo.segments.length} 段</span>
         )}
       </div>
 
-      {/* 与「自定义代码」共用同一个代码缓冲（pg.source）：同一段代码，一边看实时跑、一边收时间轴对比。 */}
-      <textarea
-        className="scroll-thin min-h-0 flex-1 resize-none rounded-md border border-input bg-card p-3 font-mono text-[11.5px] leading-[1.55] text-foreground"
-        spellCheck={false}
-        aria-label={T.timelineTitle}
-        value={pg.source}
-        onChange={(event) => pg.setSource(event.target.value)}
-      />
+      {/* 与「画布」共用同一个代码缓冲（pg.source）：同一段代码，一边看实时跑、一边收时间轴对比。 */}
+      <CodeEditor label={T.timelineTitle} value={pg.source} onChange={pg.setSource} />
 
       <div className="flex items-center gap-1.5">
         <Button
