@@ -53,3 +53,38 @@ export interface Exporter {
   probe(): Promise<{ ready: boolean; missing?: Array<{ id: string; label: string }> }>
   run(request: ExportRequest, signal?: AbortSignal): Promise<ExportResult>
 }
+
+// ---- 本机 CLI 导出：就绪门 / 结果 / 定位（Host 半边生产、客户端半边解析，两边同一份形状）----
+//
+// 与上面的 `Exporter` 接口的关系：那条接口是「拿活画布录一段」的抽象；本机 CLI 导出
+// **不需要活画布**（它只吃源码），所以不走 Exporter，而是自成一对：Node 端 `createLocalExport`
+// （./local.ts，真跑本机 manim）+ 浏览器端 `createExportClient`（./client.ts，走宿主路由）。
+
+/** 缺的一项必要条件。`id` 是探测项标识（界面按它换成可读名），`detail` 是原始说明。 */
+export interface ExportMissing {
+  id: string
+  detail: string
+}
+
+/** 就绪结论：`ready` 为 false 时 `missing` 说明缺什么（按钮置灰 + 悬停提示直接用）。 */
+export interface ExportReadiness {
+  ready: boolean
+  missing: ExportMissing[]
+}
+
+/**
+ * 本机 CLI 导出的结果（= `/export` 那条接口的响应体形状）。
+ * `reason` 三档：`input` 源码为空 / `environment` 必要条件没备齐 / `render` manim 跑了但失败。
+ */
+export type LocalExportResult =
+  | { ok: true; file: string; quality: string }
+  | { ok: false; reason: 'input' | 'environment' | 'render'; error?: string; missing?: ExportMissing[] }
+
+/** 定位失败的原因（机器可读）：文件不在了 / 越出导出目录 / 命令跑失败。 */
+export type RevealCode = '' | 'missing' | 'outside' | 'failed'
+
+export interface RevealResult {
+  ok: boolean
+  code: RevealCode
+  error: string
+}

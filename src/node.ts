@@ -70,6 +70,18 @@ export { canonicalPackageName } from './py/pkg-names.ts'
 export { createPyodideSupply } from './packages/supply.ts'
 export type { PyodideSupply, PyodideSupplyOptions, SupplyCatalogEntry, CacheResult } from './packages/supply.ts'
 
+// ---- 本机探测（跑真命令）与本机 CLI 导出 ----
+//
+// 探测：这台机器装没装 manim / FFmpeg / LaTeX（导出 mp4 的门）；
+// 导出：源码 → 本机 manim CLI → mp4 落盘，外加「在文件浏览器里定位」。
+// 成片去向（outputDir）与探测 / 寻址都能注入——调用方传自己的策略，测试传替身；
+// 两个半边（浏览器侧 createMachineClient / createExportClient）在浏览器入口。
+export { probePlan, probeCheck, resolveExecutable, pythonBesideExecutable } from './machine/probe.ts'
+export type { EnvCheck, EnvPlan, EnvStatus, EnvResult, ProbeFn } from './machine/types.ts'
+export { createLocalExport, sceneClassName, wrapConstructBody, buildRenderArgs } from './export/local.ts'
+export type { LocalExport, LocalExportOptions, CommandRunner, CommandOutcome } from './export/local.ts'
+export type { ExportMissing, ExportReadiness, LocalExportResult, RevealCode, RevealResult } from './export/types.ts'
+
 // ---- 语料：装载 / 路径 / 分组表 ----
 export {
   collectCorpus,

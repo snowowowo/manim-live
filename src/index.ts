@@ -196,6 +196,18 @@ export type {
   PrefetchOutcome,
   Completion,
 } from './packages/client.ts'
+
+// ---- 本机探测与本机导出（客户端半边）----
+//
+// 「本机」= 跑宿主进程那台机器（导出 mp4 要调它装的 manim CLI），与同名的
+// `environmentStatus`（浏览器里 Pyodide 运行时的状态）是两件事，见 machine/types.ts 顶注。
+// 两条 Host 半边都在 `manim-live/node`：createMachineClient 对面是 machine/probe 的
+// probePlan/probeCheck，createExportClient 对面是 createLocalExport。
+export { createMachineClient, parsePlan, parseResult } from './machine/client.ts'
+export type { EnvCheck, EnvPlan, EnvStatus, EnvResult, ProbeFn } from './machine/types.ts'
+export { createExportClient, parseReadiness, parseReveal } from './export/client.ts'
+export type { ExportClient } from './export/client.ts'
+export type { ExportMissing, ExportReadiness, LocalExportResult, RevealCode, RevealResult } from './export/types.ts'
 // ---- 场景会话（黑板步进）：持久命名空间 + 段提交协议（Surface.createSession 的本体）----
 export { createPySession } from './engine/session.ts'
 export type { Session, SessionVerdict, SessionAppend, PySessionOptions } from './engine/session.ts'
