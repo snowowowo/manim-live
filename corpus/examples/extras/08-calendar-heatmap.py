@@ -12,5 +12,6 @@ class CalendarScene(Scene):
     def construct(self):
         data = [{"date": f"2026-06-{day:02d}", "value": (day * 7) % 11} for day in range(1, 29)]
         chart = CalendarHeatmap(data=data)
+        chart.move_to(ORIGIN)  # 上游图表类默认从原点往右上构图，不居中会偏出画面
         self.play(Create(chart))
         self.wait(0.3)

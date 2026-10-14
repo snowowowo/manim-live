@@ -11,5 +11,6 @@ from manim_live_extra import StackedBarChart
 class StackedBarScene(Scene):
     def construct(self):
         chart = StackedBarChart(values=[[3, 4, 2], [2, 1, 4]], series_names=["线上", "线下"])
+        chart.move_to(ORIGIN)  # 上游图表类默认从原点往右上构图，不居中会偏出画面
         self.play(Create(chart))
         self.wait(0.3)

@@ -21,5 +21,6 @@ print("groupby", [round(x, 2) for x in values])
 class PandasGroupByScene(Scene):
     def construct(self):
         chart = BarChart(values=values, bar_colors=[RED, BLUE, GREEN])
+        chart.move_to(ORIGIN)  # 上游图表类默认从原点往右上构图，不居中会偏出画面
         self.play(Create(chart))
         self.wait(0.3)
