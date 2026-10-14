@@ -219,7 +219,15 @@ export const T = {
   markFail: '不对',
   markUnmark: '清除本条标注',
   marksClear: '清除人工标注',
-  marksClearHint: '清掉全部人工验证标注（自动渲染结果不动）',
+  marksClearHint: '清掉全部人工验证标注与备注（自动渲染结果不动）',
+  noteTitle: '备注',
+  noteHint:
+    '写给人也写给看报告的 agent：画面哪里不对、动画过程哪里怪——这些自动结果看不出来，' +
+    '只有看过动画的人知道。备注随标注一起保存、一起进回执（复制与落盘都带）。',
+  notePlaceholder: '画面 / 动画过程哪里不对，或别的要交代的事…',
+  noteFillError: '填入报错',
+  noteFillErrorHint: '把这条的自动报错原文追加进备注末尾——省得手抄；没报错时只能自己写。',
+  noteNoError: '这条没有自动报错文本，备注只能自己写',
   previewEmpty: '从左边的语料里点一条，或切到「自定义代码」写一段——结果出现在这里。',
   rendering: '渲染中…',
   renderingFast: '极速落终态…',

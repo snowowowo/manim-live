@@ -53,7 +53,8 @@ import { loadPlaygroundCorpus } from './corpus.ts'
 import { matchFilter } from './filter.ts'
 import { T } from './i18n.ts'
 import {
-  clearGround, clearMarks, loadGround, loadMarks, saveGround, saveMarks,
+  clearGround, clearMarks, clearNotes, loadGround, loadMarks, loadNotes,
+  saveGround, saveMarks, saveNotes,
 } from './storage.ts'
 import {
   FREE_SAMPLE, SEGMENT_SAMPLE, TIMEOUT_MS,
@@ -110,6 +111,8 @@ export function usePlayground() {
   const [fast, setFastState] = useState(restored.fast ?? false)
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
   const [marks, setMarks] = useState<Record<string, ManualMark>>(() => loadMarks())
+  /** 人工备注（id → 一段自由文字）：「没报错但画面对不对」只有人知道，自动结果带不出来。 */
+  const [notes, setNotes] = useState<Record<string, string>>(() => loadNotes())
   /** 加载失败的截图（语料还在、图被删了）：按路径记下来就别再试，免得控制台一直报 404。 */
   const [brokenShots, setBrokenShots] = useState<Record<string, true>>({})
 
@@ -254,8 +257,9 @@ export function usePlayground() {
     return () => window.clearTimeout(pending)
   }, [results, fast, source, view, layout, theme, filter])
 
-  // 人工标注很小，直存即可。
+  // 人工标注很小，直存即可。备注同样（打字直写，localStorage 不在乎这点量）。
   useEffect(() => saveMarks(marks), [marks])
+  useEffect(() => saveNotes(notes), [notes])
 
   // ---- 预热：先把 Pyodide 拉起来，别等点了渲染才发现要下十几 MB 的运行时 ----
   useEffect(() => {
@@ -634,6 +638,31 @@ export function usePlayground() {
     })
   }, [])
 
+  /** 写 / 清当前这条的人工备注（空串与 null 都算清）。 */
+  const writeNote = useCallback((id: string, text: string | null): void => {
+    setNotes((prev) => {
+      const value = text?.trim() === '' || text === null ? null : text
+      if (value === null && prev[id] === undefined) return prev
+      const next = { ...prev }
+      if (value === null) delete next[id]
+      else next[id] = value
+      return next
+    })
+  }, [])
+
+  /**
+   * 把这条的自动报错原文**追加**进备注末尾（快捷方式：有报错的不用手抄）。
+   * 追加而不是覆盖——覆盖会把已经手写的那半句吞掉。已含同一段文本时原样返回（防连点重铺）。
+   */
+  const noteErrorInto = useCallback((id: string): void => {
+    const text = results[id]?.text ?? ''
+    if (text.trim().length === 0) return
+    setNotes((prev) => {
+      if (prev[id]?.includes(text) === true) return prev
+      return { ...prev, [id]: prev[id] === undefined ? text : `${prev[id]}\n${text}` }
+    })
+  }, [results])
+
   // ---- 「上一个 / 下一个」：沿左栏同一套筛选口径的序列切条 ----
   // 序列用 groupItems 的同一口径（分组顺序 × matchFilter）算，而不是 examples 全局顺序——
   // 用户在左栏看到的顺序就是切换顺序，两套顺序会在「组序与插入序不一致」时各说各话。
@@ -655,21 +684,29 @@ export function usePlayground() {
     openExample(target.id)
   }, [openExample, stepList])
 
-  // ---- 回执：自动结果（buildReport）+ 人工标注一节 ----
-  // 人工标注必须进回执：自动结果只说「没炸」，人判的「画得不对」（打叉）只有这里带得出来。
+  // ---- 回执：自动结果（buildReport）+ 人工一节（标注 + 备注）----
+  // 人工信息必须进回执：自动结果只说「没炸」，人判的「画得不对」（打叉）与口述的问题（备注）
+  // 只有这里带得出来——只打叉没写字、只写字没打叉的条目都算「有人工结论」，都要出现。
   const reportText = useCallback((): string => {
     const base = buildReport({ cases: corpus.examples, results })
-    const marked = corpus.examples.filter((item) => marks[item.id] !== undefined)
-    if (marked.length === 0) return base
-    const passed = marked.filter((item) => marks[item.id] === 'pass').length
-    const lines = ['', `## 人工标注（✓${passed} ✗${marked.length - passed}）`]
-    for (const item of marked) {
+    const touched = corpus.examples.filter((item) =>
+      marks[item.id] !== undefined || notes[item.id] !== undefined)
+    if (touched.length === 0) return base
+    const passed = touched.filter((item) => marks[item.id] === 'pass').length
+    const lines = ['', `## 人工结论（✓${passed} ✗${touched.length - passed}，共 ${touched.length} 条有标注或备注）`]
+    for (const item of touched) {
       const state = results[item.id]
       const auto = state === undefined ? '未跑' : isPassed(item, state) ? '自动通过' : '自动未通过'
-      lines.push(`[${marks[item.id] === 'pass' ? '✓' : '✗'}] ${item.id} ${item.title} — ${item.file}（${auto}）`)
+      const mark = marks[item.id]
+      const head = mark === undefined ? '—' : mark === 'pass' ? '✓' : '✗'
+      lines.push(`[${head}] ${item.id} ${item.title} — ${item.file}（${auto}）`)
+      const note = notes[item.id]
+      if (note !== undefined) {
+        for (const line of note.split('\n')) lines.push(`    ${line}`)
+      }
     }
     return `${base}\n${lines.join('\n')}`
-  }, [corpus.examples, marks, results])
+  }, [corpus.examples, marks, notes, results])
 
   /**
    * 落盘报告：POST 给 vite 开发中间件（`/__pg/report`），写成 `_tmp/playground-report/report.md`。
@@ -697,9 +734,12 @@ export function usePlayground() {
       })
   }, [reportText, say])
 
+  /** 清全部人工痕迹（标注 + 备注）——自动渲染结果不动。 */
   const clearAllMarks = useCallback((): void => {
     clearMarks()
+    clearNotes()
     setMarks({})
+    setNotes({})
   }, [])
 
   /**
@@ -806,6 +846,10 @@ export function usePlayground() {
       const kept = Object.entries(prev).filter(([id]) => known.has(id))
       return kept.length === Object.keys(prev).length ? prev : Object.fromEntries(kept)
     })
+    setNotes((prev) => {
+      const kept = Object.entries(prev).filter(([id]) => known.has(id))
+      return kept.length === Object.keys(prev).length ? prev : Object.fromEntries(kept)
+    })
   }, [corpus.examples])
 
   // 卸载时把取包计时的尾巴收掉（它可能还挂着一次 setOverlay）。
@@ -823,6 +867,7 @@ export function usePlayground() {
     // 渲染状态
     results, fast, setFast, shown, selected, running, batch, status, overlay, warm, note, setNote,
     marks, setMark, clearAllMarks,
+    notes, writeNote, noteErrorInto,
     brokenShots, setBrokenShots,
     // 上一个 / 下一个（沿当前筛选序列）
     hasPrev: stepIndex > 0,

@@ -14,6 +14,7 @@ import type { CardResult, GroundFilter, GroundView, LayoutMode, ManualMark, Them
 
 const GROUND_KEY = 'manim-live.playground.v1'
 const MARKS_KEY = 'manim-live.playground.marks.v1'
+const NOTES_KEY = 'manim-live.playground.notes.v1'
 
 export interface GroundState {
   results: Record<string, CardResult>
@@ -150,5 +151,42 @@ export function clearMarks(): void {
     window.localStorage.removeItem(MARKS_KEY)
   } catch (error) {
     console.error('[manim-live] 清除人工标注失败:', error)
+  }
+}
+
+/**
+ * 人工备注：一条语料一句自由文字（「画面贴边了」「动画中段闪了一下」这类只有人看得出来的事）。
+ * 与标注同一套纪律：坏条目丢掉、单独落盘。保存随打字直写（localStorage 写入对这点量无所谓）。
+ */
+export function loadNotes(): Record<string, string> {
+  try {
+    const raw = window.localStorage.getItem(NOTES_KEY)
+    if (raw === null) return {}
+    const parsed: unknown = JSON.parse(raw)
+    if (parsed === null || typeof parsed !== 'object') return {}
+    const out: Record<string, string> = {}
+    for (const [id, value] of Object.entries(parsed as Record<string, unknown>)) {
+      if (typeof value === 'string' && value.trim().length > 0) out[id] = value
+    }
+    return out
+  } catch (error) {
+    console.error('[manim-live] 读取人工备注失败:', error)
+    return {}
+  }
+}
+
+export function saveNotes(notes: Record<string, string>): void {
+  try {
+    window.localStorage.setItem(NOTES_KEY, JSON.stringify(notes))
+  } catch (error) {
+    console.error('[manim-live] 保存人工备注失败:', error)
+  }
+}
+
+export function clearNotes(): void {
+  try {
+    window.localStorage.removeItem(NOTES_KEY)
+  } catch (error) {
+    console.error('[manim-live] 清除人工备注失败:', error)
   }
 }

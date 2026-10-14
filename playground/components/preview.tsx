@@ -11,7 +11,7 @@
  * 视图（语料 / 自定义代码）在这里合流：同一块画布、同一套工具（渲染 / 极速 / 导出），
  * 只是「当前这条」的来源不同。
  */
-import { Check, ChevronLeft, ChevronRight, Download, Play, Undo2, X, Zap } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, ClipboardPaste, Download, Play, Undo2, X, Zap } from 'lucide-react'
 import { shotUrl, type LastRun } from '@/lib/corpus.ts'
 import { T } from '@/lib/i18n.ts'
 import { isPassed, type ManimExample } from 'manim-live'
@@ -57,6 +57,44 @@ function MarkButtons({ pg, example }: { pg: Playground; example: ManimExample })
         </Tip>
       )}
     </span>
+  )
+}
+
+/**
+ * 人工备注：一段只有人写得出的字（画面 / 动画过程哪里不对），旁边一枚「填入报错」快捷键——
+ * 有自动报错的条目一键把原文带进来，没报错的只能自己写（按钮灰着，提示说明原因）。
+ * 备注随标注落盘、并进「复制 / 落盘报告」的回执（见 use-playground 的 reportText）。
+ */
+function NoteBlock({ pg, example }: { pg: Playground; example: ManimExample }) {
+  const errText = pg.results[example.id]?.text ?? ''
+  const hasError = errText.trim().length > 0
+  return (
+    <div className="w-full">
+      <div className="flex items-center gap-1.5">
+        <Tip label={T.noteHint} align="start" wide>
+          <span className="cursor-help text-[11px] font-medium text-muted-foreground">{T.noteTitle}</span>
+        </Tip>
+        <Tip label={hasError ? T.noteFillErrorHint : T.noteNoError} align="start" wide>
+          <Button
+            size="iconSm"
+            className="size-5"
+            disabled={!hasError}
+            aria-label={T.noteFillError}
+            onClick={() => pg.noteErrorInto(example.id)}
+          >
+            <ClipboardPaste size={12} strokeWidth={1.8} />
+          </Button>
+        </Tip>
+      </div>
+      <textarea
+        value={pg.notes[example.id] ?? ''}
+        placeholder={T.notePlaceholder}
+        aria-label={T.noteTitle}
+        rows={2}
+        onChange={(event) => pg.writeNote(example.id, event.target.value)}
+        className="scroll-thin mt-1 w-full resize-y rounded-md border border-input bg-card px-2 py-1.5 text-xs leading-[1.5] text-foreground placeholder:text-muted-foreground"
+      />
+    </div>
   )
 }
 
@@ -139,6 +177,7 @@ export function Preview({ pg, current, showShot = true }: PreviewProps) {
             {current.expectation ?? <em className="text-muted-foreground">{T.expectMissing}</em>}
           </span>
           <MarkButtons pg={pg} example={current} />
+          <NoteBlock pg={pg} example={current} />
           {lastRun !== undefined && (
             <div className="w-full">
               <LastRunLine run={lastRun} />
