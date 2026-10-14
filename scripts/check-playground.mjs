@@ -307,6 +307,17 @@ try {
   }
   console.log('✓ 不叠加：第二次渲染换了新画布，上一幅的墨一点没留')
 
+  // ⑦b 扩展车道在真浏览器里真出画。
+  //
+  // 这条盯的是「manim_live_extra 车道端到端」：Node 侧语料回归只证明**构造**得过（真桥 + 假画布），
+  // 图表要真出画面还得真 WebGL / 真 DOM。所以点一条扩展语料、量墨迹——不要求多密，要求非空。
+  // 顺带钉住「语料分组多了 extras 也不炸」这件事（清单是从核心包的 GROUPS 来的，未登记目录会当场抛）。
+  await playExample('直方图')
+  const extrasInk = await inkRatio(320)
+  console.log(`  扩展语料（直方图）墨迹：${(extrasInk * 100).toFixed(1)}%`)
+  if (extrasInk <= 0.001) throw new Error('扩展图表跑完画布是空的——manim_live_extra 车道没通到真渲染')
+  console.log('✓ 扩展车道：直方图在真浏览器渲出画面')
+
   // ⑧ 导出（逐帧）产出**非空**文件。
   //
   // 旧录屏版这条是冲着一个「不报错的错」立的（110 字节空文件）。2026-10-13 起换成逐帧导出：

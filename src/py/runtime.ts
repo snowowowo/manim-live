@@ -18,7 +18,7 @@
  * 由使用方用 setPyodideLoader 注入。
  */
 import type { ManimBridge } from './bridge.ts'
-import { MANIM_SHIM_SOURCE } from './manim-shim.ts'
+import { extrasModuleSource, MANIM_SHIM_SOURCE } from './manim-shim.ts'
 
 /** Python 执行失败：带行号。Host 预检把它回给模型，卡片把它显示给用户。 */
 export class PyRuntimeError extends Error {
@@ -168,6 +168,20 @@ exec(compile(_dsh_manim_src, "<manim-shim>", "exec"), _dsh_manim.__dict__)
 _sys.modules["manim"] = _dsh_manim
 `
 
+/**
+ * 扩展车道：把 manim_live_extra 注册成第二个模块（在 manim 之后——它的源码要 `from manim import _shape`）。
+ * 源码为空（extras 表被清空 = 车道卸下）时整段跳过：不注册、import 即 ModuleNotFoundError，
+ * manim 里也不再有教错存根——引擎回到纯 CE 面，这就是「可拆卸」的落点。
+ */
+const EXTRAS_MODULE_SETUP = `
+import sys as _sys
+import types as _types
+if _dsh_extras_src:
+    _dsh_extras = _types.ModuleType("manim_live_extra")
+    exec(compile(_dsh_extras_src, "<manim-live-extra>", "exec"), _dsh_extras.__dict__)
+    _sys.modules["manim_live_extra"] = _dsh_extras
+`
+
 const RUN_SNIPPET = 'import manim as _dsh_manim\nawait _dsh_manim._run_source(_dsh_src)\n'
 const EXEC_SNIPPET = 'import manim as _dsh_manim\n_dsh_manim._exec_source(_dsh_src)\n'
 
@@ -194,6 +208,8 @@ async function getRuntime(): Promise<PyodideRuntime> {
       runtime.globals.set('_dsh_manim_src', MANIM_SHIM_SOURCE)
       await runtime.runPythonAsync(BRIDGE_BOOTSTRAP)
       await runtime.runPythonAsync(MANIM_MODULE_SETUP)
+      runtime.globals.set('_dsh_extras_src', extrasModuleSource())
+      await runtime.runPythonAsync(EXTRAS_MODULE_SETUP)
       runtimePhaseListener?.('ready')
       return runtime
     } catch (error) {

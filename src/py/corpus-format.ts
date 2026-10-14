@@ -58,6 +58,9 @@ export const GROUPS: ReadonlyArray<{ id: string; title: string; network?: boolea
   // 下面两组要真联网取包（首次跑会下载几十 MB），默认不进自动测试；见 examples.test.ts 的 MANIM_NET。
   { id: 'net', title: '第三方包（按需取·需联网）', network: true },
   { id: 'combo', title: '综合场景（多库协同·需联网）', network: true },
+  // 扩展车道（manim_live_extra 模块）：标准 Manim 没有的图形，样例全部双 import。
+  // 这一组**钉住车道契约**——哪条升级后坏了，这里最先红。也是离线的（不依赖第三方包）。
+  { id: 'extras', title: '引擎扩展图表（manim_live_extra）' },
   { id: 'reject', title: '应当被当场拒绝' },
 ]
 

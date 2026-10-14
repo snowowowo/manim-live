@@ -151,6 +151,29 @@ describe('就绪门', () => {
     expect(result).toMatchObject({ ok: false, reason: 'input' })
     expect(calls).toEqual([])
   })
+
+  it('扩展车道（manim_live_extra）前置门：命中当场拒、错误带两条出路、连探测都不跑', async () => {
+    const calls: string[] = []
+    const local = createLocalExport({
+      outputDir: downloads,
+      probe: async (id) => {
+        calls.push(id)
+        return probeFrom(READY)!(id)
+      },
+    })
+    // from … import 与 import … 两种写法都算；藏在 # 注释里的不算（正则认行首的 import）。
+    const hits = [
+      'from manim import *\nfrom manim_live_extra import Histogram\n\nclass S(Scene):\n    def construct(self):\n        pass\n',
+      'import manim_live_extra\n\nclass S(Scene):\n    def construct(self):\n        pass\n',
+    ]
+    for (const python of hits) {
+      const result = await local.exportVideo({ python })
+      expect(result).toMatchObject({ ok: false, reason: 'input' })
+      expect(result.error).toContain('manim_live_extra')
+      expect(result.error).toContain('浏览器逐帧导出')
+    }
+    expect(calls).toEqual([])
+  })
 })
 
 describe('真导出（假 manim 脚本）', () => {

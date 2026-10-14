@@ -41,6 +41,13 @@ const EXPORT_TIMEOUT_MS = 10 * 60 * 1000
 /** 必要条件的就绪结论缓存这么久：太快会反复 import Manim，太慢则装好环境后按钮迟迟不亮。 */
 const READINESS_TTL_MS = 30 * 1000
 
+/**
+ * 扩展车道的 import 行（`from manim_live_extra import …` / `import manim_live_extra`）。
+ * 本机 manim CLI 只有标准 Manim——命中即拦在真跑之前，别等到渲染中途才 ModuleNotFoundError。
+ * 这道门只能放这里：浏览器的 check() 跑在我们自己的适配层上，扩展在它眼里完全合法。
+ */
+const EXTRAS_IMPORT = /(?:^|\n)\s*(?:from\s+manim_live_extra\s+import|import\s+manim_live_extra\b)/
+
 // ---- 场景代码的处理 ----------------------------------------------------------
 
 /**
@@ -178,6 +185,15 @@ export function createLocalExport(options: LocalExportOptions = {}): LocalExport
     const workRoot = callOptions.workRoot ?? tmpdir()
     if (typeof python !== 'string' || python.trim().length === 0) {
       return { ok: false, reason: 'input', error: 'python 不能为空' }
+    }
+    if (EXTRAS_IMPORT.test(python)) {
+      return {
+        ok: false,
+        reason: 'input',
+        error:
+          '这段代码用了引擎扩展（import manim_live_extra）——标准 Manim 没有这些图形，本机 manim CLI 渲不了。' +
+          '两条路：改用浏览器逐帧导出（能渲扩展），或把扩展图形换成标准 Manim 写法',
+      }
     }
     const q = QUALITIES.has(callOptions.quality ?? '') ? callOptions.quality! : DEFAULT_QUALITY
 

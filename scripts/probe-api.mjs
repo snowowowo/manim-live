@@ -369,6 +369,26 @@ try {
   await browser.close()
 }
 
+/**
+ * **扩展车道**（manim_live_extra 模块）的第一批清单：上游有、CE 没有的图形。
+ *
+ * 这张清单就是车道的**总开关**——清空它重跑探针，extras-map 变空表，
+ * 适配层不再生成 manim_live_extra 模块与 manim 侧教错存根，整条车道消失（可拆卸）。
+ *
+ * 收录口径：① 上游导出存在且是类；② 教学价值高（统计 / 通用图表 / 数学可视化）；
+ * ③ 构造是「纯数据 + 关键字选项」（复合结构 treemap/chord/sankey 与学科道具放后续批次，先把过桥机制验稳）。
+ * 撞名检查：BarChart 与 CE 撞名，不进扩展（CE 面已有）；其余均已核不撞。
+ */
+const EXTRAS = [
+  // 统计
+  'Histogram', 'BoxPlot', 'ViolinPlot', 'ScatterPlot',
+  'StackedBarChart', 'AreaChart', 'StepChart', 'CalendarHeatmap',
+  // 通用
+  'PieChart', 'DonutChart', 'RadarChart', 'GanttChart',
+  // 数学可视化
+  'HeatMap', 'ContourPlot',
+]
+
 const hasExport = (name) => observed.names.includes(name)
 // 只认自有键：跨端回来后 methodIndex 又是普通对象了，toString 这类会从 Object.prototype 读出来
 const ownHits = (jsName) =>
@@ -587,6 +607,32 @@ const ts = [
 
 const genPath = join(root, 'src/py/api-map.generated.ts')
 writeFileSync(genPath, ts.join('\n'))
+const extrasEntries = {}
+for (const name of EXTRAS) {
+  if (!hasExport(name)) {
+    console.warn(`[probe:extras] ${name} 不在 manim-web 导出里——清单过期了，删掉或改名`)
+    continue
+  }
+  extrasEntries[name] = { js: name }
+}
+const extrasPath = join(root, 'src/py/extras-map.generated.ts')
+writeFileSync(extrasPath, [
+  '// 由 scripts/probe-api.mjs 生成（勿手改；换版本或改 EXTRAS 清单后重跑）。',
+  '// 扩展车道（manim_live_extra 模块）的名字表：上游有、CE 没有的图形。',
+  '// **这张表就是车道的总开关**——清空它（重跑探针时把 EXTRAS 置空）即整条车道消失：',
+  '//   适配层不再生成 manim_live_extra 模块、manim 里不再有教错存根，代码回到纯 CE 面。',
+  `// 收录口径与撞名检查见 probe-api.mjs 的 EXTRAS 注释。当前 ${Object.keys(extrasEntries).length} 个。`,
+  '',
+  'export interface ExtraApiEntry {',
+  '  /** manim-web 里的类名（构造走同一座桥：_mb_create(kind, args, kwargs)） */',
+  '  js: string',
+  '}',
+  '',
+  `export const EXTRA_API_MAP: Record<string, ExtraApiEntry> = ${JSON.stringify(extrasEntries, null, 2)}`,
+  '',
+].join('\n'))
+console.log(`扩展车道表完成：${extrasPath}（${Object.keys(extrasEntries).length} 个）`)
+
 console.log(
   `三态表完成：${genPath}\n` +
     `  共 ${stats.length} 项：ok ${count('ok')} / alias ${count('alias')} / missing ${count('missing')}\n` +

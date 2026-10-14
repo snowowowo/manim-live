@@ -12,6 +12,7 @@
  * 运行在真 CPython（Pyodide）上，所以 numpy 是真的——向量就是 ndarray，运算天然逐元素。
  */
 import { PY_ANIMATE_METHODS, PY_API_MAP, PY_COLOR_HEX } from './api-map.generated.ts'
+import { EXTRA_API_MAP } from './extras-map.generated.ts'
 import {
   ABSTRACT_CLASSES,
   ANIMATE_REWRITES,
@@ -665,6 +666,16 @@ def _abstract(name, alt):
     return _stub("%s 是抽象基类、不能直接构造——%s" % (name, alt))
 
 
+def _extra(name):
+    """**扩展车道**的教错存根：名字在 manim_live_extra 模块里、不在标准 Manim 里。
+    模型最常见的错就是 from manim import * 之后直接用——这里当场把正确 import 与
+    车道代价（本机 manim CLI 跑不了）一次说清。表空时不生成，manim 回到纯 CE 面。"""
+    return _stub(
+        "%s 是本引擎的扩展图形（标准 Manim 没有）——改用 from manim_live_extra import %s；"
+        "注意用了扩展的代码只能在浏览器渲染，本机 manim CLI 跑不了" % (name, name)
+    )
+
+
 async def _flush_after(value):
     """MathTex/Tex 构造后等渲染：排版是异步的，渲染完之前宽度是 0，随后的
     to_edge / next_to 会按 0 宽定位错（角落标签被顶出画面）。由 _AwaitTransform
@@ -1110,7 +1121,42 @@ def _session_end(sid):
 
 `
 
+/**
+ * 扩展车道的两份生成物（都由 extras-map 驱动，表空即双双为空——车道整体消失，可拆卸）：
+ *   ① extraStubs：塞进 **manim** 模块的教错存根——模型 `from manim import *` 之后直接用时，
+ *      当场给出正确 import（manim_live_extra）与车道代价。manim 的名字面因此**不增加任何可用名**，
+ *      只有「用了即教」的存根，纯 CE 面不破。
+ *   ② extrasModuleSource：**manim_live_extra** 模块的完整源码——每个扩展名一个 _shape 工厂，
+ *      与 manim 模块同一座桥（_mb_create），构造规则、动画、方法调用全部复用。
+ */
+function extraStubs(): string {
+  return Object.keys(EXTRA_API_MAP)
+    .filter((name) => usable(name))
+    .map((name) => `${name} = _extra(${JSON.stringify(name)})`)
+    .join('\n')
+}
+
+/** manim_live_extra 模块的完整源码。`from manim import _shape`：工厂在 manim 适配层里，注册顺序保证它先在。 */
+export function extrasModuleSource(): string {
+  const names = Object.keys(EXTRA_API_MAP).filter((name) => usable(name))
+  if (names.length === 0) return ''
+  const doc = [
+    '"""manim-live 引擎扩展（标准 Manim 没有的图形）。',
+    '',
+    '泾渭分明的第二条车道：本模块里的名字不属于 Manim CE——用了它们的代码只能在 manim-live',
+    '引擎里渲染（浏览器）；拿到任何标准 Manim 环境会 import 失败，本机 CLI 导出会被前置门拒绝。',
+    '文件不 import 本模块，就与扩展毫无关系、随处可用。"""',
+  ].join('\n')
+  return [
+    doc,
+    'from manim import _shape',
+    '',
+    ...names.map((name) => `${name} = _shape(${JSON.stringify(name)})`),
+    '',
+  ].join('\n')
+}
+
 /** Python 适配层模块的完整源码。手写部分里的 __GENERATED_MEMBERS__ 换成表生成的属性/下标。 */
 export const MANIM_SHIM_SOURCE = `${SHIM_BASE.replace('    # __GENERATED_MEMBERS__\n', `${memberSection()}\n`)}${
   animateAliases()
-}\n\n${rateAliases()}\n\n${colorAliases()}\n\n${objectAliases()}\n\n${sceneAliases()}\n\n${sceneKindSet()}\n\n${missingAliases()}\n`
+}\n\n${rateAliases()}\n\n${colorAliases()}\n\n${objectAliases()}\n\n${sceneAliases()}\n\n${sceneKindSet()}\n\n${missingAliases()}\n\n${extraStubs()}\n`
