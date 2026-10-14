@@ -142,9 +142,11 @@ function rateAliases(): string {
  * Mobject 上的属性读取与下标取段：都由支持面表生成（PROP_READS / INDEX_GETTERS），
  * 免得在 Python 里另写一份、跟判定漂移。`__getattr__` 对任何名字都返回调用包装，
  * 所以不在这份表里的属性读出来会是个函数——那几个宁可报错（见 planAttrRead）。
- * `__iter__` 靠 `__getitem__` 越界抛 IndexError 收尾，所以越界**绝不能**返回空物体。
- * `__len__` 读 PROP_READS 的 `length`（VGroup / MathTex 有、别的物体没有）——与 `__iter__`
- * 同一件事的另一面，两者一起才是完整的「分组协议」。
+ * `__iter__` 用 `range(__len__)` 收口（2026-10-14 改）：不再靠 `__getitem__` 抛 IndexError
+ * 迭代到越界——那会把「预检桥没登记子物数的组」逼成一律取不到（单点下标被连坐，
+ * 8 条语料预检误报）。改后迭代次数由 len 决定：没 len 的物体当场 TypeError（与 CE
+ * 「Circle 不可迭代」同类），循环不可能无限——挂死风险不靠「未登记=取不到」来防了。
+ * `__len__` 读 PROP_READS 的 `length`（VGroup / MathTex 有、别的物体没有）。
  */
 function memberSection(): string {
   const props = Object.entries(PROP_READS).map(([name, spec]) => {
@@ -164,10 +166,9 @@ function memberSection(): string {
     `    _INDEX_GETTERS = (${getters},)\n\n` +
     '    def __getitem__(self, index):\n' +
     '        """CE 的 m[i] 取子物体：分段物体才有效（MathTex 是 getPart、VGroup 是 get）。\n\n' +
-    '        取不到必须抛 IndexError——**迭代协议就靠它收尾**。以前取不到只是把 None / 句柄\n' +
-    '        原样返回，于是 `for m in group` 永远取得到「下一个」，越取越多直到把内存吃满卡死\n' +
-    '        （真机事故，回归网见 syntax 组的 group-iteration 语料）。真桥那边越界返回 undefined，\n' +
-    '        过桥就是 None——所以 None 必须当「这个取值器不认」，而不是当子物体。\n' +
+    '        取不到抛 IndexError（单点取的语义）。迭代收尾不靠它（见 __iter__），所以这里\n' +
+    '        的 IndexError 只说明「这个取值器不认这个下标」——真桥越界返回 undefined，过桥\n' +
+    '        就是 None，同样当「不认」处理。\n' +
     '        """\n' +
     '        last = None\n' +
     '        for getter in self._INDEX_GETTERS:\n' +
@@ -180,13 +181,17 @@ function memberSection(): string {
     '                return _wrap(value)\n' +
     '        raise IndexError("m[%r] 取不到子物体（只对分段物体有效：VGroup / MathTex）：%s" % (index, last))\n\n' +
     '    def __iter__(self):\n' +
-    '        index = 0\n' +
-    '        while True:\n' +
-    '            try:\n' +
-    '                yield self[index]\n' +
-    '            except IndexError:\n' +
-    '                return\n' +
-    '            index += 1\n\n' +
+    '        """按 len 迭代：次数有限，不可能挂死。非分组物体没有 length，当场 TypeError——\n' +
+    '        与 CE「Circle 不可迭代」同类。预检桥对「没登记结构的组」（如 BarChart 里取出的\n' +
+    '        子组）也走 TypeError——那条路兜底成迭代一次：预检的口径是宁可放行不可误杀\n' +
+    '        （表外名字一律放行，见 surface 的 assertSupported），循环体至少执行一次才算检过。\n' +
+    '        """\n' +
+    '        try:\n' +
+    '            n = len(self)\n' +
+    '        except TypeError:\n' +
+    '            n = 1\n' +
+    '        for i in range(n):\n' +
+    '            yield self[i]\n\n' +
     '    def __len__(self):\n' +
     '        """CE 的 len(group) / len(mathtex)：子物体个数（manim-web 的 VGroup.length）。\n\n' +
     '        int() 不能省——JS 数字过桥是 Python float，而 __len__ 必须给 int（float 会被 Python 拒）。\n' +

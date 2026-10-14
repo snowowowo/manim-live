@@ -564,6 +564,15 @@ export const PROP_READS: Record<string, { method?: string; attr?: string }> = {
 export const INDEX_GETTERS: string[] = ['getPart', 'get', 'getCurve']
 
 /**
+ * 异步方法（**CE 名**——桥的 method 收到的就是它）：适配层会给这类 `self.xxx(...)` 补 await
+ * （manim-shim 的 _AWAIT_METHODS），所以**桥返回的必须可 await**——真桥过桥的是 JS Promise
+ * （天然可 await），预检桥照此返 resolved Promise；干跑若返回句柄 dict，`await dict` 当场
+ * TypeError（真机事故：lesson/13 的 move_camera 预检报 'object dict can't be used in await'，
+ * 真桥却跑得过——判定漂移）。真桥的名字映射（snake→camel）在 planMethod 里做，这里只对照原名。
+ */
+export const ASYNC_METHODS: string[] = ['move_camera']
+
+/**
  * 取**值**的方法返回值是什么——预检桥照此返一个占位值（真桥返的是真值，不用这张表）。
  *
  * 为什么必须有：预检桥对一切方法都返句柄，于是返回值是个 Mobject，而真桥返的却是
@@ -585,6 +594,12 @@ export const METHOD_RETURNS: Record<string, 'vector' | 'number'> = {
   input_to_graph_point: 'vector',
   // 数值类
   get_value: 'number',
+  get_updaters: 'vector',
+  // 属性的取法（PROP_READS 的 method 型在适配层也走 _mb_method，发的就是 JS 名，所以键用 JS 名）：
+  // `round(m.width, 2)`、`float(m.width)` 这类合法算术曾把句柄拖炸（2026-10-14 标叉批次）。
+  getWidth: 'number',
+  getHeight: 'number',
+  getCenter: 'vector',
 }
 
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/

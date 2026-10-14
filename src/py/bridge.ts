@@ -110,7 +110,8 @@ export interface RecordingBridge extends ManimBridge {
 export function createRecordingBridge(): RecordingBridge {
   const ops: BridgeOp[] = []
   let nextHandle = 1
-  // VGroup 的子物体数：`m[i]` 越界要返 undefined，`for m in group` 才收得了尾（与真桥/预检桥同判）。
+  // VGroup 的子物体数：`m[i]` 越界要返 undefined（与真桥/预检桥同判）；
+  // add 会累加（空 VGroup() 再逐个 add 的写法，见 dry-run-bridge 同名注释）。
   const sizes = new Map<number, number>()
   return {
     ops,
@@ -122,7 +123,8 @@ export function createRecordingBridge(): RecordingBridge {
     },
     method(handle, name, args, kwargs) {
       ops.push({ op: 'method', handle, name, args, kwargs })
-      if ((name === 'get' || name === 'getPart') && sizes.has(handle)) {
+      // 取法名单与 surface 的 INDEX_GETTERS 同一份（getCurve 是 2026-10-13 补的，这里曾漏）。
+      if ((name === 'get' || name === 'getPart' || name === 'getCurve') && sizes.has(handle)) {
         const index = args[0]
         if (typeof index === 'number' && Number.isInteger(index) && index >= sizes.get(handle)!) {
           return undefined
@@ -138,6 +140,8 @@ export function createRecordingBridge(): RecordingBridge {
     },
     add(handle, mobjects) {
       ops.push({ op: 'add', handle, mobjects })
+      const size = sizes.get(handle)
+      if (size !== undefined) sizes.set(handle, size + mobjects.length)
     },
     async play(handle, animations, kwargs) {
       ops.push({ op: 'play', handle, animations, kwargs })

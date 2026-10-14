@@ -390,6 +390,63 @@ except IndexError:
 })
 
 /**
+ * 预检桥「真桥跑得过、预检不该拦」的四件事——2026-10-14 用户逐条标叉的那批语料里，
+ * 八条期望 ok 的被预检误拒（备注里全是预检报错原文）。根因有四个：
+ *  ① 空 `VGroup()` 登记 size=0、add 不累加 → `blocks[3]` 判越界（math-prob/04）；
+ *  ② 未登记容器（BarChart / CurvesAsSubmobjects）单点下标一律判「取不到」（api/15、graph/08）；
+ *  ③ `.width` 数值属性返句柄 → `round(w, 2)` / `float(...)` 炸（method/11、api/04）；
+ *  ④ `move_camera` 被 _AwaitTransform 补 await，而桥返回句柄 dict → 'object dict can't be
+ *     used in await'（lesson/13）——真桥过桥的是 JS Promise，跑得过。
+ * 迭代收尾改由 `__len__` 收口（manim-shim 的 __iter__ 不再靠 IndexError），挂死风险不靠
+ * 「未登记=取不到」来防，②才得以放宽。
+ */
+describe('预检桥：真桥跑得过的，预检不拦（2026-10-14 标叉批次）', () => {
+  const dry = async (code: string): Promise<string> => {
+    const out: string[] = []
+    await runPython(code, createDryRunBridge(), { output: (text) => { out.push(text) }, drive: false })
+    return out.join('').trim()
+  }
+
+  it('空 VGroup() 再 add：按累加个数放行单点下标', async () => {
+    expect(await dry(`from manim import *
+
+blocks = VGroup()
+blocks.add(Dot(), Dot(), Dot(), Dot())
+b = blocks[3]
+print("ok", b is not None)
+`)).toBe('ok True')
+  })
+
+  it('未登记容器（CurvesAsSubmobjects）的单点下标：返占位，不判「取不到」', async () => {
+    expect(await dry(`from manim import *
+
+curves = CurvesAsSubmobjects(Arc(radius=2, start_angle=0, angle=PI))
+c = curves[0]
+print("ok", c is not None)
+`)).toBe('ok True')
+  })
+
+  it('数值属性 width/height：round / float 合法算术不再炸', async () => {
+    expect(await dry(`from manim import *
+
+s = Square(side_length=2)
+print("ok", round(s.width, 2), float(s.height))
+`)).toBe('ok 0 0.0')
+  })
+
+  it("move_camera 的 await：桥返 Promiselike，不再 object dict can't be used in await", async () => {
+    expect(await dry(`from manim import *
+
+class T(ThreeDScene):
+    def construct(self):
+        self.set_camera_orientation(phi=70 * DEGREES, theta=-135 * DEGREES)
+        self.move_camera(phi=60 * DEGREES, theta=-20 * DEGREES, run_time=2)
+print("ok")
+`)).toBe('ok')
+  })
+})
+
+/**
  * 第五轮补的两处适配层行为：
  *  - get_parts()：manim-web 的 getParts 挂在单段上、不在 MathTex 本体上，所以按段迭代出来；
  *    调用它必须走通（拿到列表），而不是转发到一个不存在的方法上（那会报「无对应方法」）。
