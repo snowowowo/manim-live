@@ -10,7 +10,9 @@
 //   GET  /__pg/packages              → createPyodideSupply().inventory(cacheDir)
 //   POST /__pg/packages/cache        → cachePackages(cacheDir, names)（按 lock 校验下载落盘）
 //   POST /__pg/node/check  {code}    → runPython(code, createDryRunBridge()) 的结论（Node 干跑）
+//   POST /__pg/report    {text}      → 把页面回执写进 _tmp/playground-report/report.md（盲写：内容浏览器侧已组好）
 import type { IncomingMessage, ServerResponse } from 'node:http'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { Plugin } from 'vite'
 import {
@@ -104,6 +106,20 @@ export function devApi(pkgRoot: string): Plugin {
                 // 预检不通过是**结论**不是故障：200 + ok:false + 原因（与浏览器侧 check 同一纪律）。
                 json(response, 200, { ok: false, error: message(error) })
               }
+              return
+            }
+            if (url.startsWith('/__pg/report') && request.method === 'POST') {
+              const body = JSON.parse(await readBody(request)) as { text?: unknown }
+              const text = typeof body.text === 'string' ? body.text : ''
+              if (text.trim().length === 0) {
+                json(response, 400, { error: 'text 不能为空' })
+                return
+              }
+              const dir = join(pkgRoot, '_tmp', 'playground-report')
+              await mkdir(dir, { recursive: true })
+              const file = join(dir, 'report.md')
+              await writeFile(file, text, 'utf8')
+              json(response, 200, { ok: true, path: file })
               return
             }
             json(response, 404, { error: '未知的 dev-api 路由' })

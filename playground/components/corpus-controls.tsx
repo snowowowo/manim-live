@@ -5,9 +5,9 @@
  * 三份实现意味着三种「清除记录到底清了什么」的细微差别——那是最难被发现的 bug。
  * 版式的差别只在**摆哪儿**，从来不在「有哪些操作」。
  */
-import { ClipboardCopy, Play, Search, Square, Trash2, Undo2, Zap, X } from 'lucide-react'
+import { ClipboardCopy, FileDown, Play, Search, Square, Trash2, Undo2, Zap, X } from 'lucide-react'
 import { useState } from 'react'
-import { buildReport, tally } from 'manim-live'
+import { tally } from 'manim-live'
 import { copyText } from '@/lib/clipboard.ts'
 import { T } from '@/lib/i18n.ts'
 import type { GroundFilter } from '@/lib/types.ts'
@@ -16,7 +16,7 @@ import { Button } from '@/ui/button.tsx'
 import { Segmented } from '@/ui/segmented.tsx'
 import { Tip } from '@/ui/tip.tsx'
 
-/** 语料工具条：全部渲染 / 停止 / 复制结果 / 清除记录 / 清除标注 / 极速 + 计数。 */
+/** 语料工具条：全部渲染 / 停止 / 复制结果 / 落盘报告 / 清除记录 / 清除标注 / 极速 + 计数。 */
 export function CorpusToolbar({ pg }: { pg: Playground }) {
   const [copied, setCopied] = useState(false)
   const { tried, failed, pending } = tally(pg.examples, pg.results)
@@ -24,7 +24,7 @@ export function CorpusToolbar({ pg }: { pg: Playground }) {
   const marksPassed = markIds.filter((id) => pg.marks[id] === 'pass').length
 
   const copy = (): void => {
-    void copyText(buildReport({ cases: pg.examples, results: pg.results })).then((ok) => {
+    void copyText(pg.reportText()).then((ok) => {
       if (!ok) return
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1600)
@@ -53,6 +53,11 @@ export function CorpusToolbar({ pg }: { pg: Playground }) {
       <Tip label={copied ? T.copyReportDone : (tried === 0 ? T.copyReportEmpty : T.copyReportHint)} align="start" wide>
         <Button size="icon" disabled={tried === 0} aria-label={T.copyReport} onClick={copy}>
           <ClipboardCopy size={14} strokeWidth={1.7} />
+        </Button>
+      </Tip>
+      <Tip label={T.reportSaveHint} align="start" wide>
+        <Button size="icon" disabled={tried === 0} aria-label={T.reportSave} onClick={pg.saveReport}>
+          <FileDown size={14} strokeWidth={1.7} />
         </Button>
       </Tip>
       <Tip label={T.clearRecordHint} align="start" wide>

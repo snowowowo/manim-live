@@ -33,9 +33,11 @@
  * ⑥ **作废的趟一个字都不报**（`cancelled`）。判断「还是不是当前那趟」用 `runSeed`：
  *    换一条、按停止、清记录都会把它顶掉。
  */
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  buildReport,
   createManimRenderer,
+  isPassed,
   type CheckResult,
   type ManimExample,
   type ManimRenderer,
@@ -48,6 +50,7 @@ import {
   type Surface,
 } from 'manim-live'
 import { loadPlaygroundCorpus } from './corpus.ts'
+import { matchFilter } from './filter.ts'
 import { T } from './i18n.ts'
 import {
   clearGround, clearMarks, loadGround, loadMarks, saveGround, saveMarks,
@@ -631,6 +634,69 @@ export function usePlayground() {
     })
   }, [])
 
+  // ---- 「上一个 / 下一个」：沿左栏同一套筛选口径的序列切条 ----
+  // 序列用 groupItems 的同一口径（分组顺序 × matchFilter）算，而不是 examples 全局顺序——
+  // 用户在左栏看到的顺序就是切换顺序，两套顺序会在「组序与插入序不一致」时各说各话。
+  const stepList = useMemo(() => {
+    const keep = (item: ManimExample): boolean => matchFilter(item, results, filter, query)
+    return corpus.groups.flatMap((group) =>
+      corpus.examples.filter((item) => item.group === group.id && keep(item)))
+  }, [corpus.examples, corpus.groups, filter, query, results])
+
+  /** 当前条在序列里的位置；不在序列里（刚被筛选滤掉）= -1。 */
+  const stepIndex = useMemo(
+    () => (selected === null ? -1 : stepList.findIndex((item) => item.id === selected)),
+    [selected, stepList],
+  )
+
+  const stepTo = useCallback((index: number): void => {
+    const target = stepList[index]
+    if (target === undefined) return
+    openExample(target.id)
+  }, [openExample, stepList])
+
+  // ---- 回执：自动结果（buildReport）+ 人工标注一节 ----
+  // 人工标注必须进回执：自动结果只说「没炸」，人判的「画得不对」（打叉）只有这里带得出来。
+  const reportText = useCallback((): string => {
+    const base = buildReport({ cases: corpus.examples, results })
+    const marked = corpus.examples.filter((item) => marks[item.id] !== undefined)
+    if (marked.length === 0) return base
+    const passed = marked.filter((item) => marks[item.id] === 'pass').length
+    const lines = ['', `## 人工标注（✓${passed} ✗${marked.length - passed}）`]
+    for (const item of marked) {
+      const state = results[item.id]
+      const auto = state === undefined ? '未跑' : isPassed(item, state) ? '自动通过' : '自动未通过'
+      lines.push(`[${marks[item.id] === 'pass' ? '✓' : '✗'}] ${item.id} ${item.title} — ${item.file}（${auto}）`)
+    }
+    return `${base}\n${lines.join('\n')}`
+  }, [corpus.examples, marks, results])
+
+  /**
+   * 落盘报告：POST 给 vite 开发中间件（`/__pg/report`），写成 `_tmp/playground-report/report.md`。
+   * 拿它代替「复制 → 粘贴」：跑完一轮点一下，开发机直接读盘——回执里报错原文与人工叉都在。
+   * 只在 dev server 下通（正式构建里没有那条路由），失败照实报在状态行。
+   */
+  const saveReport = useCallback((): void => {
+    fetch('/__pg/report', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ text: reportText() }),
+    })
+      .then(async (response) => {
+        const payload: unknown = await response.json().catch(() => null)
+        const errorText = payload !== null && typeof payload === 'object'
+          && typeof (payload as Record<string, unknown>).error === 'string'
+          ? (payload as Record<string, string>).error
+          : `HTTP ${response.status}`
+        if (!response.ok) throw new Error(errorText)
+        say(T.reportSaveDone, 'ok')
+      })
+      .catch((error: unknown) => {
+        console.error('[playground] 落盘报告失败:', error)
+        say(T.reportSaveFail(error instanceof Error ? error.message : String(error)), 'error')
+      })
+  }, [reportText, say])
+
   const clearAllMarks = useCallback((): void => {
     clearMarks()
     setMarks({})
@@ -758,6 +824,13 @@ export function usePlayground() {
     results, fast, setFast, shown, selected, running, batch, status, overlay, warm, note, setNote,
     marks, setMark, clearAllMarks,
     brokenShots, setBrokenShots,
+    // 上一个 / 下一个（沿当前筛选序列）
+    hasPrev: stepIndex > 0,
+    hasNext: stepList.length > 0 && stepIndex < stepList.length - 1,
+    stepPrev: () => stepTo(stepIndex - 1),
+    stepNext: () => stepTo(stepIndex + 1),
+    // 回执（复制与落盘同源）
+    reportText, saveReport,
     // 动作
     stageRef, openExample, renderFree, runBatch, stop, clearRecord, exportCurrent,
     source, setSource,

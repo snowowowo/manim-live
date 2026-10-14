@@ -11,7 +11,7 @@
  * 视图（语料 / 自定义代码）在这里合流：同一块画布、同一套工具（渲染 / 极速 / 导出），
  * 只是「当前这条」的来源不同。
  */
-import { Check, Download, Play, Undo2, X, Zap } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Download, Play, Undo2, X, Zap } from 'lucide-react'
 import { shotUrl, type LastRun } from '@/lib/corpus.ts'
 import { T } from '@/lib/i18n.ts'
 import { isPassed, type ManimExample } from 'manim-live'
@@ -182,6 +182,33 @@ export function Preview({ pg, current, showShot = true }: PreviewProps) {
             <Download size={14} strokeWidth={1.7} />
           </Button>
         </Tip>
+        {/* 逐条过的导航：看画面 →（上面卡片里）标对错 → 点下一条。序列与左栏筛选一致，见 use-playground 的 stepList。 */}
+        {pg.view === 'corpus' && (
+          <>
+            <Tip label={T.stepHint} align="start" wide>
+              <Button
+                size="sm"
+                disabled={!pg.hasPrev || pg.running}
+                aria-label={T.stepPrev}
+                onClick={pg.stepPrev}
+              >
+                <ChevronLeft size={12} strokeWidth={2} aria-hidden="true" />
+                {T.stepPrev}
+              </Button>
+            </Tip>
+            <Tip label={T.stepHint} align="start" wide>
+              <Button
+                size="sm"
+                disabled={!pg.hasNext || pg.running}
+                aria-label={T.stepNext}
+                onClick={pg.stepNext}
+              >
+                {T.stepNext}
+                <ChevronRight size={12} strokeWidth={2} aria-hidden="true" />
+              </Button>
+            </Tip>
+          </>
+        )}
         {label !== undefined && (
           <span className="ml-auto truncate font-mono text-[11px] text-muted-foreground">{label}</span>
         )}

@@ -175,9 +175,15 @@ export const T = {
   stopAll: '停止',
   stopAllHint: '停下这一轮渲染',
   copyReport: '复制结果',
-  copyReportHint: '复制成一份回执：每条的文件路径、结果、报错与源码',
+  copyReportHint: '复制成一份回执：每条的文件路径、结果、报错、人工标注与失败源码',
   copyReportDone: '已复制到剪贴板',
   copyReportEmpty: '还没有结果',
+  reportSave: '落盘报告',
+  reportSaveHint:
+    '把当前回执写成 manim-live/_tmp/playground-report/report.md（含人工标注与报错原文）——' +
+    '只在本机开发服务器（pnpm playground）下可用；开发机上直接读那个文件，不用复制粘贴。',
+  reportSaveDone: '报告已落盘 _tmp/playground-report/report.md',
+  reportSaveFail: (message: string) => `落盘失败：${message}`,
   clearRecord: '清除记录',
   clearRecordHint: '清掉已保存的渲染结果与自定义代码，下次从头开始（人工标注不动）',
   fastOn: '极速',
@@ -229,6 +235,11 @@ export const T = {
   render: '渲染',
   renderHint: '重新渲染当前这条（内容会自动保存，下次进来还在）',
   rerun: '重跑',
+  stepPrev: '上一个',
+  stepNext: '下一个',
+  stepHint:
+    '沿左栏同一套筛选与搜索的顺序切一条（选中并渲染）——看画面、标对错、点下一条，不用回左栏滚动找。' +
+    '当前条被筛选滤掉时「下一个」跳到序列第一条。',
 
   // ---- 上次截图 / 上一轮真机结果 ----
   shotLabel: '上次截图',
