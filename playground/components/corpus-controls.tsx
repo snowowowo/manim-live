@@ -16,7 +16,7 @@ import { Button } from '@/ui/button.tsx'
 import { Segmented } from '@/ui/segmented.tsx'
 import { Tip } from '@/ui/tip.tsx'
 
-/** 语料工具条：全部渲染 / 停止 / 复制结果 / 落盘报告 / 清除记录 / 清除标注 / 极速 + 计数。 */
+/** 语料工具条：全部渲染 / 停止 / 复制结果 / 落盘报告 / 清除记录 / 清除人工标注（只有人能清） / 极速 + 计数。 */
 export function CorpusToolbar({ pg }: { pg: Playground }) {
   const [copied, setCopied] = useState(false)
   const { tried, failed, pending } = tally(pg.examples, pg.results)

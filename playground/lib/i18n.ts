@@ -180,8 +180,9 @@ export const T = {
   copyReportEmpty: '还没有结果',
   reportSave: '落盘报告',
   reportSaveHint:
-    '把当前回执写成 manim-live/_tmp/playground-report/report.md（含人工标注与报错原文）——' +
-    '只在本机开发服务器（pnpm playground）下可用；开发机上直接读那个文件，不用复制粘贴。',
+    '把当前回执写成 manim-live/_tmp/playground-report/report.md（含报错原文、人工标注与备注）。' +
+    '标注与备注本来就会自动同步（同目录 marks.json），这个按钮是把**含自动结果的完整回执**再落一份——' +
+    '只在本机开发服务器（pnpm playground）下可用。',
   reportSaveDone: '报告已落盘 _tmp/playground-report/report.md',
   reportSaveFail: (message: string) => `落盘失败：${message}`,
   clearRecord: '清除记录',
@@ -219,7 +220,8 @@ export const T = {
   markFail: '不对',
   markUnmark: '清除本条标注',
   marksClear: '清除人工标注',
-  marksClearHint: '清掉全部人工验证标注与备注（自动渲染结果不动）',
+  marksClearHint:
+    '清掉全部人工验证标注与备注（自动渲染结果不动）。只有你能清——这些是人工结论，AI 只读不动。',
   noteTitle: '备注',
   noteHint:
     '写给人也写给看报告的 agent：画面哪里不对、动画过程哪里怪——这些自动结果看不出来，' +

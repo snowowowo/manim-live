@@ -10,7 +10,10 @@
 //   GET  /__pg/packages              → createPyodideSupply().inventory(cacheDir)
 //   POST /__pg/packages/cache        → cachePackages(cacheDir, names)（按 lock 校验下载落盘）
 //   POST /__pg/node/check  {code}    → runPython(code, createDryRunBridge()) 的结论（Node 干跑）
-//   POST /__pg/report    {text}      → 把页面回执写进 _tmp/playground-report/report.md（盲写：内容浏览器侧已组好）
+//   POST /__pg/report    {text}      → 完整回执写 _tmp/playground-report/report.md（页面自动 + 手动按钮）
+//   POST /__pg/marks {marks,notes}   → 人工结论写 _tmp/playground-report/marks.json（页面自动同步）
+// ⚠️ marks.json / report.md 承载用户的人工标注与备注，是**用户数据：AI 只读**，
+//    禁止代为清除 / 覆盖 / 重置（重验与清除由用户自己做）——见容器仓 AGENTS.md。
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -119,6 +122,25 @@ export function devApi(pkgRoot: string): Plugin {
               await mkdir(dir, { recursive: true })
               const file = join(dir, 'report.md')
               await writeFile(file, text, 'utf8')
+              json(response, 200, { ok: true, path: file })
+              return
+            }
+            if (url.startsWith('/__pg/marks') && request.method === 'POST') {
+              const body = JSON.parse(await readBody(request)) as { marks?: unknown; notes?: unknown }
+              const isRecord = (value: unknown): value is Record<string, unknown> =>
+                value !== null && typeof value === 'object'
+              if (!isRecord(body.marks) || !isRecord(body.notes)) {
+                json(response, 400, { error: 'marks / notes 都得是对象' })
+                return
+              }
+              const dir = join(pkgRoot, '_tmp', 'playground-report')
+              await mkdir(dir, { recursive: true })
+              const file = join(dir, 'marks.json')
+              await writeFile(
+                file,
+                JSON.stringify({ marks: body.marks, notes: body.notes, savedAt: new Date().toISOString() }, null, 2),
+                'utf8',
+              )
               json(response, 200, { ok: true, path: file })
               return
             }

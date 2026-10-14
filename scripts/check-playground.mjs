@@ -21,7 +21,10 @@ import { chromium } from 'playwright'
 
 const PKG_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PORT = 5199
-const URL = `http://localhost:${PORT}/`
+// ?e2e=1：告诉页面这是自动化环境，**关闭落盘自动同步**（use-playground 的 autoSync 闸）。
+// 这里的 localStorage 一进来就是空的，不关的话挂载即推会把空数据写上盘——
+// 覆盖用户在 marks.json / report.md 里的人工结论（「AI 不可清除用户标注」的那条规矩）。
+const URL = `http://localhost:${PORT}/?e2e=1`
 
 /** 版式名 → 截图文件名用的英文短名（中文名进不了文件名也不便查找）。 */
 const SLUG = { 清单: 'list', 平铺: 'gallery', 文档: 'docs' }

@@ -709,38 +709,69 @@ export function usePlayground() {
   }, [corpus.examples, marks, notes, results])
 
   /**
-   * 落盘报告：POST 给 vite 开发中间件（`/__pg/report`），写成 `_tmp/playground-report/report.md`。
-   * 拿它代替「复制 → 粘贴」：跑完一轮点一下，开发机直接读盘——回执里报错原文与人工叉都在。
-   * 只在 dev server 下通（正式构建里没有那条路由），失败照实报在状态行。
+   * 落盘的共用通道：POST 给 vite 开发中间件（`/__pg/*`），只在 dev server 下通。
+   * 失败照实进 console（自动推送不打扰状态行；手动按钮的反馈在 saveReport 里给）。
    */
-  const saveReport = useCallback((): void => {
-    fetch('/__pg/report', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ text: reportText() }),
-    })
-      .then(async (response) => {
-        const payload: unknown = await response.json().catch(() => null)
-        const errorText = payload !== null && typeof payload === 'object'
-          && typeof (payload as Record<string, unknown>).error === 'string'
-          ? (payload as Record<string, string>).error
-          : `HTTP ${response.status}`
-        if (!response.ok) throw new Error(errorText)
-        say(T.reportSaveDone, 'ok')
+  const postJson = useCallback(async (path: string, body: unknown): Promise<boolean> => {
+    try {
+      const response = await fetch(path, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
       })
-      .catch((error: unknown) => {
-        console.error('[playground] 落盘报告失败:', error)
-        say(T.reportSaveFail(error instanceof Error ? error.message : String(error)), 'error')
-      })
-  }, [reportText, say])
+      return response.ok
+    } catch (error) {
+      console.error(`[playground] 落盘 ${path} 失败:`, error)
+      return false
+    }
+  }, [])
 
-  /** 清全部人工痕迹（标注 + 备注）——自动渲染结果不动。 */
+  /**
+   * 自动同步的总闸：带 `?e2e=1` 的页面（烟测 / 无头验证）**不推**。
+   *
+   * 为什么必须有它：无头环境一进来 localStorage 就是空的，挂载即推会把空数据写上盘，
+   **覆盖用户的人工结论**——那正是「AI 不可清除用户标注」要防的事故（自动化清了用户数据）。
+   */
+  const autoSync = !new URLSearchParams(window.location.search).has('e2e')
+
+  /**
+   * 人工结论**自动**落盘：标注 / 备注一变（防抖半秒）就同步到 `_tmp/playground-report/marks.json`。
+   *
+   * 为什么自动而不是靠按钮：标注是「用户看画面得出的结论」，落盘要人记得点按钮等于没有——
+   * AI 读不到就帮不上忙。挂载时也推一次：浏览器里已有的存量标注（功能上线前标的），
+   * 刷新一下页面就能到开发机这边。marks.json 是**用户数据，AI 只读**（见容器仓 AGENTS.md）。
+   * 空数据不推：全新浏览器不该拿空对象覆盖盘上已有的结论；「用户清空」走 clearAllMarks 里的显式推送。
+   */
+  useEffect(() => {
+    if (!autoSync) return
+    if (Object.keys(marks).length === 0 && Object.keys(notes).length === 0) return
+    const timer = window.setTimeout(() => { void postJson('/__pg/marks', { marks, notes }) }, 500)
+    return () => window.clearTimeout(timer)
+  }, [marks, notes, postJson, autoSync])
+
+  /** 完整回执（自动结果 + 人工结论）也自动保持最新：跑完一轮不用任何人点按钮，盘上就是最新的。 */
+  useEffect(() => {
+    if (!autoSync || Object.keys(results).length === 0) return
+    const timer = window.setTimeout(() => { void postJson('/__pg/report', { text: reportText() }) }, 2000)
+    return () => window.clearTimeout(timer)
+  }, [reportText, results, postJson, autoSync])
+
+  /** 手动落盘（工具条按钮）：与自动推送同一仔回执，只是多给一句状态行反馈。 */
+  const saveReport = useCallback((): void => {
+    void postJson('/__pg/report', { text: reportText() }).then((ok) => {
+      if (ok) say(T.reportSaveDone, 'ok')
+      else say(T.reportSaveFail('请求失败（开发服务器在吗？）'), 'error')
+    })
+  }, [postJson, reportText, say])
+
+  /** 清全部人工痕迹（标注 + 备注）——自动渲染结果不动。显式推一次空：盘上那份也同步清空。 */
   const clearAllMarks = useCallback((): void => {
     clearMarks()
     clearNotes()
     setMarks({})
     setNotes({})
-  }, [])
+    void postJson('/__pg/marks', { marks: {}, notes: {} })
+  }, [postJson])
 
   /**
    * 导出（逐帧）。走核心自带的 `browserVideo`——它直接用 manim-web 0.36 自带的导出器
