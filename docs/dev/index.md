@@ -44,7 +44,7 @@ pnpm setup:assets    # 把 assets/pyodide 与 assets/katex 接进来
 pnpm playground      # 起本地演示台（vite）
 ```
 
-`setup:assets` 做的是**软链**不是复制：Pyodide 约 20 MB、KaTeX 约 1.2 MB，复制一份两边必然漂移（一边升级、另一边还是旧的）。默认源是同级的插件仓 `<工作区>/dsh-manim-live/assets/`，换位置就设 `MANIM_PLUGIN_ASSETS`。
+`setup:assets` 做的是**软链**不是复制：Pyodide 约 20 MB、KaTeX 约 1.2 MB，复制一份两边必然漂移（一边升级、另一边还是旧的）。默认源是同级的插件仓 `<工作区>/dsh-manim-card/assets/`，换位置就设 `MANIM_PLUGIN_ASSETS`。
 
 ## 开发流程
 
@@ -73,7 +73,7 @@ pnpm check:playground  # 核对演示台的取包目录约定没被改坏
 
 ## 语料回归
 
-`corpus/`（239 条语料加真机截图）是本库**独有**的职责：支持面实测、回归测试、重跑截图全在这里做。下游消费方（如 dsh-manim-live 的实验场）**不再承担语料回归**——它们只验收自己在宿主里的功能表现，需要样例就内置一小份自己的。
+`corpus/`（239 条语料加真机截图）是本库**独有**的职责：支持面实测、回归测试、重跑截图全在这里做。下游消费方（如 dsh-manim-card 的实验场）**不再承担语料回归**——它们只验收自己在宿主里的功能表现，需要样例就内置一小份自己的。
 
 ## 发布
 

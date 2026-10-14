@@ -44,7 +44,7 @@ pnpm setup:assets    # wire in assets/pyodide and assets/katex
 pnpm playground      # start the local playground (vite)
 ```
 
-`setup:assets` **symlinks** rather than copies: Pyodide is about 20 MB and KaTeX about 1.2 MB, and a copy would inevitably drift (one side upgraded, the other still old). The default source is the sibling plugin repository `<workspace>/dsh-manim-live/assets/`; set `MANIM_PLUGIN_ASSETS` to change it.
+`setup:assets` **symlinks** rather than copies: Pyodide is about 20 MB and KaTeX about 1.2 MB, and a copy would inevitably drift (one side upgraded, the other still old). The default source is the sibling plugin repository `<workspace>/dsh-manim-card/assets/`; set `MANIM_PLUGIN_ASSETS` to change it.
 
 ## Development flow
 
@@ -73,7 +73,7 @@ The tiered diagnosis for fetch failures is in [Third-Party Packages](/en/guide/p
 
 ## Corpus regression
 
-`corpus/` (239 entries plus real-machine screenshots) is this repository's **exclusive** responsibility: support-surface measurement, regression tests, and screenshot re-runs all happen here. Downstream consumers (such as the dsh-manim-live laboratory) **no longer carry corpus regression** — they only accept their own functional behaviour in their host, and embed a small sample set of their own when they need examples.
+`corpus/` (239 entries plus real-machine screenshots) is this repository's **exclusive** responsibility: support-surface measurement, regression tests, and screenshot re-runs all happen here. Downstream consumers (such as the dsh-manim-card laboratory) **no longer carry corpus regression** — they only accept their own functional behaviour in their host, and embed a small sample set of their own when they need examples.
 
 ## Publication
 

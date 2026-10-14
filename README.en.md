@@ -69,7 +69,7 @@ The corpus (`corpus/examples/`) is both the regression net and the only input of
 
 ## Scope
 
-It is **one canvas plus one runtime**: "render Manim Python into one frame". Card UI, playback head, step-by-step narration and local mp4 export are the consumer's responsibility. The DSH plugin `dsh-manim-live` is one of its consumers.
+It is **one canvas plus one runtime**: "render Manim Python into one frame". Card UI, playback head, step-by-step narration and local mp4 export are the consumer's responsibility. The DSH plugin `dsh-manim-card` is one of its consumers.
 
 ## Licence
 

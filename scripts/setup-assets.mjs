@@ -4,7 +4,7 @@
 // 复制一份等于让两台机器上的同一份东西各占一块盘，还必然漂移（插件升级了、核心这份还是旧的）。
 // 软链只指路、不搬运，两边永远是同一份。
 //
-// 默认源：同级的插件仓 `<工作区>/dsh-manim-live/assets/`；换位置就设 `MANIM_PLUGIN_ASSETS`。
+// 默认源：同级的插件仓 `<工作区>/dsh-manim-card/assets/`；换位置就设 `MANIM_PLUGIN_ASSETS`。
 //
 // 运行：node scripts/setup-assets.mjs
 import { existsSync, lstatSync, mkdirSync, rmSync, symlinkSync } from 'node:fs'
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 const PKG_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const SOURCE_ROOT =
   process.env.MANIM_PLUGIN_ASSETS?.trim() ||
-  resolve(PKG_ROOT, '..', 'dsh-manim-live', 'assets')
+  resolve(PKG_ROOT, '..', 'dsh-manim-card', 'assets')
 
 if (!existsSync(SOURCE_ROOT)) {
   console.error(`找不到资源目录：${SOURCE_ROOT}\n（设 MANIM_PLUGIN_ASSETS 指向插件仓的 assets/）`)
@@ -30,9 +30,15 @@ for (const name of ['pyodide', 'katex']) {
     console.warn(`跳过 ${name}：源不存在（${source}）`)
     continue
   }
-  // 已经是链接就重建（源可能换过位置）
-  if (existsSync(target)) {
-    const stat = lstatSync(target)
+  // 已经是链接就重建（源可能换过位置）。判存在必须 lstat——悬空的软链 existsSync 会跟随
+  // 链接误判为「不存在」，走到 symlinkSync 才撞 EEXIST（2026-10-15 插件仓改名时暴露）。
+  let stat = null
+  try {
+    stat = lstatSync(target)
+  } catch {
+    // 目标不存在，直接建
+  }
+  if (stat) {
     if (stat.isSymbolicLink()) rmSync(target)
     else {
       console.warn(`跳过 ${name}：${target} 已存在且不是软链——请先自行处理`)

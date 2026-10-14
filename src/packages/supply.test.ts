@@ -1,6 +1,6 @@
 /**
  * 供给线（Host 半边）的离线不变量：lock 目录化不许缺摘要、按名找文件要过归一化。
- * 下载 / 缓存落盘的联网路径不在这里打桩重测——那部分由 dsh-manim-live 的路由测试
+ * 下载 / 缓存落盘的联网路径不在这里打桩重测——那部分由 dsh-manim-card 的路由测试
  * （HTTP 层）继续钉着，两层各管各的边界。
  */
 import { mkdtempSync, writeFileSync } from 'node:fs'
