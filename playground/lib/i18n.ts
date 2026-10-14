@@ -239,6 +239,8 @@ export const T = {
   renderDone: (fast: boolean): string => `渲染完成（${fast ? '极速' : '真时序'}）`,
   renderFailed: '渲染失败',
   checkFailed: '预检未通过',
+  pageErrors: '渲染期间页面报错（Python 侧没炸，但 JS 层出错了）',
+  canvasEmpty: '画布是空的——渲染完成但没有画出内容',
   stopped: '已停止',
   timeout: '渲染超时（60 秒没有返回）',
   cancelled: '已作废',

@@ -94,6 +94,24 @@ const DEFAULT_EXAMPLE_ID = 'basic-circle'
 /** 骨架屏那层。常量对象：`setOverlay` 反复设同一个引用不会触发额外渲染。 */
 const SKELETON: Overlay = { kind: 'skeleton' }
 
+/**
+ * 画布墨迹占比（与烟测 scripts/check-playground.mjs 同一量法）：缩绘到一小块 2D 画布上数非透明像素。
+ * 「跑通」与「画出来了」是两件事——空画布是「绿灯但错」的主要来源之一。-1 = 测不了（没有画布）。
+ */
+function inkRatioOf(canvas: HTMLCanvasElement | null): number {
+  if (canvas === null) return -1
+  const probe = document.createElement('canvas')
+  probe.width = 320
+  probe.height = Math.round((320 * 9) / 16)
+  const ctx = probe.getContext('2d')
+  if (ctx === null) return -1
+  ctx.drawImage(canvas, 0, 0, probe.width, probe.height)
+  const data = ctx.getImageData(0, 0, probe.width, probe.height).data
+  let inked = 0
+  for (let i = 3; i < data.length; i += 4) if (data[i] > 8) inked += 1
+  return inked / (probe.width * probe.height)
+}
+
 export function usePlayground() {
   // ---- 落盘过的那一份（只读一次，作为各状态的初值）----
   const [restored] = useState(() => loadGround())
@@ -339,6 +357,11 @@ export function usePlayground() {
    * 这里照同一个口径：预检没过就把画布收掉，不留残影也不留空白。
    * （收画布而不是留着上一幅：39 条 `reject` 语料要一条条点过去，若每次都留着上一幅成功的画面，
    * 会让人以为「这次也画出来了」。）
+   *
+   * 跑完后的判定不止看 `run()` 的 ok（2026-10-14 增强）：Python 侧没炸不等于真画出来了——
+   * 页面级 JS 错误（未捕获异常、上游 console.error）会被上游吞掉照样「渲染完成」（真机事故：
+   * Typst 的 wasm 加载失败，绿灯 + 画布无字）。所以 ok 之后还要过两道：渲染期收集到的
+   * 页面错误、画布墨迹（与烟测同款量法）。reject 语料被成功拒时不量墨——被拒就没有画面，正常。
    */
   const execute = useCallback(async (code: string, withCheck: boolean): Promise<CardResult> => {
     if (withCheck) {
@@ -350,9 +373,39 @@ export function usePlayground() {
     }
     const target = await freshSurface()
     if (target === null) return { ok: false, text: T.noStage }
-    const result = await target.run(code)
-    if (result.cancelled === true) return { ok: false, text: T.cancelled, cancelled: true }
-    return result.ok ? { ok: true, text: '' } : { ok: false, text: result.error ?? T.renderFailed }
+
+    const pageErrors: string[] = []
+    const onError = (event: ErrorEvent): void => { pageErrors.push(event.message) }
+    const onRejection = (event: PromiseRejectionEvent): void => { pageErrors.push(String(event.reason)) }
+    // console.error 只拦**显式调用**（上游把渲染失败吞进 console.error 是主流做法）；
+    // 网络 404 那类浏览器日志不经过这个钩子，不会误伤（字体缺一两个不该判失败）。
+    const originalError = console.error
+    console.error = (...args: unknown[]) => {
+      pageErrors.push(args.map((item) => String(item)).join(' '))
+      originalError(...args)
+    }
+    window.addEventListener('error', onError)
+    window.addEventListener('unhandledrejection', onRejection)
+    try {
+      const result = await target.run(code)
+      if (result.cancelled === true) return { ok: false, text: T.cancelled, cancelled: true }
+      if (result.ok) {
+        const problems: string[] = []
+        if (pageErrors.length > 0) {
+          problems.push(`${T.pageErrors}：\n${pageErrors.slice(0, 3).join('\n')}`)
+        }
+        const canvas = target.canvas()
+        const ink = inkRatioOf(canvas)
+        if (ink >= 0 && ink <= 0.001) problems.push(T.canvasEmpty)
+        if (problems.length > 0) return { ok: false, text: problems.join('\n') }
+        return { ok: true, text: '' }
+      }
+      return { ok: false, text: result.error ?? T.renderFailed }
+    } finally {
+      window.removeEventListener('error', onError)
+      window.removeEventListener('unhandledrejection', onRejection)
+      console.error = originalError
+    }
   }, [checkCode, dropSurface, freshSurface])
 
   /**
