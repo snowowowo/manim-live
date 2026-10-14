@@ -1,7 +1,10 @@
-"""对数刻度坐标系：LogBase
+"""对数刻度基类：LogBase 不是坐标轴
 
-@expect 一条对数刻度的坐标轴：1 / 10 / 100 / 1000 的间距按对数拉开（越往右越密）。
-@note 2026-10-13 随 manim-web 0.36 从 reject 转正（0.3.24 没有 LogBase）。
+@expect 被拒：LogBase 直接 add 当场报错——它是 CE 坐标系的刻度基类（配置件），不是 Mobject。
+@note 2026-10-13 曾随 manim-web 0.36 从 reject 转正（那时只验了名字存在）；真浏览器一渲染就炸
+      `_setSceneContext is not a function`——上游的 LogBase 也不是可上画的物体，2026-10-14 转回
+      reject。对数轴的正确写法是把它当刻度配置传给 Axes：`Axes(x_range=[1, 1000],
+      x_axis_config={"scaling": LogBase(base=10)})`。
 """
 
 from manim import *
