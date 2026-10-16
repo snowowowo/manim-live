@@ -16,5 +16,6 @@ class WaterfallScene(Scene):
             show_total=True,
             total_label='净额',
         )
+        chart.move_to(ORIGIN)  # 上游图表类默认从原点往右上构图，不居中会偏出画面
         self.play(Create(chart))
         self.wait(0.3)

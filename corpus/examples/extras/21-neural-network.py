@@ -19,5 +19,6 @@ class NeuralNetworkScene(Scene):
             layer_spacing=2.0,
         )
         net.scale(0.8)
+        net.move_to(ORIGIN)  # 上游把层从 x=0 往右排（第一层贴原点），不居中会整块偏到右半屏
         self.play(Create(net))
         self.wait(0.3)
