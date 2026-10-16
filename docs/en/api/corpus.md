@@ -20,7 +20,7 @@ function shotPath(group: string, file: string): string
 
 - `parseCorpus`: when a consumer supplies a batch of corpus entries itself (own backend, static JSON, paste-import), what the browser receives is untrusted input — version drift, proxy rewriting, or manual edits can all make its structure diverge. This function folds invalid data into "no corpus" instead of letting it crash the page.
 - `buildCorpus`: folds "group + file name + source + path" into a `Corpus`. The browser-side source is the bundler (vite's `import.meta.glob`); the Node side reads the disk. Both converge into a Corpus through this one function, so the vocabulary cannot diverge. With `requireComplete: true`, an unregistered group or a group emptied out raises an error immediately.
-- `GROUPS`: the registry of 19 groups. A corpus directory not registered here raises an error, so a newly added folder cannot be silently missed.
+- `GROUPS`: the registry of 20 groups. A corpus directory not registered here raises an error, so a newly added folder cannot be silently missed.
 - `exampleId`: group plus file name (sorting prefix stripped) forms the stable id.
 - `parseExampleHeader`: parses the docstring header — first line is the title, `@expect` is the expected picture, `@reject` pins the word the error must contain, `@note` is the provenance, `@template` marks a skill template.
 - `shotPath`: the screenshot path for one entry; defined in exactly one place in the whole repository.

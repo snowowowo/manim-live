@@ -4,55 +4,63 @@ This page lists which Manim constructs are supported and which are not — the c
 
 ## Overview
 
+<!-- gen:support-stats -->
 | State | Count | Meaning |
 | --- | --- | --- |
-| Directly supported | 372 | Same name and syntax as CE; runs as-is |
+| Directly supported | 381 | Same name and syntax as CE; runs as-is |
 | Aliased | 13 | Write the CE name; the execution layer translates it (`set_stroke`, `move_camera`, `m[i]`, etc.) |
-| Not supported | 52 | Fails immediately, most with an alternative (below) |
+| Not supported | 43 | Fails immediately, most with an alternative (below) |
 
-In total **385 / 437 usable, about 88%**. The 52 missing items are distributed as follows:
+In total **394 / 437 usable, about 90%**.
+<!-- /gen:support-stats -->
 
-- **About two thirds are irrelevant to everyday code**: the OpenGL-renderer family (3), the three video-output entries (`SceneFileWriter` / `Section` / `DefaultSectionType` — a browser produces no files anyway), abstract base and axis-scale classes (`CoordinateSystem` / `LinearBase` / `LogBase`), 13 logo / grey palette constants, plus less common alternatives like Typst formulas and `TrueDot`.
+The 43 missing items are distributed as follows:
+
+- **Mostly irrelevant to everyday code**: the OpenGL-renderer family (3), the three video-output entries (`SceneFileWriter` / `Section` / `DefaultSectionType` — a browser produces no files anyway), the `CoordinateSystem` abstract base, 13 logo / grey palette constants, plus less common alternatives like `TrueDot`, `DotCloud`, `Point` and `ImageMobjectFromCamera`.
 - **What regular code may hit**: the `always_redraw` family (9 functions), 8 methods, 1 animation, 1 rate function — **every one has an equivalent** (mostly composing `add_updater()`), given right in the error message.
 
-**Conclusion: the main scenarios — basic shapes, coordinate systems and plots, text and formulas, animations, updaters, 3D — are fully covered.** All 239 corpus entries in 19 groups run; rendered results are in the [gallery](/en/examples/).
+**Conclusion: the main scenarios — basic shapes, coordinate systems and plots, text and formulas, animations, updaters, 3D — are fully covered.** All 273 corpus entries in 20 groups run (34 of them on the **engine-extension** lane, see below); rendered results are in the [gallery](/en/examples/).
 
 ## Supported constructs
 
-- **Objects and shapes**: basic shapes (`Circle` / `Arc` / `Angle` / `ArcPolygon`…), grouping (`VGroup`), tables (`Table` / `IntegerTable`), parametric curves (`ParametricFunction` / `FunctionGraph`).
-- **Coordinate systems and plots**: `Axes` / `NumberPlane` / `NumberLine` / `plot()` / `BarChart`, and the `Graph` network diagram.
-- **Text and formulas**: `Text` / `Tex` / `MathTex` (formula rendering needs the style asset configured — see [Installation](/en/guide/installation)).
+- **Objects and shapes**: basic shapes (`Circle` / `Arc` / `Angle` / `ArcPolygon` / `ArcPolygonFromArcs`), grouping (`VGroup` / `CurvesAsSubmobjects`), tables (`Table` / `IntegerTable`), parametric curves (`ParametricFunction` / `FunctionGraph`).
+- **Coordinate systems and plots**: `Axes` / `NumberPlane` / `NumberLine` / `plot()` / `BarChart`, and the `Graph` network diagram (custom ticks: see "Four that resolve but do not work" below).
+- **Text and formulas**: `Text` / `Tex` / `MathTex` / `Label` (formula rendering needs the style asset configured — see [Installation](/en/guide/installation)).
 - **Animations**: `play()` with the full set of CE animation verbs, including `.animate`.
 - **Live updates**: `add_updater` per-frame updates (the `always_redraw` family of combinators excepted, see below).
-- **3D**: `ThreeDScene` with camera operations (`set_camera_orientation` / `move_camera` / ambient camera rotation are aliases).
+- **3D**: `ThreeDScene` / `SpecialThreeDScene` with camera operations (`set_camera_orientation` / `move_camera` / ambient camera rotation are aliases), plus the parametric surface `Surface`.
 - **Colors and rate functions**: the common color constants and rate functions (a few exceptions below).
 
-## Unsupported constructs (52 items)
+## Unsupported constructs (43 items)
 
 Hitting anything below **fails on the spot** — the runtime error carries the same "alternative / note" text as this table, so you can fix the code right away.
 
-### Classes (20)
+### Classes (11)
 
 | Name | Alternative / note |
 | --- | --- |
-| `ArcPolygonFromArcs` | Use `ArcPolygon` |
 | `CoordinateSystem` | Abstract base class — use `Axes` / `NumberPlane` directly |
-| `CurvesAsSubmobjects` | The runtime error suggests an equivalent |
 | `DefaultSectionType` | Video sectioning — no file output in the browser |
 | `DotCloud` | Build scatter points as `VGroup(*[Dot(p) for p in points])` |
 | `ImageMobjectFromCamera` | The runtime error suggests an equivalent |
-| `Label` | The runtime error suggests an equivalent |
-| `LinearBase` | Axis scale strategy class — common needs are covered by `Axes` parameters |
-| `LogBase` | Axis scale strategy class — log axes are not supported yet |
-| `MathTypst` | Use `MathTex` |
 | `OpenGLPGroup` / `OpenGLPMPoint` / `OpenGLPMobject` | OpenGL-renderer specific; not applicable |
 | `Point` | The runtime error suggests an equivalent |
 | `SceneFileWriter` | Video file writing — no file output in the browser |
 | `Section` | Video sectioning — no file output in the browser |
-| `SpecialThreeDScene` | Use `ThreeDScene` and configure manually |
-| `Surface` | Parametric surfaces are not supported; `ThreeDScene` itself works |
 | `TrueDot` | Use `Dot` |
-| `Typst` | Use `MathTex` |
+
+This table shrinks as the probe improves: `ArcPolygonFromArcs`, `CurvesAsSubmobjects`, `Label`, `SpecialThreeDScene` and `Surface` used to be listed here and now have a **screenshot from a real browser proving they draw** (`Surface` takes a `lambda u, v: …` parametric equation).
+
+### Four that resolve but do not work (not in the table above, not supported either)
+
+The table above covers **names that are absent** — write one and it fails on the spot with an alternative. These four are the opposite: **the name exists and the probe marks it `ok`, yet using it is useless**. They are not counted in the "43 unsupported" (that column counts missing names), but they are just as unusable:
+
+| Name | Why it does not work |
+| --- | --- |
+| `LinearBase` / `LogBase` | In CE these are **axis tick configuration pieces, not mobjects** — `self.add(LinearBase(base=10, x_range=[1, 1000]))` blows up in a real canvas with `_setSceneContext is not a function`. To customise ticks, pass one to the axis: `Axes(x_axis_config={"scaling": LogBase(base=10)})` |
+| `MathTypst` / `Typst` | Construction does not throw, but the Typst renderer asset is not shipped — rendering leaves one `Typst rendering error` line in the console and nothing on screen. For formulas always use `Tex` / `MathTex` |
+
+> This section exists because **the probe's construction check only verifies "it builds", not "it draws"** — these four are exactly the layer it cannot see. Their verdict comes from a **screenshot** (`scripts/shot-corpus.mjs` running real Chromium), not from the probe table.
 
 ### Functions (9)
 
@@ -93,6 +101,46 @@ Hitting anything below **fails on the spot** — the runtime error carries the s
 | --- | --- |
 | `MaintainPositionRelativeTo` | Re-align the relative position each frame with `add_updater()` |
 
+## Engine extensions (`manim_live_extra`) — a separate lane
+
+Everything above answers "**what does Manim CE have, and how far do we support it**". This section is the other direction: shapes that **Manim CE does not have and this engine adds**, 34 of them. They are **not part of the support surface** and should not be memorised as original Manim — **do not reach for them by default**; import them only when a topic needs one.
+
+| Purpose | Count | Names |
+| --- | --- | --- |
+| Charts and statistics | 14 | `Histogram` `BoxPlot` `ViolinPlot` `ScatterPlot` `StackedBarChart` `AreaChart` `StepChart` `CalendarHeatmap` `CandlestickChart` `WaterfallChart` `PieChart` `DonutChart` `RadarChart` `GanttChart` |
+| Maths visualisation | 2 | `HeatMap` `ContourPlot` |
+| Biology | 3 | `DNAHelix` `Cell` `AminoAcidChain` |
+| Chemistry | 1 | `MoleculeMobject` |
+| Machine learning | 5 | `NeuralNetwork` `FeedForwardLayer` `ConvolutionalLayer` `PoolingLayer` `ImageLayer` |
+| Probability | 1 | `DiceFace` |
+| Network and flow | 1 | `SankeyDiagram` |
+| 3D | 5 | `Box3D` `Vector3D` `ParametricSurface` `Surface3D` `ImplicitSurface` |
+| Fractals | 2 | `MandelbrotSet` `NewtonFractal` |
+
+The only difference from "original" usage is the import line:
+
+```python
+from manim import *
+from manim_live_extra import RadarChart           # import only what you use, never `import *`
+
+chart = RadarChart(data=[3, 5, 4, 2, 5], categories=['speed', 'accuracy', 'cost', 'upkeep', 'reach'])
+self.play(Create(chart))
+```
+
+**Three hard boundaries**, best understood up front:
+
+- **Only this engine knows them.** In any other Manim environment — including the local manim CLI — these names do not exist and the `import` fails.
+- **A local CLI export is refused by the export gate.** The export path accepts "pure CE" source only, and the test is whether the source contains that `from manim_live_extra import` line. This is **deliberate**: better to refuse outright than to emit an artifact that only reveals a missing shape halfway through.
+- **There is no auto-injection.** Writing the extended name right after `from manim import *` fails on the spot and tells you which import it wants — but the engine will not add that line for you. Same reason as above: the gate and the source projection both rely on the source being self-contained, so inserting a line would erase the very evidence they judge by.
+
+All 34 are **classes** and all take keyword arguments. For signatures, screenshots and full source of every entry see the [engine-extensions page in the gallery](/en/examples/extras); for usage discipline see the "engine extensions" section of the blackboard / card skill docs.
+
+**Not collected** (asked for, deliberately not done): function entries (prebuilt molecules, graph factories), stateful simulations (`PhysicsWorld` / `ParticleSystem`), external-data `VideoMobject`, maps and globes, and `Text3D` / `TextOnPath` (the font asset is not shipped, so they screenshot blank).
+
 ## Data source
 
 `scripts/probe-api.mjs` probes every public Manim CE 0.22.0 API against the runtime in a headless browser: usable entries are recorded as `ok`, renamed ones as `alias`, missing ones as `missing` with an alternative attached. After a dependency upgrade the probe is re-run and this page regenerated — the list always matches runtime behavior instead of being maintained by hand.
+
+The same probe runs a second table: the `EXTRAS` list at the top of the script (the 34 names of the [engine extensions](#engine-extensions-manim_live_extra--a-separate-lane)) is constructed one by one, producing `src/py/extras-map.generated.ts`. **That list is the master switch for the whole lane** — empty it and the `manim_live_extra` module, the extension section in the skill docs and the extension group in the examples chapter all disappear together; there is nowhere else to delete. After emptying or changing it, re-run `node scripts/gen-examples-docs.mjs` and `scripts/gen-skill.mjs` on both sides to refresh the derived docs.
+
+> The probe's construction check **only verifies "it builds", not "it draws"**. `MathTypst` / `Typst` / `LinearBase` / `LogBase` are exactly the case that slips through (see "Four that resolve but do not work" above), and so are `Text3D` / `TextOnPath` — which is why neither of those two names is in `EXTRAS`: the evidence there is a screenshot, not the probe.

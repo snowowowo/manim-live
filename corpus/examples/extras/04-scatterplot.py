@@ -1,4 +1,4 @@
-"""扩展图表：散点图 ScatterPlot
+"""散点图 ScatterPlot
 
 @expect 一片正相关的散点（x 越大 y 越大），坐标轴自动生成。
 @note 引擎扩展车道：标准 Manim 没有此图形；本机 CLI 导出会被前置门拒绝。

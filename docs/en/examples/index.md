@@ -4,7 +4,7 @@
 
 Each page of this chapter corresponds to one corpus group. Every example offers two tabs: the default is Rendered — its end-state screenshot taken entry by entry in a real Chromium by `scripts/shot-corpus.mjs`; switching to Code shows the example's full source (imported straight from `corpus/examples/`, not copied).
 
-The `net` group (packages fetched over the network) and the `reject` group (expected to be refused on the spot) have no screenshots and are not part of this chapter: the former regresses the fetch path, see [Third-Party Packages](/en/guide/packages); the latter regresses the refusal vocabulary, see [Support Surface](/en/guide/support).
+The `net` group (packages fetched over the network) and the `reject` group (expected to be refused on the spot) have no screenshots and are not part of this chapter: the former regresses the fetch path, see [Third-Party Packages](/en/guide/packages); the latter regresses the refusal vocabulary, see [Support Surface](/en/guide/support). The last group, [Engine extensions](/en/examples/extras), is a **separate lane**: those shapes do not exist in standard Manim, the code must say `from manim_live_extra import …`, and a local CLI export is refused by the export gate — it has a page of its own, so do not mix it with the 17 pages above.
 
 <div class="gallery">
 
@@ -141,6 +141,14 @@ The `net` group (packages fetched over the network) and the `reject` group (expe
 [![Combined pipelines (network)](../../shots/combo/01-pandas-sklearn-fit.png)](./combo)
 
 <figcaption>Combined pipelines (network) · 5</figcaption>
+
+</figure>
+
+<figure>
+
+[![Engine extensions (`manim_live_extra`)](../../shots/extras/01-histogram.png)](./extras)
+
+<figcaption>Engine extensions (`manim_live_extra`) · 34</figcaption>
 
 </figure>
 

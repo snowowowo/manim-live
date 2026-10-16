@@ -2,11 +2,11 @@
   "overview": {
     "zh": {
       "lead": "示例章的每一页对应语料的一个分组。每条示例给两个 tab：默认显示「画面」——它在真 Chromium 里渲染出的终态截图（`scripts/shot-corpus.mjs` 逐条落图）；切到「代码」看该条语料的完整源码（直接引自 `corpus/examples/`，不复制一份）。",
-      "note": "`net`（需联网取包）与 `reject`（预期被当场拒绝）两组没有截图，不进示例章：前者是取包链路的回归，见[第三方包](/guide/packages)；后者是拦截口径的回归，见[支持面](/guide/support)。"
+      "note": "`net`（需联网取包）与 `reject`（预期被当场拒绝）两组没有截图，不进示例章：前者是取包链路的回归，见[第三方包](/guide/packages)；后者是拦截口径的回归，见[支持面](/guide/support)。最后一组[引擎扩展](/examples/extras)是**另一条车道**：那些图形标准 Manim 没有，代码里要 `from manim_live_extra import …`，本机 CLI 导出会被前置门拒绝——它单独成页，别与前 17 页混用。"
     },
     "en": {
       "lead": "Each page of this chapter corresponds to one corpus group. Every example offers two tabs: the default is Rendered — its end-state screenshot taken entry by entry in a real Chromium by `scripts/shot-corpus.mjs`; switching to Code shows the example's full source (imported straight from `corpus/examples/`, not copied).",
-      "note": "The `net` group (packages fetched over the network) and the `reject` group (expected to be refused on the spot) have no screenshots and are not part of this chapter: the former regresses the fetch path, see [Third-Party Packages](/en/guide/packages); the latter regresses the refusal vocabulary, see [Support Surface](/en/guide/support)."
+      "note": "The `net` group (packages fetched over the network) and the `reject` group (expected to be refused on the spot) have no screenshots and are not part of this chapter: the former regresses the fetch path, see [Third-Party Packages](/en/guide/packages); the latter regresses the refusal vocabulary, see [Support Surface](/en/guide/support). The last group, [Engine extensions](/en/examples/extras), is a **separate lane**: those shapes do not exist in standard Manim, the code must say `from manim_live_extra import …`, and a local CLI export is refused by the export gate — it has a page of its own, so do not mix it with the 17 pages above."
     }
   },
   "groups": {
@@ -26,9 +26,44 @@
     "math-discrete": { "en": "Discrete mathematics", "intro": { "zh": "真值表、幂集格、关系矩阵、等价类、哈斯图、归纳法、鸽巢、二分图、着色、最小生成树、欧拉与哈密顿回路、汉诺塔递推。", "en": "Truth tables, power-set lattices, relation matrices, equivalence classes, Hasse diagrams, induction, pigeonhole, bipartite graphs, colouring, minimum spanning trees, Euler and Hamilton cycles, and the Hanoi recurrence." } },
     "lesson": { "en": "Lesson scenes (templates)", "intro": { "zh": "通用讲解范式：单位圆、正弦波追踪、勾股、极坐标、割线趋近、黎曼和、线性变换与概率对照。", "en": "Reusable lesson patterns: unit circle, sine-wave tracing, Pythagoras, polar curves, secant-to-tangent, Riemann sums, linear maps and probability comparisons." } },
     "api": { "en": "API roll call (offline)", "intro": { "zh": "把支持面表里 state=ok 的名字成批点名：76 个颜色、16 个速率、方向常量、方法面、形状与 3D 实体、动画面与复平面。", "en": "Batch-naming every entry marked ok in the support table: 76 colours, 16 rate functions, direction constants, the method surface, shapes and 3D solids, the animation surface, and the complex plane." } },
-    "combo": { "en": "Combined pipelines (network)", "intro": { "zh": "pandas / scipy / sklearn / statsmodels / matplotlib 与 Manim 串成一条讲解管线，需联网取包。", "en": "pandas / scipy / sklearn / statsmodels / matplotlib chained into one Manim lesson pipeline; fetching the packages needs network access." } }
+    "combo": { "en": "Combined pipelines (network)", "intro": { "zh": "pandas / scipy / sklearn / statsmodels / matplotlib 与 Manim 串成一条讲解管线，需联网取包。", "en": "pandas / scipy / sklearn / statsmodels / matplotlib chained into one Manim lesson pipeline; fetching the packages needs network access." } },
+    "extras": { "en": "Engine extensions (`manim_live_extra`)", "intro": { "zh": "**这些不是原版 Manim 的图形。** 它们在引擎扩展车道上：代码里要写 `from manim_live_extra import …`，只在本套引擎里渲染；本机 CLI 导出会被导出前置门当场拒绝（见[支持面](/guide/support)）。本页 34 个图形按用途分：统计与通用图表 14、数学可视化 2、生物 3、化学 1、机器学习 5、概率 1、网络与流程 1、3D 5、分形 2。", "en": "**These are not standard Manim mobjects.** They live on the engine-extension lane: the code must say `from manim_live_extra import …`, they render only in this engine, and a local CLI export is refused up front by the export gate (see [Support Surface](/en/guide/support)). The 34 shapes on this page group by purpose: charts and statistics 14, maths visualisation 2, biology 3, chemistry 1, machine learning 5, probability 1, network and flow 1, 3D 5, fractals 2." } }
   },
   "examples": {
+    "extras-histogram": { "title": "Histogram", "expect": "A four-bar histogram whose bar heights are the bucket counts (rising to the right), with axes drawn automatically." },
+    "extras-boxplot": { "title": "Box plot (BoxPlot)", "expect": "Two box plots side by side (box, whiskers, outliers); the left group sits overall higher than the right." },
+    "extras-violinplot": { "title": "Violin plot (ViolinPlot)", "expect": "Two violins (kernel-density outlines) side by side, each swelling where the data is densest." },
+    "extras-scatterplot": { "title": "Scatter plot (ScatterPlot)", "expect": "A cloud of positively correlated points (larger x, larger y) with axes drawn automatically." },
+    "extras-stacked-bar": { "title": "Stacked bar chart (StackedBarChart)", "expect": "Three bars, each stacked from two colour segments (blue below, green above), with a legend." },
+    "extras-area-chart": { "title": "Area chart (AreaChart)", "expect": "Two bands filled down to the baseline in different colours, partially overlapping and rippling with x." },
+    "extras-step-chart": { "title": "Step chart (StepChart)", "expect": "A staircase polyline that jumps horizontally then vertically between data points, each point marked with a dot." },
+    "extras-calendar-heatmap": { "title": "Calendar heatmap (CalendarHeatmap)", "expect": "A row of week-aligned cells (a calendar) whose shading follows each day’s value." },
+    "extras-pie-chart": { "title": "Pie chart (PieChart)", "expect": "A pie in three slices (2:1:1) with a text label on each." },
+    "extras-donut-chart": { "title": "Donut chart (DonutChart)", "expect": "A hollow three-colour ring (3:2:1) with the canvas showing through the middle." },
+    "extras-radar-chart": { "title": "Radar chart (RadarChart)", "expect": "A pentagonal grid with a data polygon laid over it (five uneven dimensions), each axis labelled." },
+    "extras-gantt-chart": { "title": "Gantt chart (GanttChart)", "expect": "Two timeline bars (research first, development after and overlapping) with time on the horizontal axis and task names per row." },
+    "extras-heatmap": { "title": "Scalar-field heat map (HeatMap)", "expect": "A field of cells coloured by a function’s value, bright at the centre and fading outward, in a continuous colour ramp with no grid lines." },
+    "extras-contour-plot": { "title": "Contour plot (ContourPlot)", "expect": "Nested closed contour lines (a few rings on a saddle surface); where the lines crowd, the gradient is steep." },
+    "extras-candlestick": { "title": "Candlestick chart (CandlestickChart)", "expect": "Three candlesticks with bodies and both wicks; gains are red and losses green (the Chinese convention, passed explicitly)." },
+    "extras-waterfall": { "title": "Waterfall chart (WaterfallChart)", "expect": "Four rise-and-fall segments plus a total bar, joined by connector lines, walking from 3 up to 6." },
+    "extras-dna-helix": { "title": "DNA double helix (DNAHelix)", "expect": "Two backbone strands winding in opposite directions with base-pair rungs between them, coloured by base." },
+    "extras-cell": { "title": "Cell diagram (Cell)", "expect": "A round membrane, a nucleus, and several organelles, each labelled." },
+    "extras-amino-acid": { "title": "Amino-acid chain (AminoAcidChain)", "expect": "A string of beads coloured by residue with peptide-bond links between them." },
+    "extras-molecule": { "title": "Molecular structure (MoleculeMobject)", "expect": "A water molecule in skeletal form: the oxygen labelled O, two hydrogens labelled H, bonds drawn as lines." },
+    "extras-neural-network": { "title": "Neural network (NeuralNetwork)", "expect": "Three layers of nodes spread left to right with every adjacent pair fully connected, centred in the frame." },
+    "extras-feed-forward-layer": { "title": "Fully connected layer (FeedForwardLayer)", "expect": "A column of four evenly spaced dots." },
+    "extras-conv-layer": { "title": "Convolutional layer (ConvolutionalLayer)", "expect": "Three 3×3 feature-map squares side by side." },
+    "extras-pooling-layer": { "title": "Pooling layer (PoolingLayer)", "expect": "Three 2×2 feature-map squares side by side." },
+    "extras-image-layer": { "title": "Image layer (ImageLayer)", "expect": "A single 5×5 grid of pixel cells." },
+    "extras-dice-face": { "title": "Dice face (DiceFace)", "expect": "A rounded square carrying five pips laid out as the 5 face." },
+    "extras-sankey": { "title": "Sankey diagram (SankeyDiagram)", "expect": "Two nodes on the left feeding two on the right, with flow ribbons whose width matches the flow." },
+    "extras-box3d": { "title": "Cuboid (Box3D)", "expect": "A cuboid standing on an axis, its faces shaded, unmistakably 3D at a slanted angle." },
+    "extras-vector3d": { "title": "3D vector (Vector3D)", "expect": "An arrowed vector reaching out from the origin among three axes." },
+    "extras-parametric-surface": { "title": "Parametric surface (ParametricSurface)", "expect": "A saddle-shaped surface swept out by u and v, with three axes." },
+    "extras-surface3d": { "title": "Surface (Surface3D)", "expect": "An upward-curving paraboloid with three axes." },
+    "extras-implicit-surface": { "title": "Implicit surface (ImplicitSurface)", "expect": "A sphere cut out as the level set x²+y²+z²=1." },
+    "extras-mandelbrot": { "title": "Mandelbrot set (MandelbrotSet)", "expect": "A full fractal picture: the cardioid body with small discs around it and colour bands at the boundary." },
+    "extras-newton-fractal": { "title": "Newton fractal (NewtonFractal)", "expect": "A three-colour fractal partitioned by the cube roots of unity, with fine texture along the boundaries." },
     "basic-circle": { "title": "Draw a circle", "expect": "A circle in the default stroke colour appears at the centre of the frame, drawn by Create tracing its outline." },
     "basic-square-rotate": { "title": "Rotate a square by 45°", "expect": "The square rotates 45° about its own centre; position and size stay put." },
     "basic-rect-rounded": { "title": "Rectangle and rounded rectangle", "expect": "A plain rectangle beside a rounded one; the smoothed corners are a visible difference." },

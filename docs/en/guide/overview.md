@@ -15,7 +15,7 @@ The code is the same standard Manim Python; the difference lies only in where it
 | AI drawing while explaining | A single render waits for the whole pipeline, so it cannot keep pace with the explanation | Write it, watch it; `check()` stops invalid code before rendering |
 | Deployment cost | Install the stack on every machine, or run a render server | One npm package; assets can be self-hosted and it runs fully offline |
 
-The single trade-off: about 88% of the 437 public API entries are verified usable — the main scenarios (basic shapes, coordinate systems, text and formulas, animations, updaters, 3D) are fully covered; most of the 52 missing items are niche and every one has an alternative, listed item by item in [Support Surface](/en/guide/support). In exchange: real-time rendering in the browser with zero environment.
+The single trade-off: about 90% of the 437 public API entries are verified usable — the main scenarios (basic shapes, coordinate systems, text and formulas, animations, updaters, 3D) are fully covered; most of the 43 missing items are niche and every one has an alternative, listed item by item in [Support Surface](/en/guide/support). In exchange: real-time rendering in the browser with zero environment.
 
 ## Package shape
 

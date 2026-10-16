@@ -317,6 +317,10 @@ const CTOR: Record<string, CtorSpec> = {
   ArcPolygonFromArcs: { mode: 'variadic' },
   // Surface(func, u_range=…, v_range=…)：manim-web 的键是 uRange / vRange（func 同 ParametricFunction）。
   Surface: { mode: 'options', keys: ['func'], rename: { u_range: 'uRange', v_range: 'vRange' } },
+  // **扩展车道**的 NeuralNetwork(layers, options)：第一个参数是**层数组**（位置参数）、选项另起一个
+  // ——走 leading。用 options 模式会把数组并进选项对象的键里，构造器形状对不上。
+  // 层用具体类（FeedForwardLayer / ConvolutionalLayer / PoolingLayer），NeuralNetworkLayer 是抽象基类。
+  NeuralNetwork: { mode: 'leading', keys: ['layers'] },
 }
 
 /**

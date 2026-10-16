@@ -1,4 +1,4 @@
-"""扩展图表：日历热图 CalendarHeatmap
+"""日历热图 CalendarHeatmap
 
 @expect 一排按周对齐的格子（日历），颜色深浅随每天的数值变化。
 @note 引擎扩展车道：标准 Manim 没有此图形；本机 CLI 导出会被前置门拒绝。

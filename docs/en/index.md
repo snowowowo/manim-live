@@ -19,10 +19,10 @@ hero:
 features:
   - icon: 🐍
     title: Standard Manim, runs as-is
-    details: What you write is standard Manim CE Python — 385 of the 437 public API entries verified usable (~88%); the 52 missing ones report an alternative in the error itself.
+    details: What you write is standard Manim CE Python — 394 of the 437 public API entries verified usable (~90%); the 43 missing ones report an alternative in the error itself.
   - icon: 🧠
     title: Real Python, real rendering
-    details: Pyodide runs real CPython in the browser (~13 MB core) and manim-web draws the picture; 239 corpus entries regression-tested and screenshotted on real machines.
+    details: Pyodide runs real CPython in the browser (~13 MB core) and manim-web draws the picture; 273 corpus entries regression-tested, 231 of them screenshotted on real machines.
   - icon: 🧩
     title: One container element to embed
     details: The only entry is createManimRenderer() — pass a container, get run and dispose. React, Vue, and vanilla JS differ only in mount timing.
@@ -72,7 +72,7 @@ The code is the same standard Manim Python; the difference lies only in **where 
 | AI drawing while explaining | A single render waits for the whole pipeline, so it cannot keep pace with the explanation | **Write it, watch it; check() stops invalid code first** |
 | Deployment cost | Install the stack on every machine, or run a render server | **One npm package; assets can be self-hosted and it runs fully offline** |
 
-The single trade-off: about 88% of the 437 public API entries verified usable, with the main scenarios (basic shapes, coordinate systems, text and formulas, animations, updaters, 3D) fully covered — the item-by-item list is in [Support Surface](/en/guide/support).
+The single trade-off: about 90% of the 437 public API entries verified usable, with the main scenarios (basic shapes, coordinate systems, text and formulas, animations, updaters, 3D) fully covered — the item-by-item list is in [Support Surface](/en/guide/support).
 
 ## Quick start
 
@@ -111,5 +111,5 @@ Every image below is a **real end state rendered on a real machine**: generated 
 </div>
 
 ::: warning Screenshots are end states and contain no animation
-A screenshot captures the frame after an animation finishes playing. The **animation process itself** (how objects move and morph) cannot be shown statically — this repository includes a local playground; after `pnpm playground`, all 239 corpus entries can be played one by one. The playground is for local development only and is not deployed with these docs.
+A screenshot captures the frame after an animation finishes playing. The **animation process itself** (how objects move and morph) cannot be shown statically — this repository includes a local playground; after `pnpm playground`, all 273 corpus entries can be played one by one. The playground is for local development only and is not deployed with these docs.
 :::

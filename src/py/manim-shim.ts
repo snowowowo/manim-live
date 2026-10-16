@@ -615,18 +615,20 @@ def _vector_field(kind, args, kwargs):
     return Mobject(returned)
 
 
-# Surface 的 func 与向量场不同：收 (u, v) **两个**参数、返回**一个点**；实参常写成
-# axes.c2p(u, v, …)，返回值是 ndarray——过桥得先降成 list 再 _to_js 才是真数组。
-_SURFACE_KINDS = ("Surface",)
+# 曲面族的 func 与向量场不同：**参数方程**收 (u, v) 两个参数、返回一个点（实参常写成
+# axes.c2p(u, v, …)，返回 ndarray——过桥前要降成 Python list）；**隐式曲面**收 (x, y, z)
+# 三个参数、返回一个标量。两者的 options 字段都叫 func，所以共用这条通道。
+_SURFACE_KINDS = ("Surface", "ParametricSurface", "Surface3D", "ImplicitSurface")
 
 
 def _surface(kind, args, kwargs):
     func = kwargs.get("func", args[0] if len(args) > 0 else None)
     if not callable(func):
-        raise TypeError("%s 要一个函数：收 (u, v)、返回一个点" % kind)
+        raise TypeError("%s 要一个函数：参数方程收 (u, v) 返回一个点，隐式曲面收 (x, y, z) 返回一个数" % kind)
     rest = dict(kwargs)
     rest.pop("func", None)
-    wrapped = lambda u, v: _to_js(_tag(func(u, v)))
+    # 参数个数由上游定（2 参参数方程 / 3 参标量场），这里一律转发——写死 (u, v) 会把隐式曲面打死。
+    wrapped = lambda *uv: _to_js(_tag(func(*uv)))
     returned = _mb_create(kind, _tag_args(args[1:] if len(args) > 0 else ()), _tag_kwargs(dict(rest, func=wrapped)))
     return Mobject(returned)
 
@@ -1066,6 +1068,7 @@ async def _run_segment(code, ns):
 
 
 _SESSIONS = {}
+_KINDS = {}
 
 
 def _fresh_namespace():
@@ -1074,12 +1077,28 @@ def _fresh_namespace():
     return ns
 
 
-def _session_begin(sid):
-    """开一场会话：持久命名空间 + 常驻场景（self 绑定到当前画布场景，句柄恒为 0）。"""
+def _scene_class(kind):
+    """场景族名 → 适配层里那个类（sceneAliases 生成的 Scene 真子类）。
+
+    认不得的（含 manim-web 没有的 GraphScene）退回 2D 的 Scene——解析处（resolveSceneKind）
+    已经大声 warn 过一次，这里不再重复吵。
+    """
+    if kind in _SCENE_KINDS and kind != "Scene":
+        return globals().get(kind, Scene)
+    return Scene
+
+
+def _session_begin(sid, kind):
+    """开一场会话：持久命名空间 + 常驻场景（self 绑定到当前画布场景，句柄恒为 0）。
+
+    **种类必须在这里给定**：常驻 self 要早于第一段代码存在，代码里没地方问种类；而「换种类」
+    在桥那边是 dispose + 新建（画布只有一块），落笔之后补不了——只能当会话参数从外面带进来。
+    """
     _session_end(sid)
     ns = _fresh_namespace()
-    ns["self"] = Scene()
+    ns["self"] = _scene_class(kind)()
     _SESSIONS[sid] = ns
+    _KINDS[sid] = kind
 
 
 async def _session_exec(sid, source):
@@ -1090,10 +1109,13 @@ async def _session_exec(sid, source):
 async def _session_check(sid, source):
     """干跑预检一段：在**临时命名空间**里执行。已提交名字按种类造存根——函数可调用、
     数值存原值（算术不误伤）、物体在**当前桥**上现造（真会话的句柄在这张干跑桥上无效）。
+
+    预检的 self 与 live 会话**同种类**：不同的话，3D 场景里的相机方法会被误拒
+    （「当前是 Scene」），而模型看到的是一个语法完全正确的写法。
     """
     live = _SESSIONS[sid]
     ns = _fresh_namespace()
-    ns["self"] = Scene()
+    ns["self"] = _scene_class(_KINDS.get(sid, "Scene"))()
     for name, value in list(live.items()):
         if name.startswith("_") or name in ns:
             continue
@@ -1109,17 +1131,23 @@ async def _session_check(sid, source):
 
 
 def _session_reset(sid):
-    """回滚的前半段：换新命名空间并清场（桥与画布不动；重演由后续 _session_exec 完成）。"""
+    """回滚的前半段：换新命名空间并清场（桥与画布不动；重演由后续 _session_exec 完成）。
+
+    种类要**留着**——重置不是「换一种场景」，只是把这一段没提交的残迹抹掉。
+    """
+    kind = _KINDS.get(sid, "Scene")
     _session_end(sid)
     ns = _fresh_namespace()
-    scene = Scene()
+    scene = _scene_class(kind)()
     scene.clear()
     ns["self"] = scene
     _SESSIONS[sid] = ns
+    _KINDS[sid] = kind
 
 
 def _session_end(sid):
     _SESSIONS.pop(sid, None)
+    _KINDS.pop(sid, None)
 
 
 # ===== 以下由 api-map.generated.ts（探针实测）生成，勿手改：重跑探针即更新 =====

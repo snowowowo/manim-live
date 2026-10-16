@@ -45,13 +45,13 @@ export default defineConfig({
           { text: 'API', link: '/api/', activeMatch: '^/api/' },
         ],
 
-        // 侧栏按路径分区：示例章 17 页单独一套，其余页面共用一套。VitePress 用
+        // 侧栏按路径分区：示例章 18 页单独一套，其余页面共用一套。VitePress 用
         // page.relativePath 做前缀匹配、键按段数从多到少排序，所以 '/examples/' 比
         // 兜底的 '/' 先命中；折叠组里若有当前页会自动展开。
         sidebar: {
           '/examples/': [
             { text: '示例画廊', link: '/examples/' },
-            // 一页一个语料分组（17 组有截图）；子组顺序与 scripts/gen-examples-docs.mjs 的 SECTIONS 一致。
+            // 一页一个语料分组（18 组有截图）；子组顺序与 scripts/gen-examples-docs.mjs 的 SECTIONS 一致。
             {
               text: '基础与语法',
               collapsed: false,
@@ -92,6 +92,13 @@ export default defineConfig({
                 { text: 'API 点名', link: '/examples/api' },
                 { text: '综合场景（需联网）', link: '/examples/combo' },
               ],
+            },
+            // 单独成组：这一页是**另一条车道**（`from manim_live_extra import …`），
+            // 并进上面任何一组都会让人以为这些图形 `from manim import *` 就能用。
+            {
+              text: '引擎扩展（另一条车道）',
+              collapsed: true,
+              items: [{ text: '扩展图表 manim_live_extra', link: '/examples/extras' }],
             },
           ],
           '/': [
@@ -181,7 +188,7 @@ export default defineConfig({
         sidebar: {
           '/en/examples/': [
             { text: 'Gallery', link: '/en/examples/' },
-            // One page per corpus group (the 17 groups with screenshots); section order matches SECTIONS in scripts/gen-examples-docs.mjs.
+            // One page per corpus group (the 18 groups with screenshots); section order matches SECTIONS in scripts/gen-examples-docs.mjs.
             {
               text: 'Basics and syntax',
               collapsed: false,
@@ -222,6 +229,13 @@ export default defineConfig({
                 { text: 'API roll call (offline)', link: '/en/examples/api' },
                 { text: 'Combined pipelines (network)', link: '/en/examples/combo' },
               ],
+            },
+            // Its own group: this page is a **separate lane** (`from manim_live_extra import …`);
+            // folding it into any group above would suggest these shapes work with a plain `from manim import *`.
+            {
+              text: 'Engine extensions (a separate lane)',
+              collapsed: true,
+              items: [{ text: 'Extension shapes (manim_live_extra)', link: '/en/examples/extras' }],
             },
           ],
           '/': [

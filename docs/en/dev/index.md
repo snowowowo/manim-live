@@ -73,7 +73,7 @@ The tiered diagnosis for fetch failures is in [Third-Party Packages](/en/guide/p
 
 ## Corpus regression
 
-`corpus/` (239 entries plus real-machine screenshots) is this repository's **exclusive** responsibility: support-surface measurement, regression tests, and screenshot re-runs all happen here. Downstream consumers (such as the dsh-manim-card laboratory) **no longer carry corpus regression** — they only accept their own functional behaviour in their host, and embed a small sample set of their own when they need examples.
+`corpus/` (273 entries plus real-machine screenshots) is this repository's **exclusive** responsibility: support-surface measurement, regression tests, and screenshot re-runs all happen here. Downstream consumers (such as the dsh-manim-card laboratory) **no longer carry corpus regression** — they only accept their own functional behaviour in their host, and embed a small sample set of their own when they need examples.
 
 ## Publication
 

@@ -20,7 +20,7 @@ function shotPath(group: string, file: string): string
 
 - `parseCorpus`：使用者自行提供一批语料（自建后端、静态 JSON、粘贴导入）时，浏览器收到的是不可信输入——版本不一致、代理改写、人工修改都可能使其结构偏离。该函数把非法数据一律收敛为「没有语料」，不让非法数据导致页面崩溃。
 - `buildCorpus`：把「组名 + 文件名 + 源码 + 路径」收成 `Corpus`。浏览器侧的语料来源是 bundler（vite 的 `import.meta.glob`），Node 侧是读盘，两侧都通过这一个函数收敛成 Corpus，口径不会分叉。`requireComplete: true` 时，未登记的分组或某组被清空会立即抛错。
-- `GROUPS`：19 个组的登记表。未在此登记的语料目录会直接报错，避免新增的文件夹被静默漏掉。
+- `GROUPS`：20 个组的登记表。未在此登记的语料目录会直接报错，避免新增的文件夹被静默漏掉。
 - `exampleId`：分组加文件名（去掉排序前缀）拼成稳定 id。
 - `parseExampleHeader`：解析 docstring 文件头——第一行是标题，`@expect` 是预期表现，`@reject` 固定报错信息中必须出现的词，`@note` 是出处，`@template` 标记技能模板。
 - `shotPath`：一条语料对应截图的路径，全仓只此一处定义。

@@ -35,12 +35,15 @@ if (missing.length > 0 || extra.length > 0) {
   )
 }
 
-// 侧栏「示例」大组的四个子组（顺序与 docs/.vitepress/config.ts 保持一致）。
+// 侧栏「示例」大组的五个子组（顺序与 docs/.vitepress/config.ts 保持一致）。
+// 最后一组 `extras` 单独立组、而不是并进「学科讲解」：它是**另一条车道**（`from manim_live_extra import …`），
+// 与上面所有页面不是同一批图形——并进去会让人以为这些也是 `from manim import *` 就能用的。
 const SECTIONS = [
   { zh: '基础与语法', en: 'Basics and syntax', groups: ['basic', 'ctor', 'method', 'graph', 'text', 'syntax'] },
   { zh: '动画与场景', en: 'Animation and scenes', groups: ['animate', 'updater', 'scene'] },
   { zh: '学科讲解', en: 'Subject lessons', groups: ['math-calculus', 'math-linear', 'math-prob', 'math-group', 'math-discrete', 'lesson'] },
   { zh: '支持面与第三方', en: 'Support surface and third-party', groups: ['api', 'combo'] },
+  { zh: '引擎扩展（另一条车道）', en: 'Engine extensions (a separate lane)', groups: ['extras'] },
 ]
 
 const GENERATED = '<!-- 本文件由 scripts/gen-examples-docs.mjs 生成，不要手改：改语料或翻译表后重跑脚本。 -->'

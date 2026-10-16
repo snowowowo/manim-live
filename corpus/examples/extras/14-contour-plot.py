@@ -1,4 +1,4 @@
-"""扩展图表：等值线图 ContourPlot
+"""等值线图 ContourPlot
 
 @expect 同心闭合的等值线（马鞍面上若干圈），线密的地方梯度大。
 @note 引擎扩展车道：标准 Manim 没有此图形；本机 CLI 导出会被前置门拒绝。

@@ -4,7 +4,7 @@
 
 示例章的每一页对应语料的一个分组。每条示例给两个 tab：默认显示「画面」——它在真 Chromium 里渲染出的终态截图（`scripts/shot-corpus.mjs` 逐条落图）；切到「代码」看该条语料的完整源码（直接引自 `corpus/examples/`，不复制一份）。
 
-`net`（需联网取包）与 `reject`（预期被当场拒绝）两组没有截图，不进示例章：前者是取包链路的回归，见[第三方包](/guide/packages)；后者是拦截口径的回归，见[支持面](/guide/support)。
+`net`（需联网取包）与 `reject`（预期被当场拒绝）两组没有截图，不进示例章：前者是取包链路的回归，见[第三方包](/guide/packages)；后者是拦截口径的回归，见[支持面](/guide/support)。最后一组[引擎扩展](/examples/extras)是**另一条车道**：那些图形标准 Manim 没有，代码里要 `from manim_live_extra import …`，本机 CLI 导出会被前置门拒绝——它单独成页，别与前 17 页混用。
 
 <div class="gallery">
 
@@ -141,6 +141,14 @@
 [![综合场景（多库协同·需联网）](../shots/combo/01-pandas-sklearn-fit.png)](./combo)
 
 <figcaption>综合场景（多库协同·需联网） · 5</figcaption>
+
+</figure>
+
+<figure>
+
+[![引擎扩展图表（manim_live_extra）](../shots/extras/01-histogram.png)](./extras)
+
+<figcaption>引擎扩展图表（manim_live_extra） · 34</figcaption>
 
 </figure>
 

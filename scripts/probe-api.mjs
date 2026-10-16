@@ -370,23 +370,46 @@ try {
 }
 
 /**
- * **扩展车道**（manim_live_extra 模块）的第一批清单：上游有、CE 没有的图形。
+ * **扩展车道**（manim_live_extra 模块）的清单：上游有、CE 没有的图形。
  *
  * 这张清单就是车道的**总开关**——清空它重跑探针，extras-map 变空表，
  * 适配层不再生成 manim_live_extra 模块与 manim 侧教错存根，整条车道消失（可拆卸）。
  *
- * 收录口径：① 上游导出存在且是类；② 教学价值高（统计 / 通用图表 / 数学可视化）；
- * ③ 构造是「纯数据 + 关键字选项」（复合结构 treemap/chord/sankey 与学科道具放后续批次，先把过桥机制验稳）。
- * 撞名检查：BarChart 与 CE 撞名，不进扩展（CE 面已有）；其余均已核不撞。
+ * 收录口径：
+ *   ① 上游导出存在且是**类**——函数进不来（`_shape` 只走构造，见 manim-shim 的 `_shape`）；
+ *   ② 常用、能讲东西（图表 / 学科 / 3D / 分形都算，冷门专有的不收）；
+ *   ③ 构造是「纯数据 + 关键字选项」——list / tuple / dict 会递归过桥（`_tag`），
+ *      参数是函数的走曲面通道（`_surface`，见 `_SURFACE_KINDS`）。
+ *
+ * 撞名检查：`BarChart` 与 CE 撞名、不进扩展（CE 面已有）；其余均已核不撞。
+ * 仍未收：**函数条目**（预置分子 water/methane、图工厂 completeGraph 等、pendulum / springChain、
+ *   forwardPass——车道只认类构造）、**有状态模拟**（PhysicsWorld / ParticleSystem，走 updater 通道）、
+ *   **吃外部数据**（VideoMobject 要 URL）。**地图与地球**（ChoroplethMap / Globe）已定不做：
+ *   能力有限、且中国地图另叠合规要求。**Text3D / TextOnPath** 也拿不到：前者的字体默认从 CDN
+ *   异步加载（`DEFAULT_FONT_URL`）、后者 text 模式「needs fontUrl」——引擎里没有字体资源，
+ *   截出来是纯空白（实测）；要收就得先给核心包托管一份 3D 字体并做 `setFontLoaderFactory` 接缝。
  */
 const EXTRAS = [
-  // 统计
-  'Histogram', 'BoxPlot', 'ViolinPlot', 'ScatterPlot',
-  'StackedBarChart', 'AreaChart', 'StepChart', 'CalendarHeatmap',
-  // 通用
+  // 统计与通用图表
+  'Histogram', 'BoxPlot', 'ViolinPlot', 'ScatterPlot', 'StackedBarChart', 'AreaChart',
+  'StepChart', 'CalendarHeatmap', 'CandlestickChart', 'WaterfallChart',
   'PieChart', 'DonutChart', 'RadarChart', 'GanttChart',
   // 数学可视化
   'HeatMap', 'ContourPlot',
+  // 生物
+  'DNAHelix', 'Cell', 'AminoAcidChain',
+  // 化学
+  'MoleculeMobject',
+  // 机器学习（NeuralNetworkLayer 是抽象基类，构造不了——层用 FeedForwardLayer / ConvolutionalLayer 等）
+  'NeuralNetwork', 'FeedForwardLayer', 'ConvolutionalLayer', 'PoolingLayer', 'ImageLayer',
+  // 概率
+  'DiceFace',
+  // 网络与流程
+  'SankeyDiagram',
+  // 3D（曲面三个走 _surface 通道：参数是函数）
+  'Box3D', 'Vector3D', 'ParametricSurface', 'Surface3D', 'ImplicitSurface',
+  // 分形
+  'MandelbrotSet', 'NewtonFractal',
 ]
 
 const hasExport = (name) => observed.names.includes(name)
@@ -632,6 +655,60 @@ writeFileSync(extrasPath, [
   '',
 ].join('\n'))
 console.log(`扩展车道表完成：${extrasPath}（${Object.keys(extrasEntries).length} 个）`)
+
+/**
+ * 支持面总览表：把实测数字写进两边 `docs/**\/guide/support.md` 的标记块。
+ *
+ * 为什么由探针写而不是手填：这张表说的是「437 个名字里各态几个」，而 437 与各态计数**只有探针知道**。
+ * 手填就必然在某次升级依赖后与表脱节（此前正是如此：文档写 372/13/52，实测是 381/13/43）。
+ * 表里的数字一旦能自动生成，就不该再留给人工维护——探针是这些数字唯一的生产者。
+ *
+ * 只替换标记块之间的内容，块外的叙述（分布、结论、各表）仍由人写：那些是判断，不是计数。
+ */
+function spliceSupportStats() {
+  const ok = count('ok')
+  const alias = count('alias')
+  const missing = count('missing')
+  const total = stats.length
+  const usable = ok + alias
+  // 四舍五入到整百分数：文档里是「约 90%」，不必给小数。
+  const percent = Math.round((usable / total) * 100)
+  const blocks = {
+    'docs/guide/support.md': [
+      '| 状态 | 数量 | 含义 |',
+      '| --- | --- | --- |',
+      `| 直接支持 | ${ok} | 与 CE 同名同写法，直接可跑 |`,
+      `| 改名映射 | ${alias} | 写 CE 名字即可，执行层自动翻译（\`set_stroke\`、\`move_camera\`、\`m[i]\` 等） |`,
+      `| 不支持 | ${missing} | 当场报错，多数附带替代写法（见下） |`,
+      '',
+      `合计可用 **${usable} / ${total}，约 ${percent}%**。`,
+    ].join('\n'),
+    'docs/en/guide/support.md': [
+      '| State | Count | Meaning |',
+      '| --- | --- | --- |',
+      `| Directly supported | ${ok} | Same name and syntax as CE; runs as-is |`,
+      `| Aliased | ${alias} | Write the CE name; the execution layer translates it (\`set_stroke\`, \`move_camera\`, \`m[i]\`, etc.) |`,
+      `| Not supported | ${missing} | Fails immediately, most with an alternative (below) |`,
+      '',
+      `In total **${usable} / ${total} usable, about ${percent}%**.`,
+    ].join('\n'),
+  }
+  const marker = 'support-stats'
+  for (const [rel, body] of Object.entries(blocks)) {
+    const file = join(root, rel)
+    const text = readFileSync(file, 'utf8')
+    const open = `<!-- gen:${marker} -->`
+    const close = `<!-- /gen:${marker} -->`
+    const start = text.indexOf(open)
+    const end = text.indexOf(close)
+    if (start < 0 || end < 0 || end < start) {
+      throw new Error(`${rel} 里找不到 ${open} / ${close} 标记块——支持面数字无处可写`)
+    }
+    writeFileSync(file, `${text.slice(0, start + open.length)}\n${body}\n${text.slice(end)}`)
+    console.log(`支持面总览已写入：${rel}`)
+  }
+}
+spliceSupportStats()
 
 console.log(
   `三态表完成：${genPath}\n` +

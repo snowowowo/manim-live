@@ -22,10 +22,10 @@ hero:
 features:
   - icon: 🐍
     title: 标准 Manim，原样可跑
-    details: 写的就是 Manim CE 的 Python：437 项公开 API 实测可用 385 项（约 88%），缺的 52 项报错时直接给替代写法。
+    details: 写的就是 Manim CE 的 Python：437 项公开 API 实测可用 394 项（约 90%），缺的 43 项报错时直接给替代写法。
   - icon: 🧠
     title: 真 Python，真渲染
-    details: Pyodide 在浏览器里跑真 CPython（核心约 13 MB），manim-web 出画面；239 条语料逐条真机回归加截图。
+    details: Pyodide 在浏览器里跑真 CPython（核心约 13 MB），manim-web 出画面；273 条语料逐条真机回归，231 条附真机截图。
   - icon: 🧩
     title: 一个容器元素即可嵌入
     details: 入口只有 createManimRenderer()：传入容器、拿到 run 与 dispose。React、Vue、原生 JS 只是挂载时机不同。
@@ -75,7 +75,7 @@ class AxesPlotScene(Scene):
 | AI 边讲边画 | 单次渲染需等待整条管线完成，无法配合讲解节奏 | **即写即演；check() 先把有问题的代码拦在渲染之前** |
 | 部署成本 | 每台机器装一遍环境，或架渲染服务器 | **一个 npm 包；资源可自托管，完全离线也能跑** |
 
-唯一的取舍：公开 API 437 项实测可用约 88%，主力场景（基础图形、坐标系、文本公式、动画、updater、3D）全部覆盖——逐项清单见[支持面](/guide/support)。
+唯一的取舍：公开 API 437 项实测可用约 90%，主力场景（基础图形、坐标系、文本公式、动画、updater、3D）全部覆盖——逐项清单见[支持面](/guide/support)。
 
 ## 快速开始
 
@@ -114,5 +114,5 @@ pnpm add manim-live
 </div>
 
 ::: warning 截图为终态，不含动画过程
-截图截取的是一段动画播放完毕后的那一帧。**动画过程本身**（物体如何运动、变形）静态图无法呈现——本仓库附带一个本地演示台，`pnpm playground` 启动后 239 条语料均可逐条播放。该演示台仅用于本地开发，不随文档上线。
+截图截取的是一段动画播放完毕后的那一帧。**动画过程本身**（物体如何运动、变形）静态图无法呈现——本仓库附带一个本地演示台，`pnpm playground` 启动后 273 条语料均可逐条播放。该演示台仅用于本地开发，不随文档上线。
 :::
