@@ -1,5 +1,5 @@
 // 由 scripts/probe-api.mjs 生成（勿手改；升级 manim-web 或 CE 后重跑）。
-// 事实来源：Manim CE 0.22.0（域清单 scripts/ce-public-api.json）× manim-web 0.36.0
+// 事实来源：Manim CE 0.22.0（域清单 scripts/ce-public-api.json）× manim-web 0.39.4
 //            —— 无头浏览器内逐项实测：ok=直用；alias=改名/改写映射（判定层翻得出可执行调用）；
 //               missing=缺失（alt 为报错替代文案）。
 // 注意：域清单只定「测哪些名字」，不定「它是什么」——kind（物体/动画）按 manim-web 的运行时原型链实测。
@@ -1955,7 +1955,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 145
+    "hits": 151
   },
   "move_to": {
     "kind": "method",
@@ -1969,7 +1969,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 133
+    "hits": 138
   },
   "scale": {
     "kind": "method",
@@ -1983,7 +1983,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "rotate": {
     "kind": "method",
@@ -1997,7 +1997,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "stretch": {
     "kind": "method",
@@ -2011,7 +2011,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "flip": {
     "kind": "method",
@@ -2025,7 +2025,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "set_fill": {
     "kind": "method",
@@ -2039,7 +2039,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "set_stroke": {
     "kind": "method",
@@ -2058,7 +2058,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "set_opacity": {
     "kind": "method",
@@ -2077,7 +2077,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "next_to": {
     "kind": "method",
@@ -2091,7 +2091,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "align_to": {
     "kind": "method",
@@ -2105,7 +2105,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "to_edge": {
     "kind": "method",
@@ -2119,7 +2119,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "to_corner": {
     "kind": "method",
@@ -2133,7 +2133,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "arrange": {
     "kind": "method",
@@ -2147,7 +2147,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "DNAHelix",
       "DiceFace"
     ],
-    "hits": 26
+    "hits": 29
   },
   "arrange_in_grid": {
     "kind": "method",
@@ -2161,7 +2161,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "DNAHelix",
       "DiceFace"
     ],
-    "hits": 25
+    "hits": 28
   },
   "copy": {
     "kind": "method",
@@ -2175,7 +2175,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 125
+    "hits": 130
   },
   "save_state": {
     "kind": "method",
@@ -2189,7 +2189,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "restore": {
     "kind": "method",
@@ -2212,7 +2212,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "surround": {
     "kind": "method",
@@ -2231,7 +2231,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 128
+    "hits": 133
   },
   "get_bounding_box": {
     "kind": "method",
@@ -2245,7 +2245,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "put_start_and_end_on": {
     "kind": "method",
@@ -2269,7 +2269,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "set_y": {
     "kind": "method",
@@ -2283,7 +2283,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "set_z": {
     "kind": "method",
@@ -2297,7 +2297,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "add_updater": {
     "kind": "method",
@@ -2311,7 +2311,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "remove_updater": {
     "kind": "method",
@@ -2325,7 +2325,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "clear_updaters": {
     "kind": "method",
@@ -2339,7 +2339,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "get_updaters": {
     "kind": "method",
@@ -2353,7 +2353,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Arrow",
       "ArrowCircleFilledTip"
     ],
-    "hits": 127
+    "hits": 132
   },
   "animate": {
     "kind": "method",
@@ -2377,7 +2377,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Line",
       "Mobject1D"
     ],
-    "hits": 9
+    "hits": 10
   },
   "get_end": {
     "kind": "method",
@@ -2391,7 +2391,7 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Line",
       "Mobject1D"
     ],
-    "hits": 9
+    "hits": 10
   },
   "put_start_and_end": {
     "kind": "method",
@@ -2568,11 +2568,11 @@ export const PY_API_MAP: Record<string, PyApiEntry> = {
       "Add",
       "AddTextLetterByLetter",
       "AddTextWordByWord",
+      "AnimateChoropleth",
       "AnnotationDot",
-      "AnnularSector",
-      "Annulus"
+      "AnnularSector"
     ],
-    "hits": 202
+    "hits": 211
   },
   "play": {
     "kind": "scene-method",

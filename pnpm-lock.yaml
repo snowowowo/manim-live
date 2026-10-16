@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       manim-web:
-        specifier: ^0.36.0
-        version: 0.36.0(@types/node@22.20.5)(react@19.3.0)(typescript@7.0.2)
+        specifier: ^0.39.4
+        version: 0.39.4(@myriaddreamin/typst-ts-renderer@0.7.0)(@myriaddreamin/typst-ts-web-compiler@0.7.0)(@myriaddreamin/typst.ts@0.7.0(@myriaddreamin/typst-ts-renderer@0.7.0)(@myriaddreamin/typst-ts-web-compiler@0.7.0))(@types/node@22.20.5)(react@19.3.0)(typescript@7.0.2)
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.18.2
@@ -836,8 +836,8 @@ packages:
   '@types/stats.js@0.17.4':
     resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
 
-  '@types/three@0.185.4':
-    resolution: {integrity: sha512-gAsBIC07NIFrxjbf7tH2t71c38uulFfk/RFoC7FNBSjMRAQ8J1x/RBvusX0N5PJouaYFJawXQqfCQ0RKUx/1nA==}
+  '@types/three@0.186.0':
+    resolution: {integrity: sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -1583,8 +1583,8 @@ packages:
   jspdf@4.2.1:
     resolution: {integrity: sha512-YyAXyvnmjTbR4bHQRLzex3CuINCDlQnBqoSYyjJwTP2x9jDLuKDzy7aKUl0hgx3uhcl7xzg32agn5vlie6HIlQ==}
 
-  katex@0.18.10:
-    resolution: {integrity: sha512-/B6p9eY9DX7aHBfpkHdpirDTZ5QH9xTwL9y837PWuzuv41O5jFdqNQwVQEQsimY0/iVNkwBY4+4hMfhQ7d4Dbw==}
+  katex@0.19.0:
+    resolution: {integrity: sha512-v6Tznz3zJ7u3niRCoDTsumM2+HA2XXcCu+WAacCeHD2z3p9A9Ks987o5FzfTGBN0e8A0vjEgIDvLbICrXpdw/Q==}
     hasBin: true
 
   lightningcss-android-arm64@1.32.0:
@@ -1692,12 +1692,21 @@ packages:
   magicast@0.5.5:
     resolution: {integrity: sha512-UicdXN8zQ3JHlxVq+28afMXPr1z7WNY6+7EJnzTdQWkTAlMLF5fNCCKxJHBQwGaNGR11581EiQmQzx73+MvszA==}
 
-  manim-web@0.36.0:
-    resolution: {integrity: sha512-iTaOxauVFBnRdqrcurfDTHrzjDiEL/uWYX19B2cR4s2QiL5uJffnRNUSZN0TjutgVqIzBs8dp/xWT2bH6FJzlA==}
+  manim-web@0.39.4:
+    resolution: {integrity: sha512-DAmO5AQ0ISNiOgU4tHE01jTjmAyiNLy21/iVcXWpvI9YeEYOgCfOikdtFdcggASzRI2fVr51+Iq6UYmb2OyRXA==}
     peerDependencies:
+      '@myriaddreamin/typst-ts-renderer': 0.7.0
+      '@myriaddreamin/typst-ts-web-compiler': 0.7.0
+      '@myriaddreamin/typst.ts': 0.7.0
       react: '>=18.0.0'
       vue: '>=3.0.0'
     peerDependenciesMeta:
+      '@myriaddreamin/typst-ts-renderer':
+        optional: true
+      '@myriaddreamin/typst-ts-web-compiler':
+        optional: true
+      '@myriaddreamin/typst.ts':
+        optional: true
       react:
         optional: true
       vue:
@@ -2032,8 +2041,8 @@ packages:
   thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
 
-  three@0.185.1:
-    resolution: {integrity: sha512-5aojFCXKwnjBRZvUnt3WFfEcvUJgkN5LlijRFN95hMy8WVkG4I0QNcJE+OuWvuJ0bOdStrbfXn0pkd6/QyiAlg==}
+  three@0.186.1:
+    resolution: {integrity: sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==}
 
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
@@ -2625,9 +2634,11 @@ snapshots:
       mj-context-menu: 1.0.0
       speech-rule-engine: 5.0.0-rc.4
 
-  '@myriaddreamin/typst-ts-renderer@0.7.0': {}
+  '@myriaddreamin/typst-ts-renderer@0.7.0':
+    optional: true
 
-  '@myriaddreamin/typst-ts-web-compiler@0.7.0': {}
+  '@myriaddreamin/typst-ts-web-compiler@0.7.0':
+    optional: true
 
   '@myriaddreamin/typst.ts@0.7.0(@myriaddreamin/typst-ts-renderer@0.7.0)(@myriaddreamin/typst-ts-web-compiler@0.7.0)':
     dependencies:
@@ -2635,6 +2646,7 @@ snapshots:
     optionalDependencies:
       '@myriaddreamin/typst-ts-renderer': 0.7.0
       '@myriaddreamin/typst-ts-web-compiler': 0.7.0
+    optional: true
 
   '@napi-rs/lzma-linux-x64-gnu@1.5.1':
     optional: true
@@ -2900,7 +2912,7 @@ snapshots:
 
   '@types/stats.js@0.17.4': {}
 
-  '@types/three@0.185.4':
+  '@types/three@0.186.0':
     dependencies:
       '@dimforge/rapier3d-compat': 0.12.0
       '@tweenjs/tween.js': 23.1.3
@@ -3448,7 +3460,8 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  idb@7.1.1: {}
+  idb@7.1.1:
+    optional: true
 
   ieee754@1.2.1: {}
 
@@ -3507,7 +3520,7 @@ snapshots:
       dompurify: 3.4.17
       html2canvas: 1.4.1
 
-  katex@0.18.10:
+  katex@0.19.0:
     dependencies:
       commander: 15.0.0
 
@@ -3595,27 +3608,27 @@ snapshots:
       '@babel/types': 7.29.8
       source-map-js: 1.2.2
 
-  manim-web@0.36.0(@types/node@22.20.5)(react@19.3.0)(typescript@7.0.2):
+  manim-web@0.39.4(@myriaddreamin/typst-ts-renderer@0.7.0)(@myriaddreamin/typst-ts-web-compiler@0.7.0)(@myriaddreamin/typst.ts@0.7.0(@myriaddreamin/typst-ts-renderer@0.7.0)(@myriaddreamin/typst-ts-web-compiler@0.7.0))(@types/node@22.20.5)(react@19.3.0)(typescript@7.0.2):
     dependencies:
       '@mathjax/src': 4.1.3
-      '@myriaddreamin/typst-ts-renderer': 0.7.0
-      '@myriaddreamin/typst-ts-web-compiler': 0.7.0
-      '@myriaddreamin/typst.ts': 0.7.0(@myriaddreamin/typst-ts-renderer@0.7.0)(@myriaddreamin/typst-ts-web-compiler@0.7.0)
       '@types/opentype.js': 1.3.10
-      '@types/three': 0.185.4
+      '@types/three': 0.186.0
       earcut: 3.2.4
       gif.js: 0.2.0
       gifuct-js: 2.1.2
       jspdf: 4.2.1
-      katex: 0.18.10
+      katex: 0.19.0
       lottie-web: 5.13.0
       mp4-muxer: 5.2.2
       opentype.js: 2.0.0
       polygon-clipping: 0.15.7
-      three: 0.185.1
+      three: 0.186.1
       typia: 12.2.1(@types/node@22.20.5)(typescript@7.0.2)
       webm-muxer: 5.1.4
     optionalDependencies:
+      '@myriaddreamin/typst-ts-renderer': 0.7.0
+      '@myriaddreamin/typst-ts-web-compiler': 0.7.0
+      '@myriaddreamin/typst.ts': 0.7.0(@myriaddreamin/typst-ts-renderer@0.7.0)(@myriaddreamin/typst-ts-web-compiler@0.7.0)
       react: 19.3.0
     transitivePeerDependencies:
       - '@types/node'
@@ -3962,7 +3975,7 @@ snapshots:
     dependencies:
       any-promise: 1.3.0
 
-  three@0.185.1: {}
+  three@0.186.1: {}
 
   through@2.3.8: {}
 
