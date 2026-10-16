@@ -113,16 +113,22 @@ export interface SceneSlot {
   dispose(): void
 }
 
-/** 造一块场景槽。`container` 为 null = 无头（Node 单测）。 */
+/**
+ * 造一块场景槽。`container` 为 null = 无头（Node 单测）。
+ *
+ * `options.kind` = **开局就是这种类**。会话（黑板步进）必须走这条：它的常驻 `self` 在第一段
+ * 代码之前就得存在，种类只能由调用方带进来；若先建 2D 再靠 `sceneFor` 换，那一次换就是
+ * `dispose()` + 新建（白建一块），而且换完画布元素也换了。
+ */
 export function createSceneSlot(
   container: HTMLDivElement | null,
   manim: ManimRuntime,
   width: number,
   height: number,
-  options: Pick<CreateSceneOptions, 'headless'> = {},
+  options: Pick<CreateSceneOptions, 'headless' | 'kind'> = {},
 ): SceneSlot {
-  let kind = 'Scene'
-  let scene = createScene(container, manim, width, height, options)
+  let kind = resolveSceneKind(options.kind ?? 'Scene')
+  let scene = createScene(container, manim, width, height, { ...options, kind: options.kind ?? 'Scene' })
 
   const replace = (wanted: string): ManimScene => {
     try {

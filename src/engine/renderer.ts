@@ -49,8 +49,11 @@ export interface Surface {
   /**
    * 场景会话（黑板步进）：持久命名空间 + 段提交协议（见 engine/session.ts）。
    * 同时至多一个活会话——开新的会先收旧的；随 `dispose()` 级联销毁。
+   *
+   * `kind` = 常驻场景的种类（CE 场景基类名）。**开完就改不了**——它决定 `self` 是哪一种场景，
+   * 而换种类意味着换画布、清掉已有内容。想一开局就是 3D，就在 `createSurface` 时也带上同一个值。
    */
-  createSession(): Promise<Session>
+  createSession(options?: { kind?: string }): Promise<Session>
   /**
    * 作废当前画布 → 创建一块新画布 → 把上一段代码从头完整播放一遍。resolve 表示这一遍播放完毕。
    *
@@ -78,6 +81,13 @@ export interface SurfaceOptions {
   /** 极速：不等时间，直接落终态（playground 的「全部渲染」用，见 manim-bridge 的 fast）。 */
   fast?: boolean
   /**
+   * 开局画布的场景种类（CE 场景基类名，如 `ThreeDScene`；缺省 `'Scene'`）。
+   *
+   * 会话（`createSession`）要在这里给定：它的常驻 `self` 早于第一段代码存在，种类没地方从代码里
+   * 问；而「换种类」在桥那边是 dispose + 新建——先建 2D 再换就是白建一块、还换了 canvas 元素。
+   */
+  kind?: string
+  /**
    * 按 import 取包时的进展回调（开始取时给包名，取完给空数组）。
    *
    * 给**没走工厂**的使用者用（自己 `createSurface` 那种）；走 `createManimRenderer` 的
@@ -90,9 +100,9 @@ export interface SurfaceOptions {
 export async function createSurface(container: HTMLDivElement, options: SurfaceOptions = {}): Promise<Surface> {
   const manim = await loadManim()
 
-  // 场景槽：2D 起手，真跑到 3D 场景时换一块真 3D 画布。**「换」的动作只有一处实现**
-  // （engine/canvas.ts 的 createSceneSlot）——工具侧的截图自查台用的是同一份。
-  const slot = createSceneSlot(container, manim, WIDTH, HEIGHT)
+  // 场景槽：默认 2D 起手，真跑到 3D 场景时换一块真 3D 画布（`options.kind` 则一开局就是那种）；
+  // **「换」的动作只有一处实现**（engine/canvas.ts 的 createSceneSlot）——工具侧的截图自查台用的是同一份。
+  const slot = createSceneSlot(container, manim, WIDTH, HEIGHT, { kind: options.kind })
   let tail: Promise<unknown> = Promise.resolve()
   let disposed = false
   let lastCode: string | null = null
@@ -209,7 +219,7 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
       return job
     },
 
-    async createSession(): Promise<Session> {
+    async createSession(sessionOptions: { kind?: string } = {}): Promise<Session> {
       if (disposed) throw new Error('manim-live：画布已销毁，不能再开会话')
       // 同一块画布同时至多一个活会话（回放同理，先收掉）。
       endPlayback?.()
@@ -220,6 +230,7 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
         manim: manim as unknown as ManimNamespace,
         scene: slot.scene(),
         sceneFor: slot.sceneFor,
+        kind: sessionOptions.kind,
         fast: options.fast === true,
         // 会话的画布工作排进本 Surface 的串行尾：与 run / replay 同一条队，单写入方不破。
         enqueueOnSurface: (job) => {

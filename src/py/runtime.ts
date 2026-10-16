@@ -187,7 +187,7 @@ const EXEC_SNIPPET = 'import manim as _dsh_manim\n_dsh_manim._exec_source(_dsh_s
 
 // ---- 会话（黑板步进）驱动片段：操作对象（命名空间 / 段）由适配层的 _session_* 家族按 _dsh_sid 管理 ----
 const SESSION_SNIPPETS = {
-  begin: 'import manim as _dsh_manim\n_dsh_manim._session_begin(_dsh_sid)\n',
+  begin: 'import manim as _dsh_manim\n_dsh_manim._session_begin(_dsh_sid, _dsh_kind)\n',
   exec: 'import manim as _dsh_manim\nawait _dsh_manim._session_exec(_dsh_sid, _dsh_src)\n',
   check: 'import manim as _dsh_manim\nawait _dsh_manim._session_check(_dsh_sid, _dsh_src)\n',
   reset: 'import manim as _dsh_manim\n_dsh_manim._session_reset(_dsh_sid)\n',
@@ -239,6 +239,12 @@ export interface RunOptions {
    * 卡片滚出视口时画布已经拆了，硬跑的结果必然失败，而那条失败是自伤，不是渲染错误。
    */
   active?: () => boolean
+  /**
+   * 会话常驻场景的**种类**（CE 场景基类名，如 `ThreeDScene`；缺省 `'Scene'`）。
+   * 只有 `op: 'begin'` 会用它——常驻 `self` 早于第一段代码存在，种类只能由调用方带进来
+   * （理由见 engine/session.ts 的 `kind`）。
+   */
+  kind?: string
 }
 
 /**
@@ -340,6 +346,8 @@ export async function runSessionOp(
     outputSink = options.output ?? (() => {})
     runtime.globals.set('_dsh_bridge', bridge)
     runtime.globals.set('_dsh_sid', sid)
+    // 会话种类总是给一个值：非 begin 的操作不读它，但少一个「有没有设过」的状态更省心。
+    runtime.globals.set('_dsh_kind', options.kind ?? 'Scene')
     if (source !== undefined) runtime.globals.set('_dsh_src', source)
     try {
       await runtime.runPythonAsync(SESSION_SNIPPETS[op])

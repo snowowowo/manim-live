@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest'
 import * as manimModule from 'manim-web'
 import { setPyodideLoader } from '../py/runtime.ts'
 import { createPySession, type Session } from './session.ts'
+import { createSceneSlot } from './canvas.ts'
 import type { ManimNamespace } from '../py/manim-bridge.ts'
 import { testPyodideLoader } from '../../scripts/test-pyodide.mjs'
 
@@ -101,4 +102,95 @@ describe('场景会话：段式执行', () => {
     await expect(session.append('c = 3')).resolves.toMatchObject({ ok: false, cancelled: true })
     await expect(session.check('a')).resolves.toMatchObject({ ok: false, cancelled: true })
   }, 120_000)
+})
+
+/**
+ * 常驻场景的**种类**由会话参数给定（`kind`）——这是「黑板写死 2D」那个断点的回归。
+ *
+ * 以前 `_session_begin` 一律 `Scene()`：3D 专有方法（相机四件套 / fixed_in_frame 两对）跨步必被
+ * 预检误拒，Cube 落在无光的 2D 画布上**全黑且不报错**。种类只能当会话参数带进来——常驻 `self`
+ * 早于第一段代码存在，而「换种类」在桥那边是拆了重建。
+ */
+describe('场景会话：常驻场景的种类由会话参数给定', () => {
+  interface SceneInternals {
+    camera3D?: unknown
+    threeScene: { traverse(visit: (object: { isLight?: boolean }) => void): void }
+  }
+  /** 场景里的灯（2D 的 Scene 是 0 盏，ThreeDScene 默认 3 盏）。 */
+  const lights = (scene: object): number => {
+    let count = 0
+    ;(scene as SceneInternals).threeScene.traverse((object) => {
+      if (object.isLight === true) count += 1
+    })
+    return count
+  }
+  const hasCamera3D = (scene: object): boolean => (scene as SceneInternals).camera3D !== undefined
+
+  /** 真画布槽（无容器 → headless），会话直接用它当 scene / sceneFor。 */
+  const slotOf = (kind?: string) =>
+    createSceneSlot(null, manim, 1280, 720, { headless: true, ...(kind === undefined ? {} : { kind }) })
+
+  it('kind=ThreeDScene：开局画布就是 3D，相机方法第一步与跨步都过', async () => {
+    const slot = slotOf('ThreeDScene')
+    const session = await createPySession({
+      manim,
+      scene: slot.scene(),
+      sceneFor: slot.sceneFor,
+      kind: 'ThreeDScene',
+    })
+    // 开局即 3D：不给 kind 时这里是 0 盏灯、没有 camera3D——而画布种类只能在开局定。
+    expect(lights(slot.scene())).toBe(3)
+    expect(hasCamera3D(slot.scene())).toBe(true)
+    await expect(
+      session.append('self.set_camera_orientation(phi=60 * DEGREES, theta=30 * DEGREES)'),
+    ).resolves.toMatchObject({ ok: true, step: 1 })
+    // 第 2 步还用 self：预检的 self 与 live 同种类，不该被「当前是 Scene」误拒。
+    await expect(session.append('self.begin_ambient_camera_rotation(rate=0.2)')).resolves.toMatchObject({
+      ok: true,
+      step: 2,
+    })
+    session.dispose()
+  }, 240_000)
+
+  it('kind=ThreeDScene：Cube 落进有光的画布（不是那块全黑的 2D）', async () => {
+    const slot = slotOf('ThreeDScene')
+    const session = await createPySession({
+      manim,
+      scene: slot.scene(),
+      sceneFor: slot.sceneFor,
+      kind: 'ThreeDScene',
+    })
+    await expect(session.append('self.add(Cube(side_length=1))')).resolves.toMatchObject({ ok: true, step: 1 })
+    expect(lights(slot.scene())).toBe(3)
+    session.dispose()
+  }, 240_000)
+
+  it('失败回滚后种类不丢：相机仍可用', async () => {
+    const slot = slotOf('ThreeDScene')
+    const session = await createPySession({
+      manim,
+      scene: slot.scene(),
+      sceneFor: slot.sceneFor,
+      kind: 'ThreeDScene',
+    })
+    await session.append('self.add(Cube(side_length=1))')
+    const bad = await session.append('missing_thing + 1')
+    expect(bad.ok).toBe(false)
+    // 回滚是「清场重演已提交段」，不是「换一种场景」——种类要留着。
+    await expect(session.append('self.set_camera_orientation(phi=45 * DEGREES)')).resolves.toMatchObject({
+      ok: true,
+      step: 2,
+    })
+    session.dispose()
+  }, 240_000)
+
+  it('不给 kind：仍是 2D，相机方法照旧被拒（默认没变）', async () => {
+    const slot = slotOf()
+    const session = await createPySession({ manim, scene: slot.scene(), sceneFor: slot.sceneFor })
+    expect(lights(slot.scene())).toBe(0)
+    const bad = await session.check('self.set_camera_orientation(phi=60 * DEGREES)')
+    expect(bad.ok).toBe(false)
+    expect(bad.error).toContain('3D 场景')
+    session.dispose()
+  }, 240_000)
 })

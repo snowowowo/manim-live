@@ -6,6 +6,8 @@
  *   失败自动回滚——新命名空间 + 清场 + **同一块桥上极速重演**已提交段
  *   （句柄的连续性要求桥不能换，所以极速档做成运行期可切换的 `setFast`）；
  * - 会话全程复用一块桥、一块画布（不闪、不换 canvas 元素）。
+ * - **场景种类由调用方给定**（`kind`）：常驻 `self` 早于第一段代码存在，代码里没地方问种类；
+ *   而「换种类」在桥那边是拆了重建（见 canvas.ts 的 sceneFor）——落笔之后补不了。
  *
  * 机制的边界（什么不在这儿）：旁白、节奏、文稿 manifest、步截图——那些归壳
  * （判据见核心包页「边界判据」）。
@@ -45,6 +47,13 @@ export interface PySessionOptions {
   /** 常驻场景（渲染器传场景槽的当前场景；测试传 headless 场景）。 */
   scene: object
   sceneFor?: (kind: string) => object
+  /**
+   * 常驻场景的**种类**（CE 场景基类名，默认 `'Scene'`）。
+   *
+   * 必须是会话参数，不能由后续代码补：常驻 `self` 早于第一段代码存在，而「换种类」在桥那边
+   * 是 `dispose()` + 新建（画布只有一块）——落笔之后换就等于把已讲的内容撕掉。
+   */
+  kind?: string
   fast?: boolean
   /** print 输出落点（缺省丢弃）。 */
   onOutput?: (text: string) => void
@@ -71,8 +80,9 @@ export async function createPySession(options: PySessionOptions): Promise<Sessio
   let disposed = false
 
   const active = () => !disposed
+  const kind = options.kind ?? 'Scene'
   const runOp = (op: Parameters<typeof runSessionOp>[0], source?: string, use: ManimBridge = bridge) =>
-    runSessionOp(op, sid, source, use, { active, output })
+    runSessionOp(op, sid, source, use, { active, output, kind })
 
   await runOp('begin')  /** 失败段可能已把残迹写上画布：新命名空间 + 清场 + 极速重演已提交段。 */
   const rollback = async (): Promise<void> => {
