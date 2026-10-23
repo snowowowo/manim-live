@@ -114,49 +114,94 @@ interface ResizableScene {
 }
 
 /**
- * 导出前把场景临时放大到目标档位（默认 1080p），返回「还原」函数。
+ * 导出用的画布尺寸规划：把画布**设备像素**对齐到档位要的像素，并给出还原函数。
  *
- * 为什么必须动画布：上游导出器虽然收 `width/height`，但那两个值只写进编码器配置，
- * 帧是 `new VideoFrame(canvas)` 直接从画布抓的——画布只有 1280×720 就只能出 720p，
- * 传更大的尺寸反而会让编码器与输入帧对不上。想更清晰，只能真的按更大像素渲染。
- * 反过来也一样：想要更快就**别放大**（720p 档的像素只有 1080p 的 44%）。
+ * 这里有三件事必须一起看，少一件就会算错：
  *
- * 等比放大不改构图：上游 `resize()` 改的是渲染器像素与相机宽高比，`frameWidth/frameHeight`
- * （逻辑坐标系）不动；16:9 → 16:9 时宽高比也没变。
+ * 1. **编码器认的是场景尺寸，不是画布尺寸**。上游 `createWebCodecsExporter` 的 `width/height`
+ *    默认取 `scene.getWidth()`——那是 CSS 像素；帧却是 `new VideoFrame(canvas)`，那是设备像素
+ *    （CSS × pixelRatio）。所以 dpr=2 的屏幕上，一个「720p」档若不折算，会先按 2560×1440
+ *    渲染再让编码器缩到 1280×720：输出的确是 720p，代价却是四倍。折算之后渲染像素 = 成片像素，
+ *    档位标多少就是多少（headless Chrome、dpr=2、同一段 2s 场景实测：1080p60 从 5.5s 降到 1.5s，
+ *    720p30 从 2.7s 降到 0.6s，成片尺寸与帧率一字不差）。
+ * 2. **尺寸不是「只放大不缩小」**。档位是承诺，画布本来多大都得对上它：小窗里的卡（640×360）
+ *    要放大，全屏的卡（超过 1080p）要收回来。收的是这一小段导出窗口，导完还原，用户看不见。
+ * 3. **必须等比**。缩放系数按「画布像素 / 档位像素框」取最小值，宽高比不动；16:9 的卡配 16:9
+ *    的框时就是精确命中。
  *
  * 还原时尺寸变化会清空画布，所以顺手 seek 到时间轴末尾，把卡片留在导出前的终态。
  */
-export function upscaleForExport(scene: ResizableScene, targetHeight: number = DEFAULT_HEIGHT): () => void {
+export interface ExportCanvas {
+  /** 画布应有的设备像素（0 = 没算出来，交给调用方看实际画布）。 */
+  width: number
+  height: number
+  restore: () => void
+}
+
+/** 成片像素取偶数：H.264 的编码尺寸按宏块对齐，奇数只会让编码器自己补齐。 */
+function even(value: number): number {
+  return Math.max(2, Math.round(value / 2) * 2)
+}
+
+const NOOP_RESTORE = (): void => {}
+
+export function fitCanvasForExport(
+  scene: ResizableScene,
+  targetHeight: number = DEFAULT_HEIGHT,
+  pixelRatio: number = 1,
+): ExportCanvas {
   const { getWidth, getHeight, resize } = scene
   if (typeof getWidth !== 'function' || typeof getHeight !== 'function' || typeof resize !== 'function') {
-    return () => {}
+    return { width: 0, height: 0, restore: NOOP_RESTORE }
   }
-  const width = getWidth.call(scene)
-  const height = getHeight.call(scene)
-  if (!(width > 0) || !(height > 0)) return () => {}
+  const cssWidth = getWidth.call(scene)
+  const cssHeight = getHeight.call(scene)
+  if (!(cssWidth > 0) || !(cssHeight > 0)) return { width: 0, height: 0, restore: NOOP_RESTORE }
 
+  // 比率只用来把「设备像素」换算回 `resize()` 收的 CSS 像素；不可信的值一律当 1。
+  const ratio = Number.isFinite(pixelRatio) && pixelRatio > 0 ? pixelRatio : 1
   const box = boxOf(heightOf(targetHeight))
-  const scale = Math.min(box.width / width, box.height / height)
-  // 已经够大（或更大）就不动它：放大不会凭空多出像素，反而多烧一遍渲染。
-  if (scale <= 1) return () => {}
+  const scale = Math.min(box.width / (cssWidth * ratio), box.height / (cssHeight * ratio))
+  const width = even(cssWidth * ratio * scale)
+  const height = even(cssHeight * ratio * scale)
+
+  // 已经正好是这个像素：不 resize（省一次重排，也不会无故清画布）。
+  if (width === even(cssWidth * ratio) && height === even(cssHeight * ratio)) {
+    return { width, height, restore: NOOP_RESTORE }
+  }
 
   try {
-    resize.call(scene, Math.round(width * scale), Math.round(height * scale))
+    resize.call(scene, width / ratio, height / ratio)
   } catch (error) {
-    // 放大失败不是导出失败：退回原尺寸，成片是 720p 而不是没有。
-    console.error('[manim-live] 放大导出画布失败，按原尺寸导出:', error)
-    return () => {}
+    // 改尺寸失败不是导出失败：按原尺寸出片，糊一点总比没有好。
+    console.error('[manim-live] 调整导出画布失败，按原尺寸导出:', error)
+    return { width: 0, height: 0, restore: NOOP_RESTORE }
   }
 
-  return () => {
-    try {
-      resize.call(scene, width, height)
-      const duration = scene.getTimelineDuration?.() ?? null
-      if (typeof scene.seek === 'function' && typeof duration === 'number' && duration > 0) scene.seek(duration)
-    } catch (error) {
-      console.error('[manim-live] 还原画布尺寸失败:', error)
-    }
+  return {
+    width,
+    height,
+    restore: () => {
+      try {
+        resize.call(scene, cssWidth, cssHeight)
+        const duration = scene.getTimelineDuration?.() ?? null
+        if (typeof scene.seek === 'function' && typeof duration === 'number' && duration > 0) scene.seek(duration)
+      } catch (error) {
+        console.error('[manim-live] 还原画布尺寸失败:', error)
+      }
+    },
   }
+}
+
+/**
+ * 画布当前的「设备像素 / CSS 像素」比率。**实测**而不是读 `devicePixelRatio`：
+ * 上游在 resize 时才重算 pixelRatio（并把上限夹到 2），真值只有画布自己知道。
+ */
+function canvasRatio(canvas: { width: number } | null, scene: unknown): number {
+  const cssWidth = (scene as ResizableScene).getWidth?.()
+  if (canvas === null || typeof cssWidth !== 'number' || !(cssWidth > 0)) return 1
+  const ratio = canvas.width / cssWidth
+  return Number.isFinite(ratio) && ratio > 0 ? ratio : 1
 }
 
 export const browserVideo: Exporter = {
@@ -194,20 +239,27 @@ export const browserVideo: Exporter = {
     const module = await loadExportModule()
     if (module === null) return { ok: false, reason: 'environment', error: 'manim-web 的导出器载入失败' }
 
-    // 先按档位放（或放大）画布再取尺寸：码率与「导出的像素数」挂钩，按 720p 算码率去编 1080p 会糊；
+    // 先把画布像素对齐到档位，再取尺寸：码率与「导出的像素数」挂钩，按 720p 算码率去编 1080p 会糊；
     // 反过来按 1080p 算码率去编 720p 则纯属浪费——档位决定像素，像素决定码率。
     const fps = fpsOf(video?.fps)
     const targetHeight = heightOf(video?.height)
-    const restore = upscaleForExport(scene as ResizableScene, targetHeight)
+    // 比率要按**调整前**的画布测：resize 之后比率可能被上游重算，那时算出来的就不是「这份场景
+    // 原先的像素密度」了。
+    const ratio = canvasRatio(controller.canvas(), scene)
+    const plan = fitCanvasForExport(scene as ResizableScene, targetHeight, ratio)
+    const restore = plan.restore
     const canvas = controller.canvas()
-    const width = canvas?.width ?? 0
-    const height = canvas?.height ?? 0
+    const width = canvas?.width ?? plan.width
+    const height = canvas?.height ?? plan.height
     const bitrate = bitrateFor(width, height, fps)
     const spec = width > 0 && height > 0 ? `${width}×${height} · ${fps}fps` : `${fps}fps`
 
     const options = {
       fps,
       bitrate,
+      // 显式交给编码器：不传的话上游按 `scene.getWidth()`（CSS 像素）配编码器，遇到 dpr=2
+      // 的画布就变成「大帧喂小配置」，白烧像素。传了才是「渲染像素 = 成片像素」。
+      ...(width > 0 && height > 0 ? { width, height } : {}),
       // MediaRecorder 退路看 quality（0–1），WebCodecs 看 bitrate；两个都传，各自取用。
       quality: 0.95,
       onProgress: (progress: number) => onProgress?.(`导出中 ${Math.round(progress * 100)}%（${spec}）`),
@@ -221,8 +273,8 @@ export const browserVideo: Exporter = {
           return { ok: false, reason: 'environment', error: '这版 manim-web 没有 WebCodecs 导出器' }
         }
         onProgress?.(`逐帧编码（WebCodecs · ${spec}）…`)
-        // 上游把 AVC 等级写死在 Level 3.1（只够 720p），1080p 会在 configure() 当场被浏览器拒。
-        // 这层包装只把 codec 串里的等级抬到配得上当前像素，编码仍走上游（见 avc-level.ts）。
+        // 上游把 AVC 等级写死在 Level 3.1（只够 720p30），1080p / 60fps 会在 configure() 当场被
+        // 浏览器拒。这层包装只把 codec 串里的等级抬到配得上当前像素与帧率，编码仍走上游（见 avc-level.ts）。
         const blob = await withAvcLevelAdapted(() => createWebCodecsExporter(scene, options).export())
         return finishResult(blob, onProgress)
       }

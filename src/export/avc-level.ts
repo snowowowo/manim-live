@@ -12,7 +12,8 @@
 // 传 `'avc1.420028'` 这种完整串也只会查表失败（表是按 `'avc'` 这种短名索引的）。
 //
 // 所以这里做一件最小的事：**导出期间**把 `window.VideoEncoder` 换成一个壳，`configure()` 时
-// 按实际分辨率把 codec 串里的 level 字节抬到够用（1080p → 0x28 = Level 4.0），别的原样放过。
+// 按实际分辨率与帧率把 codec 串里的 level 字节抬到够用（1080p30 → 0x28 = 4.0、1080p60 →
+// 0x2a = 4.2，因为每秒宏块数也是硬上限），别的原样放过。
 // 编码本身还是浏览器的原生实现，我们只改一个字符串——不是在重写导出器。
 //
 // 边界与去留：
@@ -22,27 +23,39 @@
 //   · 上游一旦支持等级选项（或默认按分辨率选等级），整个文件删掉，`browser-video.ts` 里那层包装
 //     一起删——这是临时补丁，不是我们的功能。
 
-/** H.264 Level 的「最大帧尺寸」，单位是宏块（16×16）。取自 ITU-T H.264 表 A-1 的 MaxFS。 */
-const AVC_LEVELS: ReadonlyArray<{ levelIdc: number; maxFrameMacroblocks: number }> = [
-  { levelIdc: 10, maxFrameMacroblocks: 99 }, // 1.0
-  { levelIdc: 11, maxFrameMacroblocks: 396 }, // 1.1
-  { levelIdc: 12, maxFrameMacroblocks: 396 }, // 1.2
-  { levelIdc: 13, maxFrameMacroblocks: 396 }, // 1.3
-  { levelIdc: 20, maxFrameMacroblocks: 396 }, // 2.0
-  { levelIdc: 21, maxFrameMacroblocks: 792 }, // 2.1
-  { levelIdc: 22, maxFrameMacroblocks: 1620 }, // 2.2
-  { levelIdc: 30, maxFrameMacroblocks: 1620 }, // 3.0
-  { levelIdc: 31, maxFrameMacroblocks: 3600 }, // 3.1（= 1280×720，上游默认在这一档）
-  { levelIdc: 32, maxFrameMacroblocks: 5120 }, // 3.2
-  { levelIdc: 40, maxFrameMacroblocks: 8192 }, // 4.0（= 1920×1088，1080p 落在这一档）
-  { levelIdc: 41, maxFrameMacroblocks: 8192 }, // 4.1
-  { levelIdc: 42, maxFrameMacroblocks: 8704 }, // 4.2
-  { levelIdc: 50, maxFrameMacroblocks: 22080 }, // 5.0
-  { levelIdc: 51, maxFrameMacroblocks: 36864 }, // 5.1
-  { levelIdc: 52, maxFrameMacroblocks: 36864 }, // 5.2
-  { levelIdc: 60, maxFrameMacroblocks: 139264 }, // 6.0
-  { levelIdc: 61, maxFrameMacroblocks: 139264 }, // 6.1
-  { levelIdc: 62, maxFrameMacroblocks: 139264 }, // 6.2
+/**
+ * H.264 各等级的两条硬上限，取自 ITU-T H.264 表 A-1：
+ *
+ *  - `maxFrameMacroblocks`（MaxFS）：一帧最多多少宏块——报错里那条 `coded area` 查的就是它；
+ *  - `maxMacroblocksPerSecond`（MaxMBPS）：每秒最多多少宏块。**只看分辨率会漏掉这一条**：
+ *    1080p60 的 8160×60 = 489600 放在 Level 4.0（245760）是不够的，要 4.2（522240）。
+ *
+ * 上游 configure 时把 `framerate` 一起传下去，所以帧率是知道的——两条都算，取同时满足的最低档。
+ */
+const AVC_LEVELS: ReadonlyArray<{
+  levelIdc: number
+  maxFrameMacroblocks: number
+  maxMacroblocksPerSecond: number
+}> = [
+  { levelIdc: 10, maxFrameMacroblocks: 99, maxMacroblocksPerSecond: 1485 }, // 1.0
+  { levelIdc: 11, maxFrameMacroblocks: 396, maxMacroblocksPerSecond: 3000 }, // 1.1
+  { levelIdc: 12, maxFrameMacroblocks: 396, maxMacroblocksPerSecond: 6000 }, // 1.2
+  { levelIdc: 13, maxFrameMacroblocks: 396, maxMacroblocksPerSecond: 11880 }, // 1.3
+  { levelIdc: 20, maxFrameMacroblocks: 396, maxMacroblocksPerSecond: 11880 }, // 2.0
+  { levelIdc: 21, maxFrameMacroblocks: 792, maxMacroblocksPerSecond: 19800 }, // 2.1
+  { levelIdc: 22, maxFrameMacroblocks: 1620, maxMacroblocksPerSecond: 20250 }, // 2.2
+  { levelIdc: 30, maxFrameMacroblocks: 1620, maxMacroblocksPerSecond: 40500 }, // 3.0
+  { levelIdc: 31, maxFrameMacroblocks: 3600, maxMacroblocksPerSecond: 108000 }, // 3.1（720p30 正好卡满，上游默认在这一档）
+  { levelIdc: 32, maxFrameMacroblocks: 5120, maxMacroblocksPerSecond: 216000 }, // 3.2
+  { levelIdc: 40, maxFrameMacroblocks: 8192, maxMacroblocksPerSecond: 245760 }, // 4.0（1080p30 落在这一档）
+  { levelIdc: 41, maxFrameMacroblocks: 8192, maxMacroblocksPerSecond: 245760 }, // 4.1
+  { levelIdc: 42, maxFrameMacroblocks: 8704, maxMacroblocksPerSecond: 522240 }, // 4.2（1080p60 落在这一档）
+  { levelIdc: 50, maxFrameMacroblocks: 22080, maxMacroblocksPerSecond: 589824 }, // 5.0
+  { levelIdc: 51, maxFrameMacroblocks: 36864, maxMacroblocksPerSecond: 983040 }, // 5.1
+  { levelIdc: 52, maxFrameMacroblocks: 36864, maxMacroblocksPerSecond: 2073600 }, // 5.2
+  { levelIdc: 60, maxFrameMacroblocks: 139264, maxMacroblocksPerSecond: 4177920 }, // 6.0
+  { levelIdc: 61, maxFrameMacroblocks: 139264, maxMacroblocksPerSecond: 8355840 }, // 6.1
+  { levelIdc: 62, maxFrameMacroblocks: 139264, maxMacroblocksPerSecond: 16711680 }, // 6.2
 ]
 
 /**
@@ -53,11 +66,15 @@ const AVC_LEVELS: ReadonlyArray<{ levelIdc: number; maxFrameMacroblocks: number 
  *
  * 尺寸未知（0）时返回 31，即上游原来的档位——没信息就不改。
  */
-export function avcLevelFor(width: number, height: number): number {
+export function avcLevelFor(width: number, height: number, fps?: number): number {
   if (!(width > 0) || !(height > 0)) return 31
   const macroblocks = Math.ceil(width / 16) * Math.ceil(height / 16)
+  // 帧率未知（上游没传 / 传了 0）就只按帧尺寸算——宁可少抬，也不凭空抬到 4.2 去。
+  const perSecond = typeof fps === 'number' && Number.isFinite(fps) && fps > 0 ? macroblocks * fps : 0
   for (const level of AVC_LEVELS) {
-    if (macroblocks <= level.maxFrameMacroblocks) return level.levelIdc
+    if (macroblocks <= level.maxFrameMacroblocks && perSecond <= level.maxMacroblocksPerSecond) {
+      return level.levelIdc
+    }
   }
   return AVC_LEVELS[AVC_LEVELS.length - 1]!.levelIdc
 }
@@ -69,12 +86,12 @@ const AVC_CODEC = /^avc1\.([0-9a-fA-F]{6})$/
  * 把一个 codec 串的 AVC 等级抬到「配得上这个分辨率」的档位；其余情况原样返回同一个字符串
  * （调用方靠 `===` 判断要不要新建配置对象）。
  */
-export function adaptAvcCodec(codec: string, width: number, height: number): string {
+export function adaptAvcCodec(codec: string, width: number, height: number, fps?: number): string {
   const matched = AVC_CODEC.exec(codec)
   if (matched === null) return codec
   const hex = matched[1]!.toLowerCase()
   const current = Number.parseInt(hex.slice(4), 16)
-  const needed = avcLevelFor(width, height)
+  const needed = avcLevelFor(width, height, fps)
   if (!Number.isFinite(current) || needed <= current) return codec
   // 只换最后那个 level 字节，档位/约束位（Baseline、4:2:0 之类）一概不动。
   return `avc1.${hex.slice(0, 4)}${needed.toString(16).padStart(2, '0')}`
@@ -82,7 +99,8 @@ export function adaptAvcCodec(codec: string, width: number, height: number): str
 
 /** 把一个配置里需要抬等级的 codec 换掉；不需要就返回原对象。 */
 function adaptConfig(config: VideoEncoderConfig): VideoEncoderConfig {
-  const codec = adaptAvcCodec(config.codec, config.width, config.height)
+  // `framerate` 是上游 configure 时一起传的（1080p60 → 60）；没有这一项就只按尺寸选。
+  const codec = adaptAvcCodec(config.codec, config.width, config.height, config.framerate)
   return codec === config.codec ? config : { ...config, codec }
 }
 

@@ -126,9 +126,13 @@ Three limits, plus one thing it fixes on upstream's behalf:
 2. The format depends on the browser and codec. The WebCodecs path can produce `mp4` / `webm` depending on the codec; the MediaRecorder path usually produces `webm`. The result carries `mime` and the extension is derived from it — never hard-code `.mp4`.
 3. Audio exists only when the scene itself has audio attached (Manim has no audio of its own).
 
-During an export it **temporarily resizes the scene to `video.height` (1080p by default)** (same aspect, camera frame untouched) and restores it afterwards: upstream's `width/height` only configure the encoder, while frames are captured straight from the canvas with `new VideoFrame(canvas)` — a 720p canvas stays soft no matter what size you ask for. The reverse also holds: to go faster, don't upscale — 720p has 44% of the pixels and half the frames, which adds up to about a fifth of the work.
+During an export it **aligns the canvas pixel count to the tier** (1080p by default, same aspect, camera frame untouched) and restores it afterwards.
 
-It also patches one upstream gap: upstream hard-codes the AVC codec string to `avc1.42001f` (Level 3.1, ceiling 1280×720), so a 1080p export is rejected by the browser inside `configure()`. For the duration of the export this package raises the level byte to match the pixel count (1080p → `0x28` = Level 4.0) and restores it on exit; encoding itself is still native (see `src/export/avc-level.ts`).
+That step is fussier than it looks, because two units are in play at once: upstream's `width/height` only configure the encoder, while frames are captured straight from the canvas with `new VideoFrame(canvas)`, and the canvas's physical pixels are **scene CSS size × pixelRatio** (2× on a retina screen). So this package computes the scale from "canvas pixels vs. tier pixel box", divides the ratio back out, calls `resize` with CSS units, and hands the resulting pixel count to the encoder explicitly — rendered pixels and output pixels are the same number. Without that folding, a "720p" tier on a dpr=2 screen renders 2560×1440 and lets the encoder shrink it to 1280×720: correct output, four times the cost (headless Chrome, dpr=2, same 2-second scene: 1080p60 went from 5.5s to 1.5s, 720p30 from 2.7s to 0.6s).
+
+The tier is a promise, so it **both upscales and pulls back**: a card in a small window (640×360) grows to the tier, a full-screen card is pulled back to it. For speed, pick a lower tier: 720p has 44% of the pixels and half the frames, which adds up to about a fifth of the work.
+
+It also patches one upstream gap: upstream hard-codes the AVC codec string to `avc1.42001f` (Level 3.1, ceiling 1280×720), so a 1080p export is rejected by the browser inside `configure()`. For the duration of the export this package raises the level byte to match the pixel count and frame rate (1080p30 → `0x28` = Level 4.0, 1080p60 → `0x2a` = Level 4.2, since macroblocks per second is a hard cap too) and restores it on exit; encoding itself is still native (see `src/export/avc-level.ts`).
 
 ## createLocalExport(options) (Node side)
 

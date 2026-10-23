@@ -32,6 +32,31 @@ describe('avcLevelFor：等级按宏块数选（浏览器就是这么算的）',
   })
 })
 
+describe('avcLevelFor：帧率也是硬上限（MaxMBPS）', () => {
+  it('1080p60 = 8160×60 = 489600 宏块/秒，Level 4.0（245760）不够，要 4.2', () => {
+    // 这就是为什么真机成片 SPS 里写的是 4.2：编码器自己按帧率抬了，只是不认我们传的串。
+    expect(avcLevelFor(1920, 1080, 60)).toBe(42)
+  })
+
+  it('1080p30 仍是 4.0（8160×30 = 244800 刚好在 245760 以内）', () => {
+    expect(avcLevelFor(1920, 1080, 30)).toBe(40)
+  })
+
+  it('720p30 一动不动（3600×30 = 108000，正好卡满 3.1）', () => {
+    expect(avcLevelFor(1280, 720, 30)).toBe(31)
+  })
+
+  it('720p60 要 3.2（帧尺寸还是 3.1，但每秒宏块翻倍到 216000）', () => {
+    expect(avcLevelFor(1280, 720, 60)).toBe(32)
+  })
+
+  it('不传帧率 / 传 0 / 传 NaN：只按帧尺寸算（宁可少抬）', () => {
+    expect(avcLevelFor(1920, 1080)).toBe(40)
+    expect(avcLevelFor(1920, 1080, 0)).toBe(40)
+    expect(avcLevelFor(1920, 1080, Number.NaN)).toBe(40)
+  })
+})
+
 describe('adaptAvcCodec：只换最后那个等级字节', () => {
   it('1080p：avc1.42001f（3.1）→ avc1.420028（4.0）', () => {
     expect(adaptAvcCodec('avc1.42001f', 1920, 1080)).toBe('avc1.420028')
@@ -48,6 +73,10 @@ describe('adaptAvcCodec：只换最后那个等级字节', () => {
 
   it('等级本来就够高 —— 不往下降', () => {
     expect(adaptAvcCodec('avc1.640033', 1920, 1080)).toBe('avc1.640033')
+  })
+
+  it('1080p60：抬到 4.2（0x2a），不是只抬到 4.0', () => {
+    expect(adaptAvcCodec('avc1.42001f', 1920, 1080, 60)).toBe('avc1.42002a')
   })
 
   it('不是 AVC（vp9 / av01 / hev1）不碰', () => {
@@ -108,6 +137,27 @@ describe('withAvcLevelAdapted：导出期间才补等级，结束就还原', () 
         expect(encoder.configured?.codec).toBe('avc1.420028')
         // 其它字段原样带过去
         expect(encoder.configured?.bitrate).toBe(15_000_000)
+      })
+    } finally {
+      restore()
+    }
+  })
+
+  it('配置里的 framerate 会被算进等级（1080p60 → 4.2）', async () => {
+    const restore = installFakeEncoder()
+    try {
+      await withAvcLevelAdapted(async () => {
+        const Encoder = (globalThis as { VideoEncoder: new (init?: unknown) => FakeEncoder }).VideoEncoder
+        const encoder = new Encoder({})
+        encoder.configure({
+          codec: 'avc1.42001f',
+          width: 1920,
+          height: 1080,
+          bitrate: 15_000_000,
+          framerate: 60,
+        })
+        expect(encoder.configured?.codec).toBe('avc1.42002a')
+        expect(encoder.configured?.framerate).toBe(60)
       })
     } finally {
       restore()
