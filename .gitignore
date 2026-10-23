@@ -4,6 +4,10 @@ coverage/
 .DS_Store
 *.log
 
+# 发布包（`npm pack` 现打现用）。留在树里最危险——`npm publish ./x.tgz` 打错名字
+# 就会把上一版的内容当新版发出去（2026-10-16 真踩过一次），所以一律不进库。
+*.tgz
+
 # playground 的构建产物与本地 Pyodide 资源（资源按 Step 3 拷进来，可随时重拷）
 playground/dist/
 playground/public/pyodide/
