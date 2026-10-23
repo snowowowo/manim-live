@@ -162,4 +162,45 @@ describe('时间轴回放：收集与定位', () => {
     playback.dispose()
     expect((scene as { timeline: unknown }).timeline).toBeNull()
   }, 120_000)
+
+  /**
+   * **收集前必须清场**（renderer.ts 的 collectPlaybackRun 里那一行 `clear`）。
+   *
+   * 收集模式会真的把代码跑一遍，物体是新建的；可上级场景是**复用**的——上一趟 `run()` 留下的
+   * 那套还挂在里面。不清的话画布上是「旧终态 + 新动画」叠着：已经画好的坐标轴一直在（用户看到
+   * 「坐标轴出现没有动画」），旧的点也没走、跟新的一起动（看起来抖）。
+   *
+   * 时间轴救不了它们——它们根本不在这条时间轴上，seek/reset 只管自己排过的动画。
+   * 这条测试就是那个真机现象的离线复刻。
+   */
+  it('收集前不清场会叠两套——run 过一遍之后再收集', async () => {
+    const scene = headless()
+    const code = 'ax = Axes()\nself.play(Create(ax), run_time=1)\n'
+    const visible = (): number => mobjectsOf(scene).filter((m) => m.opacity > 0).length
+
+    // ① 卡片那条路：run 真跑一遍，画面停在终态
+    await runPython(code, createManimWebBridge({ manim, scene, fast: true }))
+    const afterRun = mobjectsOf(scene).length
+    expect(afterRun).toBeGreaterThan(0)
+
+    // ② 不清场直接收集：两套，且旧的还看得见（它不在时间轴上，藏不掉）
+    const dirty = collectPlayback(manim, scene)
+    await runPython(code, createManimWebBridge({ manim, scene, collect: dirty.collector }))
+    const dirtyPlayback = dirty.finish()
+    dirtyPlayback.seek(0)
+    expect(mobjectsOf(scene)).toHaveLength(afterRun * 2)
+    expect(visible()).toBeGreaterThanOrEqual(afterRun)
+    dirtyPlayback.dispose()
+
+    // ③ 清场后再收集：只有一套，起点帧上什么都不该露出来
+    ;(scene as unknown as { clear(o?: { render?: boolean }): void }).clear({ render: false })
+    expect(mobjectsOf(scene)).toHaveLength(0)
+    const clean = collectPlayback(manim, scene)
+    await runPython(code, createManimWebBridge({ manim, scene, collect: clean.collector }))
+    const cleanPlayback = clean.finish()
+    cleanPlayback.seek(0)
+    expect(mobjectsOf(scene)).toHaveLength(afterRun)
+    expect(visible()).toBe(0)
+    cleanPlayback.dispose()
+  }, 120_000)
 })

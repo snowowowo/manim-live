@@ -139,6 +139,12 @@ export async function createSurface(container: HTMLDivElement, options: SurfaceO
     endSession = null
     endPlayback?.()
     endPlayback = null
+    // **先清场景，再收集**。收集模式会真的把代码跑一遍，物体是新建的；可上级场景是复用的
+    // ——上一趟 `run()` 留下的那套还挂在里面。不清的话画布上就是「旧终态 + 新动画」叠在一起：
+    // 已经画好的坐标轴一直在（看起来「出现没有动画」），旧的点也没走，跟新的一起动（看起来抖）。
+    // 时间轴的 seek/reset 救不了它们——它们根本不在这条时间轴上。
+    // 用 clear 而不是 slot.reset()：后者会换 canvas 元素，而导出那条路已经拿着这块画布在录了。
+    slot.scene().clear({ render: false })
     const { collector, finish } = collectPlayback(manim as unknown as ManimNamespace, slot.scene())
     const bridge = createManimWebBridge({
       manim: manim as unknown as ManimNamespace,

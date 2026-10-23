@@ -12,6 +12,11 @@ export interface ManimScene {
   mobjects: Set<unknown>
   camera: { frameHeight: number; frameWidth: number }
   remove(...mobjects: unknown[]): void
+  /**
+   * 清空场景里的全部物体。收集模式开跑前必须调一次——见 renderer 的 collectPlaybackRun。
+   * `render: false` 抑制这一次重绘（紧接着就要跑代码，中间那帧空白没有意义）。
+   */
+  clear(options?: { render?: boolean }): void
   play(...animations: unknown[]): Promise<void>
   dispose(): void
 }

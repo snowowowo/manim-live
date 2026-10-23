@@ -53,6 +53,7 @@ playback.play()                    // continue from there
 **Notes**
 
 - **One live form per canvas**: starting a playback ends an active session and any previous playback; `run` / `replay` / `createSession` end a playback too.
+- **The scene is cleared before collecting**: collect mode really executes the code, so the mobjects are new — but the scene is reused. Without clearing, whatever the previous `run()` left is still mounted, and the canvas shows "old final state + new animation" stacked: it looks like a mobject "appears with no animation" (the old copy is already drawn) and moves look smeared (two copies). They are not on this timeline, so `seek` / `reset` cannot reach them. Only mobjects are cleared — **the canvas element stays the same** (so anyone recording that canvas is unaffected).
 - Statements **without animation** (object creation, `set_color`, `self.add`, …) execute immediately during collecting — they have no duration and are state changes "outside" the timeline; **seeking backwards across them does not undo them** (the same trade-off as manim-web's official recording facade).
 - 3D scene switches (a mid-block `class X(ThreeDScene)`) are not handled in collect mode.
 
