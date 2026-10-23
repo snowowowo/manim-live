@@ -40,8 +40,25 @@ interface ManimExportModule {
   ) => UpstreamTimelineExporter
 }
 
-/** 逐帧导出的帧率。30 对教学动画足够（上游默认 60，产物翻倍）。 */
-const FPS = 30
+/**
+ * 逐帧导出的帧率。上游默认也是 60：教学动画里点沿曲线走、文字上浮这类运动在 30fps 下
+ * 有明显的台阶（成片比屏幕上更显眼，因为观众会全屏盯着看）。帧率的代价只是文件更大、
+ * 编码更久，换掉它没有意义。
+ */
+const FPS = 60
+
+/**
+ * 码率按「每秒每像素多少比特」算，而不是写死一个数：分辨率或帧率一变，固定码率就会不够。
+ * 0.12 bpp 对线条/文字为主的 Manim 动画偏高一点——细线和字形最怕压，宁可文件大也别糊。
+ */
+const BITS_PER_PIXEL_PER_FRAME = 0.12
+
+export function bitrateFor(width: number, height: number): number {
+  if (width <= 0 || height <= 0) return 8_000_000
+  const raw = width * height * FPS * BITS_PER_PIXEL_PER_FRAME
+  // 上限 32Mbps：再高对教学动画没有可见收益，只让文件难分享。
+  return Math.round(Math.min(Math.max(raw, 6_000_000), 32_000_000))
+}
 
 /** 上游的 `mime`：WebCodecs 那条给 mp4，MediaRecorder 那条给 webm——由实际编码结果定，不猜。 */
 function extensionOf(blob: Blob): { mime: string; name: string } {
@@ -63,6 +80,60 @@ async function loadExportModule(): Promise<ManimExportModule | null> {
 /** WebCodecs 是否可用（上游就是拿它当分路依据，这里保持一致）。 */
 function hasWebCodecs(): boolean {
   return typeof globalThis !== 'undefined' && 'VideoEncoder' in globalThis
+}
+
+/** 导出目标像素：1080p，与本机渲染的成片同档。 */
+const EXPORT_WIDTH = 1920
+const EXPORT_HEIGHT = 1080
+
+/** 场景在导出时真正要用的那几个成员（只声明用到的，不把 manim-web 类型带进公开面）。 */
+interface ResizableScene {
+  getWidth?: () => number
+  getHeight?: () => number
+  resize?: (width: number, height: number) => unknown
+  seek?: (time: number) => unknown
+  getTimelineDuration?: () => number | null
+}
+
+/**
+ * 导出前把场景临时放大到 1080p，返回「还原」函数。
+ *
+ * 为什么必须动画布：上游导出器虽然收 `width/height`，但那两个值只写进编码器配置，
+ * 帧是 `new VideoFrame(canvas)` 直接从画布抓的——画布只有 1280×720 就只能出 720p，
+ * 传更大的尺寸反而会让编码器与输入帧对不上。想更清晰，只能真的按更大像素渲染。
+ *
+ * 等比放大不改构图：上游 `resize()` 改的是渲染器像素与相机宽高比，`frameWidth/frameHeight`
+ * （逻辑坐标系）不动；16:9 → 16:9 时宽高比也没变。
+ *
+ * 还原时尺寸变化会清空画布，所以顺手 seek 到时间轴末尾，把卡片留在导出前的终态。
+ */
+export function upscaleForExport(scene: ResizableScene): () => void {
+  const { getWidth, getHeight, resize } = scene
+  if (typeof getWidth !== 'function' || typeof getHeight !== 'function' || typeof resize !== 'function') {
+    return () => {}
+  }
+  const width = getWidth.call(scene)
+  const height = getHeight.call(scene)
+  if (!(width > 0) || !(height > 0) || width * height >= EXPORT_WIDTH * EXPORT_HEIGHT) return () => {}
+
+  const scale = Math.min(EXPORT_WIDTH / width, EXPORT_HEIGHT / height)
+  try {
+    resize.call(scene, Math.round(width * scale), Math.round(height * scale))
+  } catch (error) {
+    // 放大失败不是导出失败：退回原尺寸，成片是 720p 而不是没有。
+    console.error('[manim-live] 放大导出画布失败，按原尺寸导出:', error)
+    return () => {}
+  }
+
+  return () => {
+    try {
+      resize.call(scene, width, height)
+      const duration = scene.getTimelineDuration?.() ?? null
+      if (typeof scene.seek === 'function' && typeof duration === 'number' && duration > 0) scene.seek(duration)
+    } catch (error) {
+      console.error('[manim-live] 还原画布尺寸失败:', error)
+    }
+  }
 }
 
 export const browserVideo: Exporter = {
@@ -97,7 +168,21 @@ export const browserVideo: Exporter = {
     const module = await loadExportModule()
     if (module === null) return { ok: false, reason: 'environment', error: 'manim-web 的导出器载入失败' }
 
-    const options = { fps: FPS, onProgress: (progress: number) => onProgress?.(`导出中 ${Math.round(progress * 100)}%`) }
+    // 先放大到 1080p 再取尺寸：码率与「导出的像素数」挂钩，按 720p 算码率去编 1080p 会糊。
+    const restore = upscaleForExport(scene as ResizableScene)
+    const canvas = controller.canvas()
+    const width = canvas?.width ?? 0
+    const height = canvas?.height ?? 0
+    const bitrate = bitrateFor(width, height)
+    const spec = width > 0 && height > 0 ? `${width}×${height} · ${FPS}fps` : `${FPS}fps`
+
+    const options = {
+      fps: FPS,
+      bitrate,
+      // MediaRecorder 退路看 quality（0–1），WebCodecs 看 bitrate；两个都传，各自取用。
+      quality: 0.95,
+      onProgress: (progress: number) => onProgress?.(`导出中 ${Math.round(progress * 100)}%（${spec}）`),
+    }
 
     try {
       const strategy = module.chooseVideoExporterStrategy?.(hasWebCodecs()) ?? 'mediarecorder'
@@ -105,19 +190,22 @@ export const browserVideo: Exporter = {
         if (module.createWebCodecsExporter === undefined) {
           return { ok: false, reason: 'environment', error: '这版 manim-web 没有 WebCodecs 导出器' }
         }
-        onProgress?.('逐帧编码（WebCodecs）…')
+        onProgress?.(`逐帧编码（WebCodecs · ${spec}）…`)
         const blob = await module.createWebCodecsExporter(scene, options).export()
         return finishResult(blob, onProgress)
       }
       if (module.createVideoExporter === undefined) {
         return { ok: false, reason: 'environment', error: '这版 manim-web 没有逐帧导出器' }
       }
-      onProgress?.('逐帧编码（MediaRecorder）…')
+      onProgress?.(`逐帧编码（MediaRecorder · ${spec}）…`)
       const blob = await module.createVideoExporter(scene, options).exportTimeline()
       return finishResult(blob, onProgress)
     } catch (error) {
       console.error('[manim-live] 逐帧导出失败:', error)
       return { ok: false, reason: 'error', error: error instanceof Error ? error.message : String(error) }
+    } finally {
+      // 尺寸一定要还原：留着 1080p 会让这张卡以后每帧都多烧一倍多的像素。
+      restore()
     }
   },
 }
