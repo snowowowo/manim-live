@@ -113,11 +113,15 @@ fresh.dispose()
 
 The core's first provider, `id: 'browser-video'`: it collect-runs the source to obtain a scene with a timeline, then hands that scene to manim-web's own exporters for **frame-by-frame** output (WebCodecs first, falling back to real-time MediaRecorder sampling). Strategy selection, encoding, per-frame seeking, and scene-audio mixing all happen upstream; this package only wires up options and progress.
 
-Three limits:
+Three limits, plus one thing it fixes on upstream's behalf:
 
-1. Frame-by-frame and reproducible: fixed at 30 fps (upstream defaults to 60, which doubles the payload and buys nothing for teaching animations) and unaffected by dropped frames during playback.
+1. Frame-by-frame and reproducible: 60 fps (matching the on-screen rate; at 30 fps a dot travelling along a curve or text floating up shows visible stepping) and unaffected by dropped frames during playback.
 2. The format depends on the browser and codec. The WebCodecs path can produce `mp4` / `webm` depending on the codec; the MediaRecorder path usually produces `webm`. The result carries `mime` and the extension is derived from it — never hard-code `.mp4`.
 3. Audio exists only when the scene itself has audio attached (Manim has no audio of its own).
+
+During an export it **temporarily resizes the scene to 1080p** (same aspect, camera frame untouched) and restores it afterwards: upstream's `width/height` only configure the encoder, while frames are captured straight from the canvas with `new VideoFrame(canvas)` — a 720p canvas stays soft no matter what size you ask for.
+
+It also patches one upstream gap: upstream hard-codes the AVC codec string to `avc1.42001f` (Level 3.1, ceiling 1280×720), so a 1080p export is rejected by the browser inside `configure()`. For the duration of the export this package raises the level byte to match the pixel count (1080p → `0x28` = Level 4.0) and restores it on exit; encoding itself is still native (see `src/export/avc-level.ts`).
 
 ## createLocalExport(options) (Node side)
 

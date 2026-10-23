@@ -16,6 +16,7 @@
 //   2. **格式看浏览器**：WebCodecs 能给 mp4/webm（按编解码器），MediaRecorder 那条多数出 webm；
 //      结果里带 `mime`，扩展名由调用方从它推——不许写死 .mp4。
 //   3. 浏览器太老（没有 WebCodecs 也没有 MediaRecorder）时 probe() 直接判不可用，导出按钮置灰。
+import { withAvcLevelAdapted } from './avc-level.ts'
 import type { Exporter, ExportRequest, ExportResult } from './types.ts'
 
 /** 上游导出器的松形状（只声明本文件真正用到的成员，免得把 manim-web 的类型带进核心的公开面）。 */
@@ -187,11 +188,14 @@ export const browserVideo: Exporter = {
     try {
       const strategy = module.chooseVideoExporterStrategy?.(hasWebCodecs()) ?? 'mediarecorder'
       if (strategy === 'webcodecs') {
-        if (module.createWebCodecsExporter === undefined) {
+        const { createWebCodecsExporter } = module
+        if (createWebCodecsExporter === undefined) {
           return { ok: false, reason: 'environment', error: '这版 manim-web 没有 WebCodecs 导出器' }
         }
         onProgress?.(`逐帧编码（WebCodecs · ${spec}）…`)
-        const blob = await module.createWebCodecsExporter(scene, options).export()
+        // 上游把 AVC 等级写死在 Level 3.1（只够 720p），1080p 会在 configure() 当场被浏览器拒。
+        // 这层包装只把 codec 串里的等级抬到配得上当前像素，编码仍走上游（见 avc-level.ts）。
+        const blob = await withAvcLevelAdapted(() => createWebCodecsExporter(scene, options).export())
         return finishResult(blob, onProgress)
       }
       if (module.createVideoExporter === undefined) {
