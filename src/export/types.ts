@@ -24,11 +24,28 @@ export interface RenderController {
   collect(python: string): Promise<unknown | null>
 }
 
+/**
+ * 画质档位：只对**浏览器逐帧导出**有意义（本机 CLI 那条用 manim 自己的 `-q` 档位，
+ * 走 `createLocalExport` 的 `quality` 参数，不在这儿）。
+ *
+ * 为什么是「高度 + 帧率」而不是一个 `'low' | 'high'`：这两件事的代价各自独立——分辨率决定
+ * 每帧的像素与码率，帧率决定帧数。界面要能给「720p30 / 1080p30 / 1080p60」这种组合，
+ * 抽象成两档名字反而没法表达。
+ */
+export interface VideoSettings {
+  /** 目标高度（像素）。宽度按画面比例算。默认 1080。常用 720 / 1080。 */
+  height?: number
+  /** 帧率。默认 60。常用 30 / 60。 */
+  fps?: number
+}
+
 export interface ExportRequest {
   /** 源码。本机 CLI 实现只用这个。 */
   python: string
   /** 渲染控制。浏览器录屏实现只用这个。 */
   controller: RenderController
+  /** 画质档位（缺省 = 1080p · 60fps）。不关心它的实现直接忽略。 */
+  video?: VideoSettings
   /** 进展播报（「正在录 3.2s」「正在调 manim CLI」…），供 UI 显示。 */
   onProgress?: (note: string) => void
 }

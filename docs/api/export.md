@@ -55,7 +55,13 @@ run(request: ExportRequest, signal?: AbortSignal): Promise<ExportResult>
 interface ExportRequest {
   python: string                 // 源码：本机 CLI 类实现用它
   controller: RenderController   // 渲染控制权：浏览器逐帧导出用它
+  video?: VideoSettings          // 画质档位：浏览器逐帧导出用它，别的实现忽略
   onProgress?: (note: string) => void
+}
+
+interface VideoSettings {
+  height?: number                // 目标高度（像素），宽度按比例算。默认 1080
+  fps?: number                   // 帧率。默认 60
 }
 
 interface RenderController {
@@ -74,6 +80,7 @@ type ExportResult =
 
 - `request.python`：源码。浏览器类实现把它交给 `controller.collect` 跑一遍；本机 CLI 类实现直接吃它。
 - `request.controller`：渲染控制权。浏览器类实现只用它，三个方法见上面的类型定义。
+- `request.video`：画质档位，只对浏览器逐帧导出有意义。**这不是装饰**：逐帧导出的耗时基本正比于「帧数 × 每帧像素」，所以 `{ height: 720, fps: 30 }` 大约只有默认档的 1/5。不传 = 1080p · 60fps。本机 CLI 那条用的是 manim 自己的档位（`quality` 参数），不走这个字段。
 - `request.onProgress`：阶段播报，见[钩子](/api/hooks)。
 - `signal`：取消，见[钩子](/api/hooks)。
 
@@ -115,11 +122,11 @@ fresh.dispose()
 
 三条边界，外加一条它会替上游兜的：
 
-1. 逐帧、可复现：60fps（与屏幕上的帧率一致；30fps 下点沿曲线走、文字上浮都有肉眼可见的台阶），不受实时掉帧影响。
+1. 逐帧、可复现：默认 60fps（与屏幕上的帧率一致；30fps 下点沿曲线走、文字上浮都有肉眼可见的台阶），由 `video.fps` 决定，不受实时掉帧影响。
 2. 格式取决于浏览器与编解码器：WebCodecs 那条能给 `mp4` / `webm`（按编解码器），MediaRecorder 那条多数出 `webm`；结果里带 `mime`，扩展名由它推——不要写死 `.mp4`。
 3. 音轨只有场景自己挂了音频才有（Manim 本身没有音频）。
 
-导出时它会**把场景临时 resize 到 1080p**（同比例，camera frame 不动），导出后还原：上游的 `width/height` 只写进编码器配置，帧是 `new VideoFrame(canvas)` 直接从画布抓的——画布只有 720p，传多大都只会更糊。
+导出时它会**把场景临时 resize 到 `video.height`（默认 1080p）**（同比例，camera frame 不动），导出后还原：上游的 `width/height` 只写进编码器配置，帧是 `new VideoFrame(canvas)` 直接从画布抓的——画布只有 720p，传多大都只会更糊。反过来，想要更快就别放大：720p 档的像素只有 1080p 的 44%，帧率再减半，加起来就是五分之一左右的工作量。
 
 顺带替上游补一档 AVC 等级：上游把 codec 串写死成 `avc1.42001f`（Level 3.1，上限 1280×720），1080p 会在 `configure()` 当场被浏览器拒；本包在导出那一小段窗口内把等级字节按像素抬到够用（1080p → `0x28` = Level 4.0），退出即还原，编码本身仍是浏览器原生实现（见 `src/export/avc-level.ts`）。
 

@@ -55,7 +55,13 @@ run(request: ExportRequest, signal?: AbortSignal): Promise<ExportResult>
 interface ExportRequest {
   python: string                 // source code: used by local-CLI implementations
   controller: RenderController   // render control: used by the browser exporter
+  video?: VideoSettings          // quality tier: used by the browser exporter, ignored by others
   onProgress?: (note: string) => void
+}
+
+interface VideoSettings {
+  height?: number                // target height in pixels; width follows the aspect. Default 1080
+  fps?: number                   // frame rate. Default 60
 }
 
 interface RenderController {
@@ -74,6 +80,7 @@ type ExportResult =
 
 - `request.python`: the source. Browser implementations hand it to `controller.collect`; local-CLI implementations consume it directly.
 - `request.controller`: render control. Browser implementations use only this; its three methods are in the type definition above.
+- `request.video`: quality tier, only meaningful for the browser frame-by-frame exporter. **It is not cosmetic**: the cost of a frame-by-frame export is roughly proportional to frames × pixels per frame, so `{ height: 720, fps: 30 }` costs about a fifth of the default tier. Omitting it means 1080p · 60fps. The local-CLI path uses manim's own tiers (`quality`) instead.
 - `request.onProgress`: stage updates; see [Hooks](/en/api/hooks).
 - `signal`: cancellation; see [Hooks](/en/api/hooks).
 
@@ -115,11 +122,11 @@ The core's first provider, `id: 'browser-video'`: it collect-runs the source to 
 
 Three limits, plus one thing it fixes on upstream's behalf:
 
-1. Frame-by-frame and reproducible: 60 fps (matching the on-screen rate; at 30 fps a dot travelling along a curve or text floating up shows visible stepping) and unaffected by dropped frames during playback.
+1. Frame-by-frame and reproducible: 60 fps by default (matching the on-screen rate; at 30 fps a dot travelling along a curve or text floating up shows visible stepping), set by `video.fps`, and unaffected by dropped frames during playback.
 2. The format depends on the browser and codec. The WebCodecs path can produce `mp4` / `webm` depending on the codec; the MediaRecorder path usually produces `webm`. The result carries `mime` and the extension is derived from it — never hard-code `.mp4`.
 3. Audio exists only when the scene itself has audio attached (Manim has no audio of its own).
 
-During an export it **temporarily resizes the scene to 1080p** (same aspect, camera frame untouched) and restores it afterwards: upstream's `width/height` only configure the encoder, while frames are captured straight from the canvas with `new VideoFrame(canvas)` — a 720p canvas stays soft no matter what size you ask for.
+During an export it **temporarily resizes the scene to `video.height` (1080p by default)** (same aspect, camera frame untouched) and restores it afterwards: upstream's `width/height` only configure the encoder, while frames are captured straight from the canvas with `new VideoFrame(canvas)` — a 720p canvas stays soft no matter what size you ask for. The reverse also holds: to go faster, don't upscale — 720p has 44% of the pixels and half the frames, which adds up to about a fifth of the work.
 
 It also patches one upstream gap: upstream hard-codes the AVC codec string to `avc1.42001f` (Level 3.1, ceiling 1280×720), so a 1080p export is rejected by the browser inside `configure()`. For the duration of the export this package raises the level byte to match the pixel count (1080p → `0x28` = Level 4.0) and restores it on exit; encoding itself is still native (see `src/export/avc-level.ts`).
 

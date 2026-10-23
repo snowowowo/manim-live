@@ -89,6 +89,13 @@ describe('取数：三条接口的发法（地址由调用方注入）', () => {
     expect(JSON.parse(String(init.body))).toEqual({ python: 'self.wait(1)' })
   })
 
+  it('requestExport：带档位时把 quality 一起 POST 过去（本机那条的 -q 档）', async () => {
+    const spy = respond({ ok: true, file: '/x/b.mp4', quality: 'm' })
+    expect(await client.requestExport('x', { quality: 'm' })).toEqual({ ok: true, file: '/x/b.mp4', quality: 'm' })
+    const [, init] = spy.mock.calls[0] as [string, RequestInit]
+    expect(JSON.parse(String(init.body))).toEqual({ python: 'x', quality: 'm' })
+  })
+
   it('requestExport：业务失败原样带回（含缺什么）', async () => {
     respond({ ok: false, reason: 'environment', error: '本机环境没有备齐', missing: [{ id: 'ffmpeg', detail: '没装' }] })
     expect(await client.requestExport('x')).toEqual({

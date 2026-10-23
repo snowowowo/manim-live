@@ -22,6 +22,10 @@ describe('bitrateFor：码率跟着像素与帧率走', () => {
     expect(bitrateFor(7680, 4320)).toBe(32_000_000)
   })
 
+  it('同分辨率下 30fps 的码率约为 60fps 的一半（档位调低要真的省字节，不只是省帧数）', () => {
+    expect(bitrateFor(1920, 1080, 30) / bitrateFor(1920, 1080, 60)).toBeCloseTo(0.5, 1)
+  })
+
   it('尺寸还不知道时给一个能用的兜底值，不抛错', () => {
     expect(bitrateFor(0, 0)).toBe(8_000_000)
   })
@@ -75,6 +79,18 @@ describe('upscaleForExport：导出真的按 1080p 渲染', () => {
     const { scene, resizes } = sceneStub(1000, 1000)
     upscaleForExport(scene)
     expect(resizes[0]).toEqual([1080, 1080])
+  })
+
+  it('档位选 720p：放大到 1280×720 而不是 1920×1080（快就快在像素少）', () => {
+    const { scene, resizes } = sceneStub(640, 360)
+    upscaleForExport(scene, 720)
+    expect(resizes[0]).toEqual([1280, 720])
+  })
+
+  it('档位选 720p 时，已经 720p 的画布不再放大（多渲染一遍没有收益）', () => {
+    const { scene, resizes } = sceneStub(1280, 720)
+    upscaleForExport(scene, 720)
+    expect(resizes).toEqual([])
   })
 
   it('没有 resize 能力（无头 / 老场景）—— 安静跳过，不抛错', () => {

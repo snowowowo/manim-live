@@ -54,8 +54,14 @@ export function parseReveal(payload: unknown): RevealResult {
 export interface ExportClient {
   /** 拿就绪结论（Host 侧有缓存，很快；首次会真跑一遍探测，可能几秒）。 */
   loadExportReadiness(): Promise<ExportReadiness>
-  /** 真导出：把源码交给本机 manim 渲染成 mp4，回文件路径。HTTP 层失败抛错，业务失败走 `ok:false`。 */
-  requestExport(python: string): Promise<LocalExportResult>
+  /**
+   * 真导出：把源码交给本机 manim 渲染成 mp4，回文件路径。HTTP 层失败抛错，业务失败走 `ok:false`。
+   *
+   * `quality` 是 manim 自己的档位字母（`l` 480p15 / `m` 720p30 / `h` 1080p60 / `p` 1440p60 /
+   * `k` 2160p60）。不传就由 Host 按默认档走——**校验在 Host 侧**（认不得的字母回落默认），
+   * 这里不抄一份合法值清单，免得两侧各改一半。
+   */
+  requestExport(python: string, options?: { quality?: string }): Promise<LocalExportResult>
   /**
    * 在系统的文件浏览器里定位导出的文件（macOS 是 Finder 里选中它）。
    * Host 只认导出目录里的文件，越界会回 `ok:false` 与原因——那不是错误，是拒绝。
@@ -76,11 +82,13 @@ export function createExportClient(options: { exportUrl: string }): ExportClient
       return readiness
     },
 
-    async requestExport(python: string): Promise<LocalExportResult> {
+    async requestExport(python: string, callOptions: { quality?: string } = {}): Promise<LocalExportResult> {
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ python }),
+        body: JSON.stringify(
+          callOptions.quality === undefined ? { python } : { python, quality: callOptions.quality },
+        ),
       })
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const value = (await response.json()) as Record<string, unknown>
